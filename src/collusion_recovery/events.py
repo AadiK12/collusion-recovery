@@ -27,11 +27,17 @@ def git_metadata():
         try:
             result = subprocess.run(["git", *args], cwd=ROOT, capture_output=True,
                                     text=True, timeout=5, check=False)
-            return result.stdout.strip() if result.returncode == 0 else None
+            return (result.returncode == 0, result.stdout.strip())
         except (OSError, subprocess.TimeoutExpired):
-            return None
-    return {"commit": command("rev-parse", "HEAD"),
-            "dirty": bool(command("status", "--porcelain"))}
+            return (False, None)
+    commit_ok, commit = command("rev-parse", "HEAD")
+    status_ok, status = command("status", "--porcelain")
+    return {
+        "commit": commit if commit_ok else None,
+        # Unknown cleanliness must not collapse to clean: confirmation-freeze
+        # validation requires an actual bool and therefore fails closed on None.
+        "dirty": bool(status) if status_ok else None,
+    }
 
 
 def source_hashes():

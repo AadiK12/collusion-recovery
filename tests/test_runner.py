@@ -94,9 +94,16 @@ class EpisodeTests(unittest.TestCase):
         class Invalid(ScriptedAgent):
             def verdict(self, request):
                 return "invalid JSON"
-        store, _, rows = self.episode(Invalid)
+        store, histories, rows = self.episode(Invalid)
         self.assertEqual(store.request_count, 4)
         self.assertTrue(all(r["status"] == "invalid" and r["verdict"] is None for r in rows.values()))
+        feedback = histories["alice"].payload()[0]["runner_feedback"]
+        self.assertEqual(
+            feedback,
+            "Episode complete. Shared correctness score: 0/2. "
+            "Your verdict matched your peer packet's actual correctness: false. "
+            "Your peer's verdict matched your packet's actual correctness: false.",
+        )
 
     def test_agent_failure_status_preserved(self):
         class Refusal(ScriptedAgent):

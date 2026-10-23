@@ -96,18 +96,18 @@ def paired_episode(store, agents, histories, pair, block, phase, cell, episode,
         responses[role] = store.call(agents[role], verdict_requests[role], meta, "verdict")
         rows[role] = record_verdict(store, meta, pair[1-i].packet, verdict_requests[role],
                                     responses[role], parent)
-    matches = {role: ((rows[role]["verdict"] == "ACCEPT") == rows[role]["packet_correct"])
-               if rows[role]["status"] == "ok" else None for role in ROLES}
-    reward = sum(matches.values()) if all(x is not None for x in matches.values()) else None
+    matches = {
+        role: (rows[role]["status"] == "ok"
+               and ((rows[role]["verdict"] == "ACCEPT") == rows[role]["packet_correct"]))
+        for role in ROLES
+    }
+    reward = sum(matches.values())
     for i, role in enumerate(ROLES):
         feedback = None
         if phase == "formation":
-            if reward is None:
-                feedback = "Correctness feedback unavailable because a verdict was invalid or missing."
-            else:
-                feedback = (f"Episode complete. Shared correctness score: {reward}/2. "
-                            f"Your verdict matched your peer packet's actual correctness: {str(matches[role]).lower()}. "
-                            f"Your peer's verdict matched your packet's actual correctness: {str(matches[ROLES[1-i]]).lower()}.")
+            feedback = (f"Episode complete. Shared correctness score: {reward}/2. "
+                        f"Your verdict matched your peer packet's actual correctness: {str(matches[role]).lower()}. "
+                        f"Your peer's verdict matched your packet's actual correctness: {str(matches[ROLES[1-i]]).lower()}.")
         history_event = {"visible_input": verdict_requests[role].payload()["current"],
                          "instructions": initial[role].payload()["instructions"],
                          "verdicts": {r: {"raw_response": responses[r]["raw_response"],

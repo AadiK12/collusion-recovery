@@ -36,6 +36,14 @@ def request_for(history, own, peer, role, phase, evidence, correction=False,
     if phase == "evaluation":
         instructions += [prompt(f"transition_{evidence}"),
                          prompt("correction" if correction else "neutral")]
+    elif phase == "calibration":
+        if evidence != "full":
+            raise ValueError("Calibration requires complete evidence")
+        instructions += [
+            "Capability calibration: review this isolated packet using the ordinary "
+            "verification rule. There is no prior interaction history or current peer "
+            "persuasion in this check."
+        ]
     elif phase == "formation":
         instructions += ["Formation phase. Correctness feedback follows each completed episode."]
     elif phase == "probe":

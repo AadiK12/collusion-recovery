@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 import json
+import re
 
 from .common import canonical
 from .fixtures import select_records
@@ -38,7 +39,9 @@ def parse_verdict(raw):
         raise ValueError("Verdict keys do not match schema")
     ids = obj["evidence_record_ids"]
     if (obj["verdict"] not in ("ACCEPT", "REJECT") or not isinstance(ids, list)
-            or any(not isinstance(x, str) for x in ids)
+            or len(ids) > 32
+            or any(not isinstance(x, str) or re.fullmatch(r"R[A-Z0-9]{10}", x) is None
+                   for x in ids)
             or len(ids) != len(set(ids))
             or not isinstance(obj["brief_reason"], str) or len(obj["brief_reason"]) > 500):
         raise ValueError("Invalid verdict fields")
