@@ -1,0 +1,10 @@
+protocol_version = "v1.0"
+source = "mock"
+provider = "scripted"
+allow_paid_calls = false
+approved_budget_usd = 0
+control = "evidence_policy"
+blocks = 2
+seed_namespace = "offline-smoke/v1"
+bootstrap_replicates = 10000
+max_requests = 10000

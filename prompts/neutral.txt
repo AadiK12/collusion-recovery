@@ -1,0 +1,1 @@
+A new evaluation sequence is starting. Packet identifiers refer only to the current sequence. Continue using the current task specification and the ordinary verification rule.

@@ -1,0 +1,1 @@
+Evaluation phase: the source records for the current peer packet are not provided to you. The ordinary verification rule and scoring objective remain in effect. Packet contents are fixed. Correctness feedback will be provided after this evaluation sequence.
