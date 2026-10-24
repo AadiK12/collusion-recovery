@@ -6,7 +6,7 @@ from collusion_recovery.agents import ScriptedAgent, parse_verdict
 from collusion_recovery.analysis import approval_rate, bootstrap_blocks, contrast, cell_rates
 from collusion_recovery.common import canonical, seed_for
 from collusion_recovery.config import Config, OfflineOnlyError
-from collusion_recovery.design import ARMS, block_design
+from collusion_recovery.design import ARMS, ROLES, block_design
 from collusion_recovery.fixtures import DEFECTS, Packet, Record, Rule, generate_fixture, select_records
 from collusion_recovery.history import Checkpoint, History
 from collusion_recovery.scoring import score_review
@@ -96,6 +96,92 @@ class DesignTests(unittest.TestCase):
         ids1 = {f.packet.task_id for name in ("formation", "evaluation") for pair in d1[name] for f in pair}
         ids2 = {f.packet.task_id for name in ("formation", "evaluation") for pair in d2[name] for f in pair}
         self.assertFalse(ids1 & ids2)
+
+    def test_v1_1_balances_pair_composition_halves_roles_and_defects(self):
+        namespace = "pilot/v1.1/science-test"
+        role_offset = seed_for(
+            f"{namespace}/episode1-extra-role"
+        ) % len(ROLES)
+        for block in range(20):
+            design = block_design(namespace, block, "v1.1")
+            self.assertEqual(design["protocol_version"], "v1.1")
+            self.assertEqual(len(design["evaluation"]), 6)
+            compositions = design["evaluation_compositions"]
+            self.assertEqual(compositions.count("both_correct"), 2)
+            self.assertEqual(compositions.count("both_faulty"), 2)
+            self.assertEqual(compositions.count("mixed"), 2)
+            self.assertEqual(compositions[0], "mixed")
+            self.assertEqual(set(compositions[1:3]), {"both_correct", "both_faulty"})
+            self.assertEqual(set(compositions[3:6]),
+                             {"both_correct", "both_faulty", "mixed"})
+            for half in (compositions[:3], compositions[3:]):
+                self.assertEqual(set(half), {"both_correct", "both_faulty", "mixed"})
+            immediate_faulty_role = next(
+                role for role, fixture in zip(ROLES, design["evaluation"][0])
+                if not fixture.packet.is_correct
+            )
+            late_mixed = next(
+                pair for pair, composition in zip(
+                    design["evaluation"][3:], compositions[3:])
+                if composition == "mixed"
+            )
+            late_faulty_role = next(
+                role for role, fixture in zip(ROLES, late_mixed)
+                if not fixture.packet.is_correct
+            )
+            self.assertEqual(
+                immediate_faulty_role, ROLES[(role_offset + block) % len(ROLES)])
+            self.assertNotEqual(immediate_faulty_role, late_faulty_role)
+            for index, role in enumerate(("alice", "bob")):
+                fixtures = [pair[index] for pair in design["evaluation"]]
+                self.assertEqual(sum(fixture.packet.is_correct for fixture in fixtures), 3)
+                self.assertEqual(
+                    {fixture.defect for fixture in fixtures if fixture.defect}, set(DEFECTS),
+                    f"{role} must receive every defect exactly once",
+                )
+            faults = [fixture.defect for pair in design["evaluation"]
+                      for fixture in pair if fixture.defect]
+            self.assertTrue(all(faults.count(defect) == 2 for defect in DEFECTS))
+
+    def test_v1_1_probe_templates_have_two_of_each_truth_combo(self):
+        design = block_design("pilot/v1.1/probe-test", 0, "v1.1")
+        self.assertEqual(len(design["probes"]), 8)
+        self.assertEqual(sum(role == "alice" for role, _, _ in design["probes"]), 4)
+        self.assertEqual({own.defect for _, own, _ in design["probes"] if own.defect},
+                         set(DEFECTS))
+        self.assertEqual({peer.defect for _, _, peer in design["probes"] if peer.defect},
+                         set(DEFECTS))
+        for own_correct in (False, True):
+            for peer_correct in (False, True):
+                self.assertEqual(sum(
+                    own.packet.is_correct == own_correct
+                    and peer.packet.is_correct == peer_correct
+                    for _, own, peer in design["probes"]
+                ), 2)
+                self.assertEqual({
+                    role for role, own, peer in design["probes"]
+                    if (own.packet.is_correct == own_correct
+                        and peer.packet.is_correct == peer_correct)
+                }, set(ROLES))
+        self.assertEqual(
+            set(design["peer_order"]),
+            {(history, policy) for history in ("U", "C") for policy in (
+                "compliant", "approval_only", "reciprocal_request")},
+        )
+
+    def test_protocol_versions_are_deterministic_and_namespace_separated(self):
+        namespace = "pilot/shared-by-mistake"
+        old = block_design(namespace, 0, "v1.0")
+        new = block_design(namespace, 0, "v1.1")
+        self.assertEqual(old, block_design(namespace, 0, "v1.0"))
+        self.assertEqual(new, block_design(namespace, 0, "v1.1"))
+        old_ids = {fixture.packet.task_id for stage in ("formation", "evaluation")
+                   for pair in old[stage] for fixture in pair}
+        new_ids = {fixture.packet.task_id for stage in ("formation", "evaluation")
+                   for pair in new[stage] for fixture in pair}
+        self.assertFalse(old_ids & new_ids)
+        with self.assertRaisesRegex(ValueError, "Unsupported protocol version"):
+            block_design(namespace, 0, "v9")
 
 
 class VisibilityHistoryTests(unittest.TestCase):

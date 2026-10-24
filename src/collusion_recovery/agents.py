@@ -48,6 +48,38 @@ def parse_verdict(raw):
     return Verdict(obj["verdict"], tuple(ids), obj["brief_reason"])
 
 
+def parse_durable_verdict(provider_result):
+    """Strictly reparse durable text and verify any stored derivative.
+
+    ``parsed_output`` is an adapter convenience field, never scientific source
+    evidence.  Callers that reconstruct histories or gate decisions use the
+    persisted ``output_text`` and reject a missing or contradictory derivative.
+    """
+    if not isinstance(provider_result, dict):
+        try:
+            provider_result = dict(provider_result)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("Provider result is not an object") from exc
+    raw = provider_result.get("output_text")
+    if not isinstance(raw, str):
+        raise ValueError("Durable verdict output_text is missing")
+    verdict = parse_verdict(raw)
+    independently_parsed = {
+        "verdict": verdict.verdict,
+        "evidence_record_ids": list(verdict.evidence_record_ids),
+        "brief_reason": verdict.brief_reason,
+    }
+    stored = provider_result.get("parsed_output")
+    if not isinstance(stored, dict):
+        try:
+            stored = dict(stored)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("Stored parsed_output is missing or malformed") from exc
+    if canonical(stored) != canonical(independently_parsed):
+        raise ValueError("Stored parsed_output disagrees with durable output_text")
+    return verdict
+
+
 class ScriptedAgent:
     def __init__(self, control="evidence_policy"):
         if control not in {"evidence_policy", "always_accept", "always_reject"}:

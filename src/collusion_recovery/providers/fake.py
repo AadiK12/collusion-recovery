@@ -21,12 +21,13 @@ from .base import (
 _DEFAULT_USAGE = ProviderUsage(
     input_tokens=1,
     cached_input_tokens=0,
+    cache_write_input_tokens=0,
     output_tokens=1,
     reasoning_tokens=0,
     total_tokens=2,
     raw_json=canonical({
         "input_tokens": 1,
-        "input_tokens_details": {"cached_tokens": 0},
+        "input_tokens_details": {"cached_tokens": 0, "cache_write_tokens": 0},
         "output_tokens": 1,
         "output_tokens_details": {"reasoning_tokens": 0},
         "total_tokens": 2,

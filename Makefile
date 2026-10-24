@@ -1,4 +1,4 @@
-PYTHON ?= python3
+PYTHON ?= uv run --frozen python
 export PYTHONPATH := src
 
 .PHONY: test validate estimate mock

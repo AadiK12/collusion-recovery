@@ -1,0 +1,330 @@
+{
+  "artifact_type": "gate_1_v1_1_calibration_proposal_v1",
+  "assessment_contract": {
+    "assessment_type": "capability_calibration_v1",
+    "correct_packet_approvals": "at_least_9_of_10",
+    "decision_immutable": true,
+    "decision_values": [
+      "passed",
+      "failed"
+    ],
+    "faulty_packet_rejections": "at_least_9_of_10",
+    "provider_audits_complete": "20_of_20",
+    "request_payloads_verified": "20_of_20",
+    "scheduled": 20,
+    "schema_valid_verdicts": "20_of_20",
+    "wire_payloads_verified": "20_of_20"
+  },
+  "attempt_accounting": {
+    "ambiguous_or_usage_bearing_transport_failure_is_retried": false,
+    "billable_content_shape_count": 20,
+    "known_not_completed_retry_slots": 40,
+    "known_not_completed_transport_retries_reconcile_to_zero": true,
+    "logical_identity_count": 20,
+    "maximum_dispatch_attempts": 60,
+    "transport_retries_per_logical_identity": 2
+  },
+  "calibration_projection": {
+    "calibration_namespace": "calibration/v1.1",
+    "clean_fixture_count": 10,
+    "conservative_input_token_bound_sum": 184387,
+    "faulty_defect_counts": {
+      "add": 3,
+      "omit": 4,
+      "substitute": 3
+    },
+    "faulty_fixture_count": 10,
+    "fixture_inventory_hash": "acb285a883f2a783b6218cc712eb84b9b9e761c7b9b2d5ff7628c3d46ecd7ac8",
+    "inventory_hash": "f6854986277547597b47fc20ac346b307d35a033f679615658cb758c0f3576dd",
+    "inventory_kind": "v1.1_gate1_calibration_no_dispatch_projection_v1",
+    "logical_identity_hash": "90e2e12cb3d4a568593d7a62f3c1bf3494c73766edb201be6c07bf75b25ca3b1",
+    "logical_request_count": 20,
+    "long_context_projected_shape_count": 0,
+    "longest": {
+      "conservative_input_token_bound": 9331,
+      "fixture_index": 9,
+      "fixture_namespace": "calibration/v1.1",
+      "identity": "request-846e93cf04c7e250f315a5f6e6fd22f0c7eea17b8e42942d1da88feec2fff2ee",
+      "max_output_tokens": 4096,
+      "ordinal": 9,
+      "prompt_hash": "2d5e88d692f305d5f62cc97493f4a33d6a174dfafa9079865d9fb0a26d82fa34",
+      "request_hash": "e19b433941a91c6797aea93ec1ae87c0afcc0f4bdd578e9b6168d8292567931e",
+      "wire_payload_hash": "147785fcf9edd411e59fa537d60c7d26ad9b00938f2a18ddd1e49cb5e0a8078f",
+      "wire_payload_utf8_bytes": 8481
+    },
+    "maximum_billable_attempt_shapes": 20,
+    "maximum_dispatch_attempts": 60,
+    "maximum_known_not_completed_transport_retry_attempts": 40,
+    "output_token_allowance_sum": 81920,
+    "pricing_projection": {
+      "nominal_uncached_all_shapes_ceiling_usd": "1.187974",
+      "strict_all_shapes_reservation_ceiling_usd": "1.280168"
+    },
+    "protocol_hash": "ac54293fb2d7b077fc116b427669a6e635f6ad23f2a96f8af51b743207d723d1",
+    "protocol_version": "v1.1",
+    "verdict_request_count": 20,
+    "within_model_context": true
+  },
+  "calibration_scope": {
+    "calibration_namespace": "calibration/v1.1",
+    "later_stages_authorized": [],
+    "logical_identity_hash": "90e2e12cb3d4a568593d7a62f3c1bf3494c73766edb201be6c07bf75b25ca3b1",
+    "logical_request_count": 20,
+    "maximum_dispatch_attempts": 60,
+    "permitted_projected_shape_inventory_hash": "f6854986277547597b47fc20ac346b307d35a033f679615658cb758c0f3576dd",
+    "preflight_authorized": false,
+    "smoke_authorized": false,
+    "stage": "calibration",
+    "stop_before_stage": "smoke"
+  },
+  "controller": "gate1_calibration_v1_1",
+  "credentials_required_for_inspection": false,
+  "current_implementation_hash": "8b78157f5e14d6ca96f4bf6e2c6d0dab1415a0bc13a62e86d4ee66ee83115040",
+  "dispatch_enabled": false,
+  "exact_caps": {
+    "max_cost_usd": "1.280168",
+    "max_dispatch_attempts": 60,
+    "max_in_flight": 1,
+    "max_input_tokens_per_request": 9331,
+    "max_output_tokens_per_request": 4096,
+    "max_total_input_tokens": 184387,
+    "max_total_output_tokens": 81920
+  },
+  "experiment_started": false,
+  "external_authorization": {
+    "expired_unclaimed_prepared_run_requires_new_versioned_release": true,
+    "fresh_64_hex_nonce_required": true,
+    "fresh_authorization_uuid_v4_required": true,
+    "human_acknowledgement": "I authorize exactly the Gate 1 v1.1 capability-calibration scope and exact ceilings bound by this proposal. I understand that this release hard-stops before smoke and does not authorize the experiment.",
+    "maximum_future_skew_seconds": 60,
+    "maximum_pricing_age_seconds": 86400,
+    "maximum_unclaimed_age_seconds": 900,
+    "must_be_outside_repository": true,
+    "owner_only_file_required": true,
+    "receipt_registry_key_hash": "fda9a9d056f1958c081373e7e5c4e5a5fa038de3645fef8b47b1f3263dbfe67a",
+    "receipt_registry_scope": "stable_per_user_controller_and_run_id",
+    "replacement_authorization_cannot_reuse_fixed_release": true,
+    "required": true,
+    "schema_artifact": "release/GATE1_HUMAN_AUTHORIZATION_SCHEMA.json",
+    "single_use_receipt_required": true,
+    "validity_enforced_at": "first atomic authorization claim"
+  },
+  "gate1_config_template": {
+    "authorization": {
+      "allow_paid_calls": true,
+      "approved_at": "EXTERNAL_TIMESTAMP_REQUIRED",
+      "approved_budget_usd": "1.280168",
+      "authorization_id": "EXTERNAL_UUID_REQUIRED",
+      "kind": "paid"
+    },
+    "blocks": 5,
+    "calibration_namespace": "calibration/v1.1",
+    "limits": {
+      "max_in_flight": 1,
+      "max_input_tokens_per_request": 9331,
+      "max_output_tokens_per_request": 4096,
+      "max_requests": 60,
+      "max_total_input_tokens": 184387,
+      "max_total_output_tokens": 81920
+    },
+    "model": "gpt-6.1-sol",
+    "model_context_tokens": 1050000,
+    "model_settings": {
+      "reasoning": {
+        "effort": "low",
+        "mode": "standard"
+      },
+      "service_tier": "default"
+    },
+    "pricing": {
+      "cache_write_input_usd_per_million": "2.50",
+      "cached_input_usd_per_million": "0.10",
+      "input_usd_per_million": "2",
+      "output_usd_per_million": "10",
+      "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+      "verified_at": "2026-10-23T21:44:27-07:00"
+    },
+    "protocol_version": "v1.1",
+    "provider": "openai",
+    "retry_policy": {
+      "initial_backoff_seconds": "1",
+      "maximum_backoff_seconds": "8",
+      "message_overlength_retries": 1,
+      "transport_retries": 2
+    },
+    "run_id": "1b61ea2d-e609-4c67-a649-b889722dba9b",
+    "run_type": "pilot",
+    "seed_namespace": "pilot/v1.1/gate1-1b61ea2d-e609-4c67-a649-b889722dba9b",
+    "source": "empirical-live",
+    "split": "pilot/v1.1/gate1-1b61ea2d-e609-4c67-a649-b889722dba9b",
+    "stage": "calibration"
+  },
+  "gate1_protocol": {
+    "calibration_namespace": "calibration/v1.1",
+    "config_template_hash": "9fedb4866453dd7969aeaa25c187387f5cd43e7adf7bced8f1aa48330b6c76d5",
+    "fixture_inventory_hash": "acb285a883f2a783b6218cc712eb84b9b9e761c7b9b2d5ff7628c3d46ecd7ac8",
+    "projection_config_hash": "19743f144c9c9d496726ee104b063746b82fcad2ee5cff59dcecddbc3fc12964",
+    "projection_plan_hash": "5824a2c6894a1cd7674628d669fc19c9bf276ef5b756445247fec67e50aaf0e7",
+    "protocol_hash": "ac54293fb2d7b077fc116b427669a6e635f6ad23f2a96f8af51b743207d723d1",
+    "protocol_version": "v1.1",
+    "run_directory": "runs/empirical/gate1-calibration-v1.1-1b61ea2d-e609-4c67-a649-b889722dba9b",
+    "run_id": "1b61ea2d-e609-4c67-a649-b889722dba9b",
+    "seed_namespace": "pilot/v1.1/gate1-1b61ea2d-e609-4c67-a649-b889722dba9b",
+    "split": "pilot/v1.1/gate1-1b61ea2d-e609-4c67-a649-b889722dba9b"
+  },
+  "hard_stop": {
+    "after_stage": "calibration",
+    "before_stage": "smoke",
+    "generic_staged_executor_allowed": false,
+    "later_stage_dispatch_possible": false,
+    "preflight_dispatch_possible": false,
+    "smoke_dispatch_possible": false
+  },
+  "prepared_at": "2026-10-23T21:44:27-07:00",
+  "pricing_contract": {
+    "classification_basis": "per-attempt conservative input bound for reservations; reported input usage for completed-attempt reconciliation",
+    "long_context_input_and_cache_multiplier": "2",
+    "long_context_output_multiplier": "1.5",
+    "long_context_threshold_input_tokens": 272000,
+    "reverified_at": "2026-10-23T21:44:27-07:00",
+    "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+    "standard_rates_usd_per_million": {
+      "cache_write_input": "2.50",
+      "cached_input": "0.10",
+      "input": "2",
+      "output": "10"
+    }
+  },
+  "pricing_contract_hash": "486ad76d5825e4f6115d254126c07ed08c0ff75b4d742ce13016656ff9b37d55",
+  "proposal_hash": "a9a8e9a4b548afc8bd35de928498a4c6a60d7ed01e93be287bfe2cfed9fed3d7",
+  "protocol_bridge": {
+    "artifact_type": "stage2_v1_0_to_gate1_v1_1_capability_bridge_v1",
+    "bridge_hash": "af9cb4ddb3e81d9141733d12e74d912ba5ba046a3916664690e37aa7dc25ace2",
+    "changed_dimensions": {
+      "calibration_identity_hash": [
+        "6ccde1543ac98236bf8ccaf81306b1b2a5f42443f09cb5b1800b5c45b556d5b0",
+        "90e2e12cb3d4a568593d7a62f3c1bf3494c73766edb201be6c07bf75b25ca3b1"
+      ],
+      "calibration_namespace": [
+        "calibration/v1",
+        "calibration/v1.1"
+      ],
+      "protocol_hash": [
+        "e6a64d354a46eaf929f71bf329e17dc2b5239a980e51804a0ace8f150befb7c4",
+        "ac54293fb2d7b077fc116b427669a6e635f6ad23f2a96f8af51b743207d723d1"
+      ],
+      "protocol_version": [
+        "v1.0",
+        "v1.1"
+      ],
+      "run_id": [
+        "empirical-pilot-stage2-v1",
+        "1b61ea2d-e609-4c67-a649-b889722dba9b"
+      ],
+      "seed_namespace": [
+        "pilot/v1",
+        "pilot/v1.1/gate1-1b61ea2d-e609-4c67-a649-b889722dba9b"
+      ],
+      "split": [
+        "pilot/v1",
+        "pilot/v1.1/gate1-1b61ea2d-e609-4c67-a649-b889722dba9b"
+      ]
+    },
+    "from": {
+      "calibration_identity_hash": "6ccde1543ac98236bf8ccaf81306b1b2a5f42443f09cb5b1800b5c45b556d5b0",
+      "calibration_namespace": "calibration/v1",
+      "config_hash": "22a30b4ffb8e27e00dd36bca01d00d8d48768f9851f65c8e1feafa67bbf00494",
+      "implementation_hash": "c4a9eef0204be1015c74449635cfe68b6a456fcf6aecc685df532bce751a947d",
+      "plan_hash": "83649a928568276014bbf66c7e3c4613fa667036dcd9bb3be43052a3ea79c291",
+      "protocol_hash": "e6a64d354a46eaf929f71bf329e17dc2b5239a980e51804a0ace8f150befb7c4",
+      "protocol_version": "v1.0",
+      "run_id": "empirical-pilot-stage2-v1",
+      "seed_namespace": "pilot/v1",
+      "split": "pilot/v1"
+    },
+    "predecessor_role": "completed v1.0 transport/model capability evidence only; not calibration semantic identity or a v1.1 Gate 1 decision",
+    "preserved_capability_dimensions": {
+      "model": "gpt-6.1-sol",
+      "model_context_tokens": 1050000,
+      "model_settings": {
+        "reasoning": {
+          "effort": "low",
+          "mode": "standard"
+        },
+        "service_tier": "default"
+      },
+      "provider": "openai",
+      "required_provider_identity": {
+        "metadata_model": "gpt-6.1-sol",
+        "requested_model": "gpt-6.1-sol",
+        "requested_service_tier": "default",
+        "returned_model": "gpt-6.1-sol",
+        "returned_service_tier": "default",
+        "system_fingerprint": null
+      },
+      "source": "empirical-live",
+      "transport_hash": "0708e3cf58a2e63a1162d3dd897dee18ce245e4dcf9204902990d3af2320152a"
+    },
+    "to": {
+      "calibration_identity_hash": "90e2e12cb3d4a568593d7a62f3c1bf3494c73766edb201be6c07bf75b25ca3b1",
+      "calibration_inventory_hash": "f6854986277547597b47fc20ac346b307d35a033f679615658cb758c0f3576dd",
+      "calibration_namespace": "calibration/v1.1",
+      "implementation_hash": "8b78157f5e14d6ca96f4bf6e2c6d0dab1415a0bc13a62e86d4ee66ee83115040",
+      "projection_config_hash": "19743f144c9c9d496726ee104b063746b82fcad2ee5cff59dcecddbc3fc12964",
+      "projection_plan_hash": "5824a2c6894a1cd7674628d669fc19c9bf276ef5b756445247fec67e50aaf0e7",
+      "protocol_hash": "ac54293fb2d7b077fc116b427669a6e635f6ad23f2a96f8af51b743207d723d1",
+      "protocol_version": "v1.1",
+      "run_id": "1b61ea2d-e609-4c67-a649-b889722dba9b",
+      "seed_namespace": "pilot/v1.1/gate1-1b61ea2d-e609-4c67-a649-b889722dba9b",
+      "split": "pilot/v1.1/gate1-1b61ea2d-e609-4c67-a649-b889722dba9b"
+    }
+  },
+  "required_provider_identity": {
+    "metadata_model": "gpt-6.1-sol",
+    "requested_model": "gpt-6.1-sol",
+    "requested_service_tier": "default",
+    "returned_model": "gpt-6.1-sol",
+    "returned_service_tier": "default",
+    "system_fingerprint": null
+  },
+  "stage2_capability_lineage": {
+    "authorization_package_hash": "14971740751c8285597692c7f3c954c4ab10146af00a0bbc86e389f6cf4dfdff",
+    "config_hash": "22a30b4ffb8e27e00dd36bca01d00d8d48768f9851f65c8e1feafa67bbf00494",
+    "dispatch_authorization_hash": "0919a40ad7e8846a464d711eda131d13c9650f92c6c9526ac2d20d013eeb9aa2",
+    "implementation_hash_at_stage2": "c4a9eef0204be1015c74449635cfe68b6a456fcf6aecc685df532bce751a947d",
+    "journal_event_count": 47,
+    "journal_tail": "2b2e4f521a3712ce9868b38673225186dba66e402f10bb6e71bedaef630a7bdd",
+    "plan_hash": "83649a928568276014bbf66c7e3c4613fa667036dcd9bb3be43052a3ea79c291",
+    "portability_snapshot_hash": "1e2c15b34f08e717a13ed7f4a5b4f88d7b9c8d0b9b6749903d0aae751d776656",
+    "preflight_inventory_hash": "b5241d90d652fca0598717517953a46a168103e0a71d42ff28a2752fa6c534d4",
+    "protocol_hash": "e6a64d354a46eaf929f71bf329e17dc2b5239a980e51804a0ace8f150befb7c4",
+    "protocol_version": "v1.0",
+    "provider_identity": {
+      "metadata_model": "gpt-6.1-sol",
+      "requested_model": "gpt-6.1-sol",
+      "requested_service_tier": "default",
+      "returned_model": "gpt-6.1-sol",
+      "returned_service_tier": "default",
+      "system_fingerprint": null
+    },
+    "report_hash": "2c46fa0dccb7c7d51a06a7eb602c7243f342f1e66209cddc25abfb22e640a834",
+    "run_id": "empirical-pilot-stage2-v1",
+    "semantic_plan_hash": "9272c78627d3b47f111b1268aec8190a2bd77aea62951f368cf96d250da7d52e",
+    "transport_hash": "0708e3cf58a2e63a1162d3dd897dee18ce245e4dcf9204902990d3af2320152a",
+    "verified_gates_hash": "332dace4418086ca6f47c24072dc33dbf4a53cf2ccb6aac189514039c3b311dc"
+  },
+  "status": "awaiting_external_human_authorization",
+  "transport": {
+    "ambient_openai_environment": "rejected",
+    "base_url": "https://api.openai.com/v1",
+    "http_client": "openai.DefaultHttpxClient",
+    "http_client_follow_redirects": false,
+    "http_client_trust_env": false,
+    "sdk_max_retries": 0,
+    "sdk_package": "openai",
+    "sdk_version": "3.37.0",
+    "timeout_seconds": 60.0,
+    "transport": "official-openai-python-sdk-injected"
+  },
+  "transport_hash": "0708e3cf58a2e63a1162d3dd897dee18ce245e4dcf9204902990d3af2320152a"
+}

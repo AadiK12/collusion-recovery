@@ -1,0 +1,12 @@
+{
+  "artifact_type": "stage_2_consumed_release_receipt_v1",
+  "authorization_id": "stage2-release-2026-10-23-v1",
+  "authorization_package_hash": "14971740751c8285597692c7f3c954c4ab10146af00a0bbc86e389f6cf4dfdff",
+  "consumed": true,
+  "dispatch_attempt_count": 22,
+  "journal_event_count": 47,
+  "journal_tail": "2b2e4f521a3712ce9868b38673225186dba66e402f10bb6e71bedaef630a7bdd",
+  "receipt_hash": "97daedd3914e285fc0757a6df8b55b98ca84bfa88a38f0f6a2d493866e0df984",
+  "report_hash": "2c46fa0dccb7c7d51a06a7eb602c7243f342f1e66209cddc25abfb22e640a834",
+  "run_id": "empirical-pilot-stage2-v1"
+}

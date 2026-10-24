@@ -26,6 +26,7 @@ from .orchestration import (
     DurableRun,
     StagedExecutor,
     build_request_plan,
+    canonical_analysis_rules,
     pilot_freeze_assessment,
     write_protocol_freeze,
 )
@@ -190,8 +191,10 @@ def _freeze_prompts(config) -> dict[str, str]:
     return protocol_prompt_inventory(config)
 
 
-def _analysis_rules() -> dict:
-    return dict(CANONICAL_ANALYSIS_RULES)
+def _analysis_rules(config=None) -> dict:
+    # No-argument behavior is retained for historical v1.0 callers/tests.
+    return (dict(CANONICAL_ANALYSIS_RULES) if config is None else
+            canonical_analysis_rules(config.protocol_version))
 
 
 def _retry_exclusion_policy() -> dict:
@@ -200,7 +203,10 @@ def _retry_exclusion_policy() -> dict:
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Reciprocal-verification harness; empirical dispatch is unavailable"
+        description=(
+            "Reciprocal-verification harness with one completed and sealed "
+            "Stage 2 empirical release"
+        )
     )
     sub = parser.add_subparsers(dest="command", required=True)
     for name in ("validate", "estimate", "run"):
@@ -215,6 +221,22 @@ def _build_parser() -> argparse.ArgumentParser:
     item.add_argument("--config", type=Path, default=FAKE_LIVE_CONFIG)
     item.add_argument("--output", type=Path)
     item.add_argument("--resume", action="store_true")
+
+    item = sub.add_parser(
+        "stage2",
+        help="inspect or verify the completed non-replayable Stage 2 release",
+    )
+    item.add_argument("--config", type=Path)
+    item.add_argument("--run-dir", type=Path)
+    item.add_argument("--env-file", type=Path)
+    item.add_argument("--inspect-only", action="store_true")
+
+    item = sub.add_parser(
+        "gate2-readiness",
+        help="retired legacy v1.0 readiness generator (always fails closed)",
+    )
+    item.add_argument("--run-dir", type=Path)
+    item.add_argument("--output", required=True, type=Path)
 
     item = sub.add_parser("inspect-live", help="render and audit prompts without dispatch")
     item.add_argument("--config", type=Path, default=FAKE_LIVE_CONFIG)
@@ -285,6 +307,62 @@ def main(argv=None):
         if args.command == "calibrate":
             print(json.dumps(_run_fake_stage(args.config, args.output, "calibration", args.resume), indent=2))
             return 0
+        if args.command == "stage2":
+            from .stage2 import (
+                STAGE2_CONFIG,
+                STAGE2_ENV_FILE,
+                STAGE2_RUN_DIR,
+                run_stage2,
+            )
+            result = run_stage2(
+                config_path=args.config or STAGE2_CONFIG,
+                run_dir=args.run_dir or STAGE2_RUN_DIR,
+                env_file=args.env_file or STAGE2_ENV_FILE,
+                inspect_only=args.inspect_only,
+            )
+            if args.inspect_only:
+                output = {
+                    "status": result["status"],
+                    "release_state": result["release_state"],
+                    "consumed_receipt_hash": result["consumed_receipt"][
+                        "receipt_hash"
+                    ],
+                    "historical_run_present": result["historical_run_present"],
+                    "authorization_replayable": result[
+                        "authorization_replayable"
+                    ],
+                    "credential_access": result["credential_access"],
+                    "paid_calls": result["paid_calls"],
+                    "network_calls": result["network_calls"],
+                }
+            else:
+                output = {
+                    "status": "historical_verification_complete_no_dispatch",
+                    "run_dir": result["run_dir"],
+                    "preflight_passed": (
+                        result["preflight_assessment"] is not None
+                        and result["preflight_assessment"]["passed"] is True),
+                    "calibration_passed": (
+                        result["calibration_assessment"] is not None
+                        and result["calibration_assessment"]["passed"] is True),
+                    "usage": result["usage"],
+                    "provider_identity": result["provider_identity"],
+                    "stopped_before_smoke": result["stopped_before_smoke"],
+                    "report_hash": result["report_hash"],
+                    "paid_calls": 0,
+                    "network_calls": 0,
+                }
+            print(json.dumps(output, indent=2))
+            return 0
+        if args.command == "gate2-readiness":
+            from .gate2_readiness import build_gate2_readiness
+            # This compatibility command remains only to produce an explicit,
+            # fail-closed retirement error.  It never writes the requested
+            # output and cannot reinterpret the v1.0 Stage 2 plan as v1.1.
+            build_gate2_readiness(
+                run_dir=args.run_dir or ROOT / "runs/empirical/stage2-2026-10-23"
+            )
+            raise AssertionError("retired readiness generator unexpectedly returned")
         if args.command == "gate":
             print(json.dumps(_gate(args), indent=2))
             return 0
@@ -305,7 +383,7 @@ def main(argv=None):
                               json.loads(args.pilot_decision.read_text(encoding="utf-8")))
             result = write_protocol_freeze(
                 args.output, config=config, plan=plan,
-                prompts=_freeze_prompts(config), analysis_rules=_analysis_rules(),
+                prompts=_freeze_prompts(config), analysis_rules=_analysis_rules(config),
                 annotation_guide=(ROOT / "analysis/annotation_guide.md").read_text(encoding="utf-8"),
                 annotation_sample_seed=args.annotation_sample_seed,
                 retry_exclusion_policy=_retry_exclusion_policy(),

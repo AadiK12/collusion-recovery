@@ -34,6 +34,27 @@ _ERROR_RETRYABLE = {"rate_limit_error", "server_error", "overloaded",
                     "temporarily_unavailable", "connection_error"}
 
 
+def openai_sdk_transport_metadata(*, timeout_seconds: float,
+                                  sdk_version: str) -> dict[str, object]:
+    """Return the secret-free transport identity used for authorization binding."""
+    if (isinstance(timeout_seconds, bool)
+            or not isinstance(timeout_seconds, (int, float))
+            or not 0 < timeout_seconds <= 600):
+        raise ValueError("An explicit timeout_seconds between 0 and 600 is required")
+    if (not isinstance(sdk_version, str)
+            or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9.+-]{0,63}", sdk_version) is None
+            or contains_secret_like_string(sdk_version)):
+        raise ValueError("An explicit safe official OpenAI SDK version is required")
+    return {
+        "transport": "official-openai-python-sdk-injected",
+        "base_url": "https://api.openai.com/v1",
+        "sdk_package": "openai",
+        "sdk_version": sdk_version,
+        "sdk_max_retries": 0,
+        "timeout_seconds": float(timeout_seconds),
+    }
+
+
 def _redact(text):
     if text is None:
         return None
@@ -86,12 +107,32 @@ def _usage(value):
     output_details = value.get("output_tokens_details") or {}
     if not isinstance(input_details, dict) or not isinstance(output_details, dict):
         raise ValueError("Malformed provider token details")
+    input_tokens = _int_or_none(value.get("input_tokens"), "input_tokens")
+    cached_tokens = _int_or_none(input_details.get("cached_tokens"), "cached_tokens")
+    cache_write_tokens = _int_or_none(
+        input_details.get("cache_write_tokens"), "cache_write_tokens")
+    output_tokens = _int_or_none(value.get("output_tokens"), "output_tokens")
+    reasoning_tokens = _int_or_none(
+        output_details.get("reasoning_tokens"), "reasoning_tokens")
+    total_tokens = _int_or_none(value.get("total_tokens"), "total_tokens")
+    if (cached_tokens is not None and cache_write_tokens is not None
+            and input_tokens is not None
+            and cached_tokens + cache_write_tokens > input_tokens):
+        raise ValueError(
+            "Malformed provider usage field: cached plus cache-write tokens exceed input_tokens")
+    if (reasoning_tokens is not None and output_tokens is not None
+            and reasoning_tokens > output_tokens):
+        raise ValueError("Malformed provider usage field: reasoning_tokens exceeds output_tokens")
+    if (total_tokens is not None and input_tokens is not None and output_tokens is not None
+            and total_tokens != input_tokens + output_tokens):
+        raise ValueError("Malformed provider usage field: total_tokens disagrees with counters")
     return ProviderUsage(
-        input_tokens=_int_or_none(value.get("input_tokens"), "input_tokens"),
-        cached_input_tokens=_int_or_none(input_details.get("cached_tokens"), "cached_tokens"),
-        output_tokens=_int_or_none(value.get("output_tokens"), "output_tokens"),
-        reasoning_tokens=_int_or_none(output_details.get("reasoning_tokens"), "reasoning_tokens"),
-        total_tokens=_int_or_none(value.get("total_tokens"), "total_tokens"),
+        input_tokens=input_tokens,
+        cached_input_tokens=cached_tokens,
+        cache_write_input_tokens=cache_write_tokens,
+        output_tokens=output_tokens,
+        reasoning_tokens=reasoning_tokens,
+        total_tokens=total_tokens,
         raw_json=canonical(value),
     )
 
@@ -115,6 +156,157 @@ def _classify_api_error(error, *, has_usage: bool):
 def _model_metadata(body):
     keys = ("model", "service_tier", "created_at", "system_fingerprint")
     return {key: body[key] for key in keys if key in body}
+
+
+def provider_result_matches_raw_response(
+        result: Mapping, *, response_mode: ResponseMode | str | None = None,
+        message_max_codepoints: int = 200,
+        message_retry_history_max_utf8_bytes: int = 2048) -> bool:
+    """Verify stored success derivatives against the persisted raw response.
+
+    This is an independent audit path for gates and release evidence.  It
+    deliberately reconstructs the single assistant ``output_text``, model
+    metadata, and normalized usage instead of trusting adapter-populated
+    derivative fields.
+    """
+    if (not isinstance(result, Mapping)
+            or result.get("status") not in {
+                "ok", "refusal", "invalid_response", "overlength"
+            }):
+        return False
+    raw = result.get("raw_response")
+    if not isinstance(raw, Mapping):
+        return False
+    body = dict(raw)
+    if (body.get("error") is not None
+            or not isinstance(body.get("id"), str) or not body["id"].strip()):
+        return False
+    model_matches = (
+        result.get("returned_model") == body.get("model")
+        and canonical(result.get("model_metadata"))
+        == canonical(_model_metadata(body))
+    )
+    if not model_matches:
+        return False
+    try:
+        usage = _usage(body.get("usage"))
+    except ValueError as exc:
+        # The adapter classifies malformed usage before interpreting response
+        # status or output.  Preserve that exact fail-closed branch as a valid
+        # observed invalid_response while still binding every derivative.
+        return (
+            result.get("status") == "invalid_response"
+            and result.get("usage") is None
+            and result.get("output_text") is None
+            and result.get("parsed_output") is None
+            and result.get("refusal") is None
+            and result.get("error") == str(exc)
+        )
+    normalized_usage = None if usage is None else usage.to_dict()
+    if canonical(result.get("usage")) != canonical(normalized_usage):
+        return False
+
+    expected_status = None
+    expected_output = None
+    expected_parsed = None
+    expected_refusal = None
+    expected_error = None
+    if body.get("status") != "completed":
+        expected_status = "invalid_response"
+        expected_error = (
+            "Response was not completed: "
+            f"{_redact(canonical(body.get('incomplete_details')))}"
+        )
+    else:
+        outputs = body.get("output")
+        if not isinstance(outputs, list):
+            expected_status = "invalid_response"
+            expected_error = "Response output was not a list"
+        else:
+            texts, refusals, unexpected = [], [], []
+            for item in outputs:
+                if not isinstance(item, dict):
+                    unexpected.append("non-object")
+                    continue
+                if item.get("type") == "reasoning":
+                    continue
+                if item.get("type") != "message":
+                    unexpected.append(str(item.get("type")))
+                    continue
+                if item.get("role") != "assistant":
+                    unexpected.append(f"message-role:{item.get('role')}")
+                    continue
+                if item.get("status") not in {None, "completed"}:
+                    unexpected.append(f"message-status:{item.get('status')}")
+                    continue
+                if not isinstance(item.get("content"), list):
+                    unexpected.append("message-content")
+                    continue
+                for content in item["content"]:
+                    if not isinstance(content, dict):
+                        unexpected.append("non-object-content")
+                    elif (content.get("type") == "output_text"
+                          and isinstance(content.get("text"), str)):
+                        texts.append(content["text"])
+                    elif (content.get("type") == "refusal"
+                          and isinstance(content.get("refusal"), str)):
+                        refusals.append(content["refusal"])
+                    else:
+                        unexpected.append(str(content.get("type")))
+            if refusals:
+                expected_status = "refusal"
+                expected_refusal = "\n".join(refusals)
+            elif unexpected or len(texts) != 1:
+                expected_status = "invalid_response"
+                expected_error = (
+                    f"Unexpected output item(s): {unexpected}"
+                    if unexpected else
+                    f"Expected one output_text item, received {len(texts)}"
+                )
+            else:
+                expected_output = texts[0]
+                mode = (response_mode.value
+                        if isinstance(response_mode, ResponseMode) else response_mode)
+                if mode == ResponseMode.TEXT.value:
+                    if (len(expected_output.encode("utf-8"))
+                            > message_retry_history_max_utf8_bytes):
+                        return False
+                    if len(expected_output) > message_max_codepoints:
+                        expected_status = "overlength"
+                        expected_error = "Message exceeded the code-point limit"
+                    else:
+                        expected_status = "ok"
+                        expected_parsed = expected_output
+                elif mode == ResponseMode.VERDICT.value:
+                    try:
+                        verdict = parse_verdict(expected_output)
+                    except ValueError as exc:
+                        expected_status = "invalid_response"
+                        expected_error = str(exc)
+                    else:
+                        expected_status = "ok"
+                        expected_parsed = {
+                            "verdict": verdict.verdict,
+                            "evidence_record_ids": list(verdict.evidence_record_ids),
+                            "brief_reason": verdict.brief_reason,
+                        }
+                elif result.get("status") == "ok":
+                    # Callers that omit the request mode separately validate the
+                    # action-specific parsed derivative.
+                    expected_status = "ok"
+                    expected_parsed = result.get("parsed_output")
+                else:
+                    # A lone output_text is invalid only relative to a structured
+                    # request, so the saved request mode is required to prove it.
+                    return False
+
+    return (
+        result.get("status") == expected_status
+        and result.get("output_text") == expected_output
+        and canonical(result.get("parsed_output")) == canonical(expected_parsed)
+        and result.get("refusal") == expected_refusal
+        and result.get("error") == expected_error
+    )
 
 
 def _sdk_failure(exc):
@@ -164,11 +356,28 @@ class OpenAISDKTransport:
     credentials.  The caller alone owns client setup and explicit authorization.
     """
 
-    def __init__(self, client, *, timeout_seconds: float, sdk_version: str):
-        if (isinstance(timeout_seconds, bool)
-                or not isinstance(timeout_seconds, (int, float))
-                or not 0 < timeout_seconds <= 600):
-            raise ValueError("An explicit timeout_seconds between 0 and 600 is required")
+    def __init__(self, client, *, timeout_seconds: float, sdk_version: str,
+                 ambient_openai_environment: str | None = None,
+                 http_client_trust_env: bool | None = None,
+                 http_client_follow_redirects: bool | None = None):
+        metadata = openai_sdk_transport_metadata(
+            timeout_seconds=timeout_seconds, sdk_version=sdk_version)
+        policy = (
+            ambient_openai_environment,
+            http_client_trust_env,
+            http_client_follow_redirects,
+        )
+        if any(value is not None for value in policy):
+            if policy != ("rejected", False, False):
+                raise ValueError(
+                    "The bound HTTP policy must reject ambient OpenAI settings, "
+                    "environment trust, and redirects")
+            metadata.update({
+                "ambient_openai_environment": "rejected",
+                "http_client": "openai.DefaultHttpxClient",
+                "http_client_trust_env": False,
+                "http_client_follow_redirects": False,
+            })
         base_url = str(getattr(client, "base_url", ""))
         parsed = urlsplit(base_url)
         if (base_url.rstrip("/") != "https://api.openai.com/v1"
@@ -178,10 +387,6 @@ class OpenAISDKTransport:
                 or contains_secret_like_string(base_url)):
             raise ValueError(
                 "The injected client must use exactly https://api.openai.com/v1 without credentials")
-        if (not isinstance(sdk_version, str)
-                or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9.+-]{0,63}", sdk_version) is None
-                or contains_secret_like_string(sdk_version)):
-            raise ValueError("An explicit safe official OpenAI SDK version is required")
         with_options = getattr(client, "with_options", None)
         if not callable(with_options):
             raise ValueError("The injected SDK client must support explicit per-request options")
@@ -192,14 +397,7 @@ class OpenAISDKTransport:
         if not callable(create):
             raise ValueError("A preconfigured client with responses.create is required")
         self._create = create
-        self.audit_metadata = {
-            "transport": "official-openai-python-sdk-injected",
-            "base_url": "https://api.openai.com/v1",
-            "sdk_package": "openai",
-            "sdk_version": sdk_version,
-            "sdk_max_retries": 0,
-            "timeout_seconds": float(timeout_seconds),
-        }
+        self.audit_metadata = metadata
 
     def send(self, payload: Mapping) -> TransportResponse:
         if not isinstance(payload, Mapping):

@@ -19,6 +19,8 @@ temperature = 0
 source = "local-fake-provider"
 verified_at = "2026-10-23T12:00:00-07:00"
 input_usd_per_million = "0"
+cached_input_usd_per_million = "0"
+cache_write_input_usd_per_million = "0"
 output_usd_per_million = "0"
 
 [authorization]

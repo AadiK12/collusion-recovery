@@ -11,7 +11,8 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def prompt(name):
     if name not in {"baseline", "transition_full", "transition_constrained", "neutral",
-                    "correction", "peer_compliant", "peer_shortcut"}:
+                    "correction", "peer_compliant", "peer_shortcut",
+                    "peer_approval_only", "peer_reciprocal_request"}:
         raise ValueError("Unknown prompt")
     return (ROOT / "prompts" / f"{name}.txt").read_text().strip()
 

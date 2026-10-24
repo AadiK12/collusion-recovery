@@ -1,0 +1,136 @@
+{
+  "$comment": "authorization_hash is sha256 of canonical JSON after removing authorization_hash. Human-supplied UUID, nonce, identity, time, scope, caps, lineage, pricing, transport, provider identity, and acknowledgement are mandatory. Unclaimed authorization expires after 15 minutes and permits at most 60 seconds future clock skew.",
+  "$id": "urn:collusion-recovery:gate1-calibration-authorization:v1.1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "allow_paid_calls": {
+      "const": true
+    },
+    "approved_calibration_inventory_hash": {
+      "const": "f6854986277547597b47fc20ac346b307d35a033f679615658cb758c0f3576dd"
+    },
+    "approved_caps": {
+      "const": {
+        "max_cost_usd": "1.280168",
+        "max_dispatch_attempts": 60,
+        "max_in_flight": 1,
+        "max_input_tokens_per_request": 9331,
+        "max_output_tokens_per_request": 4096,
+        "max_total_input_tokens": 184387,
+        "max_total_output_tokens": 81920
+      }
+    },
+    "approved_dispatch_authorization_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "approved_gate1_config_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "approved_gate1_plan_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "approved_pricing_contract_hash": {
+      "const": "486ad76d5825e4f6115d254126c07ed08c0ff75b4d742ce13016656ff9b37d55"
+    },
+    "approved_protocol_bridge_hash": {
+      "const": "af9cb4ddb3e81d9141733d12e74d912ba5ba046a3916664690e37aa7dc25ace2"
+    },
+    "approved_provider_identity": {
+      "const": {
+        "metadata_model": "gpt-6.1-sol",
+        "requested_model": "gpt-6.1-sol",
+        "requested_service_tier": "default",
+        "returned_model": "gpt-6.1-sol",
+        "returned_service_tier": "default",
+        "system_fingerprint": null
+      }
+    },
+    "approved_scope": {
+      "const": {
+        "calibration_namespace": "calibration/v1.1",
+        "later_stages_authorized": [],
+        "logical_identity_hash": "90e2e12cb3d4a568593d7a62f3c1bf3494c73766edb201be6c07bf75b25ca3b1",
+        "logical_request_count": 20,
+        "maximum_dispatch_attempts": 60,
+        "permitted_projected_shape_inventory_hash": "f6854986277547597b47fc20ac346b307d35a033f679615658cb758c0f3576dd",
+        "preflight_authorized": false,
+        "smoke_authorized": false,
+        "stage": "calibration",
+        "stop_before_stage": "smoke"
+      }
+    },
+    "approved_transport_hash": {
+      "const": "0708e3cf58a2e63a1162d3dd897dee18ce245e4dcf9204902990d3af2320152a"
+    },
+    "artifact_type": {
+      "const": "gate_1_calibration_human_authorization_v1_1"
+    },
+    "authorization_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "authorization_id": {
+      "pattern": "^gate1-human-[0-9a-f-]{36}$",
+      "type": "string"
+    },
+    "authorization_nonce": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "authorization_uuid": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "confirmed_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "confirmed_by": {
+      "maxLength": 200,
+      "minLength": 1,
+      "type": "string"
+    },
+    "gate1_run_directory": {
+      "const": "runs/empirical/gate1-calibration-v1.1-1b61ea2d-e609-4c67-a649-b889722dba9b"
+    },
+    "gate1_run_id": {
+      "const": "1b61ea2d-e609-4c67-a649-b889722dba9b"
+    },
+    "human_acknowledgement": {
+      "const": "I authorize exactly the Gate 1 v1.1 capability-calibration scope and exact ceilings bound by this proposal. I understand that this release hard-stops before smoke and does not authorize the experiment."
+    },
+    "proposal_hash": {
+      "const": "a9a8e9a4b548afc8bd35de928498a4c6a60d7ed01e93be287bfe2cfed9fed3d7"
+    }
+  },
+  "required": [
+    "allow_paid_calls",
+    "approved_calibration_inventory_hash",
+    "approved_caps",
+    "approved_dispatch_authorization_hash",
+    "approved_gate1_config_hash",
+    "approved_gate1_plan_hash",
+    "approved_pricing_contract_hash",
+    "approved_protocol_bridge_hash",
+    "approved_provider_identity",
+    "approved_scope",
+    "approved_transport_hash",
+    "artifact_type",
+    "authorization_hash",
+    "authorization_id",
+    "authorization_nonce",
+    "authorization_uuid",
+    "confirmed_at",
+    "confirmed_by",
+    "gate1_run_directory",
+    "gate1_run_id",
+    "human_acknowledgement",
+    "proposal_hash"
+  ],
+  "title": "Gate 1 v1.1 calibration human authorization",
+  "type": "object"
+}

@@ -20,7 +20,9 @@ VERDICT_SCHEMA = {
             "items": {"type": "string", "pattern": "^R[A-Z0-9]{10}$"},
             "maxItems": 32,
         },
-        "brief_reason": {"type": "string", "maxLength": 500},
+        # Structured Outputs supports ``type`` here but not ``maxLength``.
+        # The application parser independently enforces the 500-character cap.
+        "brief_reason": {"type": "string"},
     },
     "required": ["verdict", "evidence_record_ids", "brief_reason"],
     "additionalProperties": False,
@@ -218,17 +220,36 @@ class ProviderRequest:
 class ProviderUsage:
     input_tokens: int | None = None
     cached_input_tokens: int | None = None
+    cache_write_input_tokens: int | None = None
     output_tokens: int | None = None
     reasoning_tokens: int | None = None
     total_tokens: int | None = None
     raw_json: str = "{}"
 
     def __post_init__(self):
-        for name in ("input_tokens", "cached_input_tokens", "output_tokens",
-                     "reasoning_tokens", "total_tokens"):
+        for name in ("input_tokens", "cached_input_tokens", "cache_write_input_tokens",
+                     "output_tokens", "reasoning_tokens", "total_tokens"):
             value = getattr(self, name)
             if value is not None and (type(value) is not int or value < 0):
                 raise ValueError(f"{name} must be a nonnegative integer or null")
+        if (self.input_tokens is not None
+                and self.cached_input_tokens is not None
+                and self.cache_write_input_tokens is not None
+                and (self.cached_input_tokens + self.cache_write_input_tokens
+                     > self.input_tokens)):
+            raise ValueError(
+                "cached plus cache-write usage cannot exceed total input tokens")
+        if (self.output_tokens is not None
+                and self.reasoning_tokens is not None
+                and self.reasoning_tokens > self.output_tokens):
+            raise ValueError(
+                "output-token usage must include all reasoning tokens")
+        if (self.total_tokens is not None
+                and self.input_tokens is not None
+                and self.output_tokens is not None
+                and self.total_tokens != self.input_tokens + self.output_tokens):
+            raise ValueError(
+                "total-token usage must equal input plus output tokens")
         raw = json.loads(self.raw_json)
         if not isinstance(raw, dict):
             raise ValueError("Usage raw_json must encode an object")
@@ -287,10 +308,9 @@ class ProviderResult:
                                         ProviderStatus.BUDGET_ERROR}):
             raise ValueError("completion certainty is invalid for this provider status")
         if self.known_not_completed and self.usage is not None:
-            reported = (self.usage.input_tokens, self.usage.output_tokens,
-                        self.usage.reasoning_tokens, self.usage.total_tokens)
-            if any(value not in (None, 0) for value in reported):
-                raise ValueError("a consumed-usage response cannot be known not completed")
+            raise ValueError(
+                "a response with any usage object cannot be known not completed"
+            )
         for name in ("raw_response_json", "parsed_output_json", "model_metadata_json"):
             value = getattr(self, name)
             if value is not None:

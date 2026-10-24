@@ -1,0 +1,48 @@
+run_id = "empirical-pilot-stage2-v1"
+protocol_version = "v1.0"
+source = "empirical-live"
+provider = "openai"
+model = "gpt-6.1-sol"
+model_context_tokens = 1050000
+run_type = "pilot"
+split = "pilot/v1"
+stage = "calibration"
+seed_namespace = "pilot/v1"
+calibration_namespace = "calibration/v1"
+blocks = 5
+
+[model_settings]
+service_tier = "default"
+
+[model_settings.reasoning]
+effort = "low"
+mode = "standard"
+
+[pricing]
+source = "https://developers.openai.com/api/docs/models/gpt-6.1-sol"
+verified_at = "2026-10-23T15:45:09-07:00"
+input_usd_per_million = "2"
+cached_input_usd_per_million = "0.10"
+cache_write_input_usd_per_million = "2.50"
+output_usd_per_million = "10"
+
+[authorization]
+kind = "paid"
+authorization_id = "stage2-release-2026-10-23-v1"
+approved_at = "2026-10-23T15:45:09-07:00"
+approved_budget_usd = "1.78"
+allow_paid_calls = true
+
+[limits]
+max_requests = 67
+max_total_input_tokens = 211932
+max_total_output_tokens = 94208
+max_input_tokens_per_request = 9353
+max_output_tokens_per_request = 4096
+max_in_flight = 1
+
+[retry_policy]
+transport_retries = 2
+message_overlength_retries = 1
+initial_backoff_seconds = "1"
+maximum_backoff_seconds = "8"

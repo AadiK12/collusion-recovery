@@ -18,12 +18,18 @@ from collusion_recovery.providers import (
     OpenAIResponsesProvider,
     OpenAISDKTransport,
     ProviderRequest,
+    ProviderResult,
     ProviderStatus,
+    ProviderTiming,
+    ProviderUsage,
     ResponseMode,
     TextTurn,
     TransportFailure,
     TransportResponse,
     VERDICT_SCHEMA,
+)
+from collusion_recovery.providers.openai import (
+    provider_result_matches_raw_response,
 )
 from collusion_recovery.visibility import AgentRequest, request_for
 
@@ -67,12 +73,47 @@ def response_body(text=None, *, content=None, status="completed", error=None):
                     "content": content}],
         "usage": {
             "input_tokens": 120,
-            "input_tokens_details": {"cached_tokens": 20},
+            "input_tokens_details": {
+                "cached_tokens": 20,
+                "cache_write_tokens": 3,
+            },
             "output_tokens": 18,
             "output_tokens_details": {"reasoning_tokens": 4},
             "total_tokens": 138,
         },
     }
+
+
+class ProviderResultInvariantTests(unittest.TestCase):
+    def test_known_not_completed_rejects_even_zero_usage_object(self):
+        usage = ProviderUsage(
+            input_tokens=0,
+            output_tokens=0,
+            cached_input_tokens=0,
+            cache_write_input_tokens=0,
+            reasoning_tokens=0,
+            total_tokens=0,
+        )
+        with self.assertRaisesRegex(ValueError, "any usage object"):
+            ProviderResult(
+                status=ProviderStatus.RETRYABLE_ERROR,
+                raw_response_json=None,
+                output_text=None,
+                parsed_output_json=None,
+                refusal=None,
+                error="known transport failure",
+                provider_request_id=None,
+                returned_model=None,
+                model_metadata_json="{}",
+                usage=usage,
+                timing=ProviderTiming(
+                    "2026-10-24T00:00:00-07:00",
+                    "2026-10-24T00:00:00-07:00",
+                    0.0,
+                ),
+                ambiguous=False,
+                known_not_completed=True,
+            )
 
 
 class QueueTransport:
@@ -191,6 +232,15 @@ class PromptRenderingTests(unittest.TestCase):
 
 
 class OpenAIAdapterTests(unittest.TestCase):
+    def test_strict_verdict_schema_uses_only_supported_string_constraints(self):
+        self.assertEqual(VERDICT_SCHEMA["properties"]["brief_reason"],
+                         {"type": "string"})
+        self.assertEqual(
+            VERDICT_SCHEMA["properties"]["evidence_record_ids"]["items"],
+            {"type": "string", "pattern": "^R[A-Z0-9]{10}$"},
+        )
+        self.assertNotIn("maxLength", canonical(VERDICT_SCHEMA))
+
     def test_injected_sdk_transport_uses_preconfigured_client_only(self):
         text = canonical({"verdict": "ACCEPT", "evidence_record_ids": ["RABCDEFGHIJ"],
                           "brief_reason": "The complete records support the claim."})
@@ -336,6 +386,7 @@ class OpenAIAdapterTests(unittest.TestCase):
         self.assertEqual(result.model_metadata["service_tier"], "default")
         self.assertEqual(result.usage.input_tokens, 120)
         self.assertEqual(result.usage.cached_input_tokens, 20)
+        self.assertEqual(result.usage.cache_write_input_tokens, 3)
         self.assertEqual(result.usage.reasoning_tokens, 4)
         self.assertGreaterEqual(result.timing.elapsed_seconds, 0)
 
@@ -351,6 +402,42 @@ class OpenAIAdapterTests(unittest.TestCase):
         self.assertIsNone(refused.parsed_output)
         self.assertIs(invalid.status, ProviderStatus.INVALID_RESPONSE)
         self.assertIn("valid JSON", invalid.error)
+        self.assertTrue(provider_result_matches_raw_response(
+            refused.to_dict(), response_mode=ResponseMode.VERDICT,
+        ))
+        self.assertTrue(provider_result_matches_raw_response(
+            invalid.to_dict(), response_mode=ResponseMode.VERDICT,
+        ))
+        forged = invalid.to_dict()
+        forged["output_text"] = "different invalid output"
+        self.assertFalse(provider_result_matches_raw_response(
+            forged, response_mode=ResponseMode.VERDICT,
+        ))
+
+    def test_raw_verifier_accepts_exact_adapter_invalid_response_branches(self):
+        malformed_usage = response_body("ignored")
+        malformed_usage["usage"] = {"input_tokens": "not-an-integer"}
+        nonlist_output = response_body("ignored")
+        nonlist_output["output"] = {"type": "message"}
+        provider = OpenAIResponsesProvider(QueueTransport(
+            TransportResponse.from_mapping(malformed_usage),
+            TransportResponse.from_mapping(nonlist_output),
+        ))
+        usage_invalid = provider.complete(provider_request())
+        output_invalid = provider.complete(replace(provider_request(), attempt=1))
+        self.assertIs(usage_invalid.status, ProviderStatus.INVALID_RESPONSE)
+        self.assertIs(output_invalid.status, ProviderStatus.INVALID_RESPONSE)
+        self.assertTrue(provider_result_matches_raw_response(
+            usage_invalid.to_dict(), response_mode=ResponseMode.VERDICT,
+        ))
+        self.assertTrue(provider_result_matches_raw_response(
+            output_invalid.to_dict(), response_mode=ResponseMode.VERDICT,
+        ))
+        tampered = output_invalid.to_dict()
+        tampered["error"] = "different error"
+        self.assertFalse(provider_result_matches_raw_response(
+            tampered, response_mode=ResponseMode.VERDICT,
+        ))
 
     def test_overlength_text_is_not_truncated(self):
         text = "🧪" * 201
@@ -359,6 +446,14 @@ class OpenAIAdapterTests(unittest.TestCase):
         result = provider.complete(provider_request(ResponseMode.TEXT))
         self.assertIs(result.status, ProviderStatus.OVERLENGTH)
         self.assertEqual(result.output_text, text)
+        self.assertTrue(provider_result_matches_raw_response(
+            result.to_dict(), response_mode=ResponseMode.TEXT,
+        ))
+        tampered = result.to_dict()
+        tampered["output_text"] = "different" * 30
+        self.assertFalse(provider_result_matches_raw_response(
+            tampered, response_mode=ResponseMode.TEXT,
+        ))
 
     def test_oversized_message_history_stops_instead_of_entering_a_retry_prompt(self):
         text = "🧪" * 4097

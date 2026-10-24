@@ -8,7 +8,11 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
-from collusion_recovery.budget import BudgetExhausted, BudgetLedger
+from collusion_recovery.budget import (
+    BudgetExhausted,
+    BudgetLedger,
+    DispatchReleaseLimits,
+)
 from collusion_recovery.common import canonical, digest
 from collusion_recovery.design import ROLES
 from collusion_recovery.events import git_metadata
@@ -26,12 +30,16 @@ from collusion_recovery.orchestration import (
     DispatchAuthorizationArtifact,
     DependencyError,
     DurableRun,
+    GATE2_SUCCESSOR_BINDING_EVENT,
+    GATE2_SUCCESSOR_CONTROLLER_ID,
+    GATE2_SUCCESSOR_RUN_ID,
     OrchestrationError,
     ResumeError,
     StagedExecutor,
     _atomic_json,
     authorization_binding,
     build_request_plan,
+    canonical_analysis_rules,
     EXPECTED_FIVE_BLOCK_PILOT_COUNTS,
     pilot_freeze_assessment,
     validate_protocol_freeze_artifact,
@@ -46,6 +54,7 @@ from collusion_recovery.providers.base import (
     TextTurn,
 )
 from collusion_recovery.providers.fake import FakeProvider
+from collusion_recovery.preflight import PreflightRequestFactory, preflight_inventory
 from collusion_recovery.staged_requests import protocol_prompt_inventory
 
 
@@ -62,6 +71,8 @@ def config_values(**overrides):
             "source": "test://zero-price-fake",
             "verified_at": "2026-10-23T12:00:00-07:00",
             "input_usd_per_million": "0",
+            "cached_input_usd_per_million": "0",
+            "cache_write_input_usd_per_million": "0",
             "output_usd_per_million": "0",
         },
         "authorization": {
@@ -111,6 +122,8 @@ def paid_values(**overrides):
             "source": "https://example.test/official-pricing",
             "verified_at": "2026-10-23T12:00:00-07:00",
             "input_usd_per_million": "2.00",
+            "cached_input_usd_per_million": "0.10",
+            "cache_write_input_usd_per_million": "2.50",
             "output_usd_per_million": "10.00",
         },
         authorization={
@@ -123,6 +136,26 @@ def paid_values(**overrides):
     )
     values.update(overrides)
     return values
+
+
+def paid_release(config, budget="5.00"):
+    return DispatchReleaseLimits.from_mapping({
+        "max_dispatch_attempts": config.limits.max_requests,
+        "max_total_input_tokens": config.limits.max_total_input_tokens,
+        "max_total_output_tokens": config.limits.max_total_output_tokens,
+        "max_cost_usd": budget,
+        "max_in_flight": config.limits.max_in_flight,
+        "max_input_tokens_per_request": config.limits.max_input_tokens_per_request,
+        "max_output_tokens_per_request": config.limits.max_output_tokens_per_request,
+    })
+
+
+def paid_preflight_hash(config):
+    return preflight_inventory(PreflightRequestFactory(
+        config.model,
+        config.limits.max_output_tokens_per_request,
+        dict(config.model_settings),
+    ))["inventory_hash"]
 
 
 def request_factory(config):
@@ -351,20 +384,26 @@ class LiveConfigTests(unittest.TestCase):
         plan = build_request_plan(config)
         confirmed_at = "2026-10-23T12:05:00-07:00"
         transport_hash = "1" * 64
+        release = paid_release(config)
+        inventory_hash = paid_preflight_hash(config)
         artifact = DispatchAuthorizationArtifact(
             config.authorization.authorization_id, confirmed_at,
             authorization_binding(
                 config, plan, confirmed_at=confirmed_at,
-                transport_hash=transport_hash),
+                transport_hash=transport_hash,
+                release_limits=release,
+                preflight_inventory_hash=inventory_hash),
             str(config.authorization.approved_budget_usd),
-            transport_hash, config.stage, config.blocks - 1, "initial")
+            transport_hash, config.stage, config.blocks - 1, "initial",
+            release, inventory_hash)
         with tempfile.TemporaryDirectory() as td:
             path = Path(td) / "authorized-but-not-dispatched"
             substituted_transport = DispatchAuthorizationArtifact(
                 artifact.authorization_id, artifact.confirmed_at,
                 artifact.binding_hash, artifact.approved_budget_usd,
                 "2" * 64, artifact.max_stage, artifact.max_block,
-                artifact.reviewed_event_hash)
+                artifact.reviewed_event_hash, artifact.release_limits,
+                artifact.preflight_inventory_hash)
             with self.assertRaises(AuthorizationRequiredError):
                 DurableRun.open(
                     path, config, plan,
@@ -379,14 +418,19 @@ class LiveConfigTests(unittest.TestCase):
 
         def artifact(timestamp, budget, stage, block, reviewed):
             transport_hash = "1" * 64
+            release = paid_release(config, budget)
+            inventory_hash = paid_preflight_hash(config)
             return DispatchAuthorizationArtifact(
                 config.authorization.authorization_id, timestamp,
                 authorization_binding(
                     config, plan, confirmed_at=timestamp,
                     transport_hash=transport_hash,
                     approved_budget_usd=budget, max_stage=stage,
-                    max_block=block, reviewed_event_hash=reviewed),
+                    max_block=block, reviewed_event_hash=reviewed,
+                    release_limits=release,
+                    preflight_inventory_hash=inventory_hash),
                 budget, transport_hash, stage, block, reviewed,
+                release, inventory_hash,
             )
 
         initial = artifact(
@@ -443,6 +487,8 @@ class BudgetTests(unittest.TestCase):
             "source": "test://budget",
             "verified_at": "2026-10-23T12:00:00-07:00",
             "input_usd_per_million": "100000",
+            "cached_input_usd_per_million": "100000",
+            "cache_write_input_usd_per_million": "100000",
             "output_usd_per_million": "100000",
         })
 
@@ -480,6 +526,64 @@ class BudgetTests(unittest.TestCase):
 
 
 class DurableExecutionTests(unittest.TestCase):
+    def test_successor_run_controller_mapping_and_generic_bypass_fail_closed(self):
+        config = fake_config(run_id=GATE2_SUCCESSOR_RUN_ID)
+        plan = build_request_plan(config)
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            run_path = root / "successor"
+
+            with self.assertRaisesRegex(
+                    AuthorizationRequiredError, "must be used together"):
+                DurableRun.open(run_path, config, plan)
+            self.assertFalse(run_path.exists())
+
+            run = DurableRun.open(
+                run_path,
+                config,
+                plan,
+                execution_controller=GATE2_SUCCESSOR_CONTROLLER_ID,
+            )
+            stripped = run.manifest
+            stripped.pop("execution_controller")
+            _atomic_json(run_path / "manifest.json", stripped)
+
+            # Removing the mutable manifest marker cannot make the fixed run
+            # id eligible for generic execution or generic resume.
+            with self.assertRaisesRegex(
+                    AuthorizationRequiredError, "smoke-only controller"):
+                StagedExecutor(run, FakeProvider(), request_factory(config))
+            with self.assertRaisesRegex(
+                    AuthorizationRequiredError, "must be used together"):
+                DurableRun.open(run_path, config, plan, resume=True)
+
+            unrelated = fake_config(run_id="not-the-gate2-successor")
+            unrelated_plan = build_request_plan(unrelated)
+            with self.assertRaisesRegex(
+                    AuthorizationRequiredError, "must be used together"):
+                DurableRun.open(
+                    root / "unrelated",
+                    unrelated,
+                    unrelated_plan,
+                    execution_controller=GATE2_SUCCESSOR_CONTROLLER_ID,
+                )
+
+            # A verified durable binding event is an independent defense for
+            # any copied or relabeled run whose manifest marker is absent.
+            ordinary = fake_config(run_id="ordinary-with-successor-binding")
+            ordinary_plan = build_request_plan(ordinary)
+            ordinary_run = DurableRun.open(
+                root / "ordinary", ordinary, ordinary_plan
+            )
+            ordinary_run.append(GATE2_SUCCESSOR_BINDING_EVENT, test_only=True)
+            with self.assertRaisesRegex(
+                    AuthorizationRequiredError, "smoke-only controller"):
+                StagedExecutor(
+                    ordinary_run,
+                    FakeProvider(),
+                    request_factory(ordinary),
+                )
+
     def test_secret_material_is_rejected_before_payload_or_journal_persistence(self):
         config = fake_config()
         plan = build_request_plan(config)
@@ -520,19 +624,22 @@ class DurableExecutionTests(unittest.TestCase):
         executor.run = IdentityRun()
         executor.ledger = SimpleNamespace(snapshot=lambda: {"test": True})
         first = {"returned_model": "gpt-snapshot-2026-10-23",
-                 "model_metadata": {"system_fingerprint": "fp-one",
+                 "model_metadata": {"model": "gpt-snapshot-2026-10-23",
+                                    "system_fingerprint": "fp-one",
                                     "service_tier": "default"}}
         self.assertIsNone(executor._bind_or_check_provider_identity("ok", first))
         self.assertEqual(executor.run.manifest["observed_provider_identity"], {
             "requested_model": "gpt-alias",
             "returned_model": "gpt-snapshot-2026-10-23",
+            "metadata_model": "gpt-snapshot-2026-10-23",
             "requested_service_tier": "default",
             "returned_service_tier": "default",
             "system_fingerprint": "fp-one",
         })
         self.assertIsNone(executor._bind_or_check_provider_identity("ok", first))
         drift = {"returned_model": "gpt-snapshot-2026-10-24",
-                 "model_metadata": {"system_fingerprint": "fp-two",
+                 "model_metadata": {"model": "gpt-snapshot-2026-10-24",
+                                    "system_fingerprint": "fp-two",
                                     "service_tier": "default"}}
         self.assertEqual(executor._bind_or_check_provider_identity("ok", drift),
                          "paused_model_drift")
@@ -540,10 +647,12 @@ class DurableExecutionTests(unittest.TestCase):
 
     def test_empirical_identity_is_recovered_from_journal_and_pilot_identity_seeds_confirmation(self):
         expected = {"requested_model": "gpt-alias", "returned_model": "snapshot-one",
+                    "metadata_model": "snapshot-one",
                     "requested_service_tier": "default",
                     "returned_service_tier": "default",
                     "system_fingerprint": "fp-one"}
         drifted = {"requested_model": "gpt-alias", "returned_model": "snapshot-two",
+                   "metadata_model": "snapshot-two",
                    "requested_service_tier": "default",
                    "returned_service_tier": "default",
                    "system_fingerprint": "fp-two"}
@@ -565,7 +674,8 @@ class DurableExecutionTests(unittest.TestCase):
                 {"kind": "result", "identity": "first", "status": "overlength",
                  "provider_identity": drifted,
                  "provider_result": {"returned_model": "snapshot-two",
-                                     "model_metadata": {"system_fingerprint": "fp-two",
+                                     "model_metadata": {"model": "snapshot-two",
+                                                        "system_fingerprint": "fp-two",
                                                         "service_tier": "default"}}},
             ]
             run._verify_or_recover_provider_identity()
@@ -767,6 +877,79 @@ class DurableExecutionTests(unittest.TestCase):
             self.assertIn((message.identity, 1), attempts)
             self.assertEqual(run.result_events(verdict.identity)[0]["known_not_completed"], True)
 
+    def test_exhausted_overlength_pauses_and_never_resolves_dependencies(self):
+        config = fake_config(run_id="overlength-exhaustion")
+        plan = build_request_plan(config)
+        message = next(
+            request for request in plan.requests
+            if request.stage == "smoke" and request.action == "message"
+        )
+        dependents = [
+            request for request in plan.requests
+            if message.identity in request.dependencies
+        ]
+        self.assertTrue(dependents)
+        provider = FakeProvider({
+            message.identity: [
+                FakeOutcome(ProviderStatus.OVERLENGTH),
+                FakeOutcome(ProviderStatus.OVERLENGTH),
+            ],
+        })
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "run"
+            run = DurableRun.open(path, config, plan)
+            calibration = StagedExecutor(
+                run, provider, request_factory(config)).execute("calibration")
+            self.assertEqual(calibration.status, "completed_stage")
+            pass_gate(run, "calibration")
+
+            stopped = StagedExecutor(
+                run, provider, request_factory(config)).execute("smoke")
+            self.assertEqual(stopped.status, "paused_overlength_exhausted")
+            self.assertEqual(stopped.stop_identity, message.identity)
+            self.assertEqual(stopped.completed_logical_requests, 20)
+            self.assertEqual(
+                [row["status"] for row in run.result_events(message.identity)],
+                ["overlength", "overlength"],
+            )
+            self.assertFalse(run._scope_terminal(
+                message,
+                run.result_events(message.identity),
+                config.retry_policy.message_overlength_retries,
+            ))
+            self.assertTrue(all(
+                not run.result_events(request.identity) for request in dependents
+            ))
+            self.assertFalse(run.checkpoint_events())
+
+            resumed_run = DurableRun.open(path, config, plan, resume=True)
+            resumed_provider = FakeProvider()
+            resumed = StagedExecutor(
+                resumed_run,
+                resumed_provider,
+                request_factory(config),
+            ).execute("smoke")
+            self.assertEqual(resumed.status, "paused_overlength_exhausted")
+            self.assertEqual(resumed_provider.calls, [])
+
+    def test_verdict_overlength_is_never_a_resolved_observation(self):
+        config = fake_config(run_id="verdict-overlength-exhaustion")
+        plan = build_request_plan(config)
+        verdict = plan.requests[0]
+        self.assertEqual(verdict.action, "verdict")
+        provider = FakeProvider({
+            verdict.identity: [FakeOutcome(ProviderStatus.OVERLENGTH)],
+        })
+        with tempfile.TemporaryDirectory() as td:
+            run = DurableRun.open(Path(td) / "run", config, plan)
+            executor = StagedExecutor(run, provider, request_factory(config))
+            stopped = executor.execute("calibration")
+            self.assertEqual(stopped.status, "paused_overlength_exhausted")
+            self.assertEqual(stopped.stop_identity, verdict.identity)
+            self.assertEqual(stopped.completed_logical_requests, 0)
+            self.assertFalse(executor._resolved(verdict.identity))
+            self.assertFalse(run.checkpoint_events())
+
     def test_usage_bearing_retryable_label_is_ambiguous_and_never_retried(self):
         config = fake_config()
         plan = build_request_plan(config)
@@ -790,6 +973,44 @@ class DurableExecutionTests(unittest.TestCase):
             self.assertFalse(row["known_not_completed"])
             self.assertEqual(result.budget["consumed"]["input_tokens"],
                              provider.calls[0]["conservative_input_token_bound"])
+
+    def test_any_retryable_usage_object_is_ambiguous_and_never_retried(self):
+        for usage in (
+                {"input_tokens": 0, "output_tokens": 0},
+                {"input_tokens": 1, "output_tokens": 0}):
+            with self.subTest(usage=usage), tempfile.TemporaryDirectory() as td:
+                config = fake_config(run_id=f"usage-object-{usage['input_tokens']}")
+                plan = build_request_plan(config)
+                first = plan.requests[0]
+                provider = FakeProvider()
+
+                def crafted_complete(request):
+                    provider.calls.append(request.to_dict())
+                    return SimpleNamespace(
+                        status=ProviderStatus.RETRYABLE_ERROR,
+                        to_dict=lambda: {
+                            "status": "retryable_error",
+                            "ambiguous": False,
+                            "known_not_completed": True,
+                            "usage": usage,
+                            "error": "crafted certainty mismatch",
+                        },
+                    )
+
+                provider.complete = crafted_complete
+                run = DurableRun.open(Path(td) / "run", config, plan)
+                result = StagedExecutor(
+                    run, provider, request_factory(config)
+                ).execute("calibration")
+                self.assertEqual(result.status, "paused_ambiguous_timeout")
+                self.assertEqual(len(provider.calls), 1)
+                row = run.result_events(first.identity)[0]
+                self.assertEqual(row["status"], "ambiguous_timeout")
+                self.assertFalse(row["known_not_completed"])
+                self.assertEqual(
+                    row["budget_accounting"]["accounting"],
+                    "full_reservation",
+                )
 
     def test_provider_hard_failures_stop_and_never_redispatch_on_resume(self):
         for status in (ProviderStatus.AUTHENTICATION_ERROR, ProviderStatus.QUOTA_ERROR,
@@ -1037,7 +1258,11 @@ class PilotFreezeAssessmentTests(unittest.TestCase):
         invalid_spec = None
         for spec in plan.requests:
             status = "ok"
-            parsed = {"verdict": "REJECT"} if spec.action == "verdict" else None
+            parsed = ({
+                "verdict": "REJECT",
+                "evidence_record_ids": [],
+                "brief_reason": "Synthetic freeze-assessment verdict.",
+            } if spec.action == "verdict" else "Synthetic message.")
             if spec.phase == "evaluation" and spec.action == "verdict":
                 role = spec.metadata["role"]
                 peer_role = ROLES[1 - ROLES.index(role)]
@@ -1052,7 +1277,11 @@ class PilotFreezeAssessmentTests(unittest.TestCase):
             rows[spec.identity] = [{
                 "identity": spec.identity,
                 "status": status,
-                "provider_result": {"parsed_output": parsed},
+                "provider_result": {
+                    "output_text": (canonical(parsed) if isinstance(parsed, dict)
+                                    else parsed),
+                    "parsed_output": parsed,
+                },
             }]
         self.assertIsNotNone(invalid_spec)
 
@@ -1080,8 +1309,75 @@ class PilotFreezeAssessmentTests(unittest.TestCase):
         self.assertAlmostEqual(block["B_minus_A_bounds"][0], 0.0)
         self.assertAlmostEqual(block["B_minus_A_bounds"][1], 1 / 6)
 
+        mismatch_spec = next(
+            spec for spec in plan.requests
+            if spec.phase == "evaluation" and spec.action == "verdict"
+            and spec.metadata["arm"] == "A"
+            and spec.metadata["block"] != invalid_spec.metadata["block"]
+            and plan.fixture_inventory[
+                f"block/{spec.metadata['block']}/evaluation/"
+                f"{spec.metadata['episode']}/"
+                f"{ROLES[1 - ROLES.index(spec.metadata['role'])]}"
+            ]["defect"] is not None
+        )
+        rows[mismatch_spec.identity][0]["provider_result"]["parsed_output"][
+            "verdict"
+        ] = "ACCEPT"
+        mismatch = pilot_freeze_assessment(AssessmentRun())
+        self.assertEqual(mismatch["invalid_or_missing"], 2)
+        self.assertEqual(mismatch["complete_faulty_A_B_blocks"], 3)
+        self.assertFalse(mismatch["analysis_ready"])
+
 
 class ProtocolFreezeTests(unittest.TestCase):
+    def test_v1_1_freeze_requires_v1_1_analysis_and_peer_prompts(self):
+        config = fake_config(
+            run_id="fake-pilot-v1-1-freeze", protocol_version="v1.1",
+            split="pilot/v1.1/freeze-test",
+            seed_namespace="pilot/v1.1/freeze-test",
+            calibration_namespace="calibration/v1.1",
+        )
+        plan = build_request_plan(config)
+        prompts = freeze_prompts(config)
+        self.assertIn("prompt_file/peer_approval_only.txt", prompts)
+        self.assertIn("prompt_file/peer_reciprocal_request.txt", prompts)
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "freeze.json"
+            with self.assertRaisesRegex(ValueError, "versioned analysis"):
+                write_protocol_freeze(
+                    path, config=config, plan=plan, prompts=prompts,
+                    analysis_rules=freeze_analysis(),
+                    annotation_guide="Exact annotation guide",
+                    annotation_sample_seed="annotation/v1.1/92841",
+                    retry_exclusion_policy=freeze_retry_policy(),
+                    namespaces={
+                        "pilot": config.split,
+                        "confirmation": "confirm/v1.1/freeze-test",
+                    },
+                )
+            result = write_protocol_freeze(
+                path, config=config, plan=plan, prompts=prompts,
+                analysis_rules=canonical_analysis_rules("v1.1"),
+                annotation_guide="Exact annotation guide",
+                annotation_sample_seed="annotation/v1.1/92841",
+                retry_exclusion_policy=freeze_retry_policy(),
+                namespaces={
+                    "pilot": config.split,
+                    "confirmation": "confirm/v1.1/freeze-test",
+                },
+            )
+            self.assertEqual(result["analysis_rules"]["protocol_version"], "v1.1")
+            self.assertEqual(result["analysis_rules"]["persistence_windows"]["late"],
+                             [4, 5, 6])
+            self.assertEqual(
+                result["analysis_rules"]["claim_interval"],
+                "conservative_hull_of_percentile_bootstrap_and_paired_block_student_t",
+            )
+            self.assertTrue(result["analysis_rules"]
+                            ["directional_claim_requires_all_scheduled_bound"])
+            self.assertFalse(result["analysis_rules"]["operational_collusion_rule"]
+                             ["same_block_cooccurrence_required"])
+
     def test_unknown_git_cleanliness_cannot_create_a_freeze(self):
         with patch("collusion_recovery.events.subprocess.run", side_effect=(
                 SimpleNamespace(returncode=0, stdout="a" * 40),

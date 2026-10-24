@@ -26,9 +26,10 @@ class LiveConfigError(ValueError):
     """Raised before a provider can be initialized or a run directory created."""
 
 
-STAGE_ORDER = ("calibration", "smoke", "formation", "remaining_arms", "probes")
+STAGE_ORDER = ("preflight", "calibration", "smoke", "formation", "remaining_arms", "probes")
 RUN_TYPES = {"pilot", "confirmation"}
 SOURCES = {"fake-live", "empirical-live"}
+SUPPORTED_PROTOCOL_VERSIONS = {"v1.0", "v1.1"}
 _SAFE_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._/-]{0,127}\Z")
 _SECRET_KEYS = {
     "api_key", "apikey", "authorization", "authorization_header", "bearer",
@@ -117,11 +118,17 @@ class Pricing:
     source: str
     verified_at: str
     input_usd_per_million: Decimal
+    cached_input_usd_per_million: Decimal
+    cache_write_input_usd_per_million: Decimal
     output_usd_per_million: Decimal
 
     @classmethod
     def from_mapping(cls, values: Mapping[str, Any]) -> "Pricing":
-        expected = {"source", "verified_at", "input_usd_per_million", "output_usd_per_million"}
+        expected = {
+            "source", "verified_at", "input_usd_per_million",
+            "cached_input_usd_per_million", "cache_write_input_usd_per_million",
+            "output_usd_per_million",
+        }
         if not isinstance(values, Mapping) or set(values) != expected:
             raise LiveConfigError(f"pricing must contain exactly {sorted(expected)}")
         source = values["source"]
@@ -132,6 +139,12 @@ class Pricing:
             verified_at=_timestamp(values["verified_at"], "pricing.verified_at"),
             input_usd_per_million=_decimal(
                 values["input_usd_per_million"], "pricing.input_usd_per_million", nonnegative=True),
+            cached_input_usd_per_million=_decimal(
+                values["cached_input_usd_per_million"],
+                "pricing.cached_input_usd_per_million", nonnegative=True),
+            cache_write_input_usd_per_million=_decimal(
+                values["cache_write_input_usd_per_million"],
+                "pricing.cache_write_input_usd_per_million", nonnegative=True),
             output_usd_per_million=_decimal(
                 values["output_usd_per_million"], "pricing.output_usd_per_million", nonnegative=True),
         )
@@ -139,6 +152,10 @@ class Pricing:
     def to_dict(self) -> dict[str, str]:
         return {"source": self.source, "verified_at": self.verified_at,
                 "input_usd_per_million": str(self.input_usd_per_million),
+                "cached_input_usd_per_million": str(
+                    self.cached_input_usd_per_million),
+                "cache_write_input_usd_per_million": str(
+                    self.cache_write_input_usd_per_million),
                 "output_usd_per_million": str(self.output_usd_per_million)}
 
 
@@ -232,7 +249,7 @@ class RetryPolicy:
             raise LiveConfigError("maximum retry backoff is smaller than the initial backoff")
         if result.message_overlength_retries != 1:
             raise LiveConfigError(
-                "protocol v1.0 requires exactly one explicit message-overlength retry"
+                "protocol v1.x requires exactly one explicit message-overlength retry"
             )
         return result
 
@@ -297,24 +314,36 @@ class LiveConfig:
             value = getattr(self, name)
             if not isinstance(value, str) or not _SAFE_NAME.fullmatch(value) or ".." in value.split("/"):
                 raise LiveConfigError(f"{name} is missing or malformed")
-        if self.protocol_version != "v1.0":
+        if self.protocol_version not in SUPPORTED_PROTOCOL_VERSIONS:
             raise LiveConfigError("unsupported protocol version")
         if self.source not in SOURCES:
             raise LiveConfigError("source must be fake-live or empirical-live")
         if self.run_type not in RUN_TYPES:
             raise LiveConfigError("run_type must be pilot or confirmation")
-        required_prefix = {"pilot": "pilot/", "confirmation": "confirm/"}[self.run_type]
+        run_prefix = {"pilot": "pilot/", "confirmation": "confirm/"}[self.run_type]
+        # Historical v1.0 namespaces remain byte-for-byte loadable.  New v1.1
+        # runs must make the protocol boundary explicit so a fresh plan cannot
+        # accidentally reuse a v1.0 split or fixture namespace.
+        required_prefix = (
+            run_prefix if self.protocol_version == "v1.0"
+            else f"{run_prefix}{self.protocol_version}/"
+        )
         if not self.split.startswith(required_prefix):
             raise LiveConfigError(
                 f"{self.run_type} output requires a separate {required_prefix} split namespace")
         if not self.seed_namespace.startswith(required_prefix):
             raise LiveConfigError(
                 f"{self.run_type} fixtures require a separate {required_prefix} seed namespace")
-        if not self.calibration_namespace.startswith("calibration/"):
+        if self.protocol_version == "v1.1":
+            if self.calibration_namespace != "calibration/v1.1":
+                raise LiveConfigError(
+                    "protocol v1.1 requires calibration_namespace=calibration/v1.1"
+                )
+        elif not self.calibration_namespace.startswith("calibration/"):
             raise LiveConfigError("calibration_namespace must use a calibration/ namespace")
         if self.stage not in STAGE_ORDER:
             raise LiveConfigError(f"stage must be one of {STAGE_ORDER}")
-        if self.run_type == "confirmation" and self.stage in {"calibration", "smoke"}:
+        if self.run_type == "confirmation" and self.stage in {"preflight", "calibration", "smoke"}:
             raise LiveConfigError("confirmation stage must be formation, remaining_arms, or probes")
         if not isinstance(self.model, str) or not self.model.strip():
             raise LiveConfigError("model must be explicitly selected")
@@ -338,7 +367,10 @@ class LiveConfig:
             if (pricing_url.username or pricing_url.password or pricing_url.query
                     or pricing_url.fragment or not pricing_url.hostname):
                 raise LiveConfigError("pricing source must be a public HTTPS URL without credentials or query data")
-            if self.pricing.input_usd_per_million <= 0 or self.pricing.output_usd_per_million <= 0:
+            if (self.pricing.input_usd_per_million <= 0
+                    or self.pricing.cached_input_usd_per_million <= 0
+                    or self.pricing.cache_write_input_usd_per_million <= 0
+                    or self.pricing.output_usd_per_million <= 0):
                 raise LiveConfigError("empirical-live pricing rates must be strictly positive")
         else:
             if self.provider != "fake" or self.authorization.kind != "fake-only":
@@ -347,7 +379,10 @@ class LiveConfig:
                 raise LiveConfigError("fake-live execution cannot authorize paid calls")
             if self.authorization.approved_budget_usd != 0:
                 raise LiveConfigError("fake-live approved_budget_usd must be exactly zero")
-            if self.pricing.input_usd_per_million != 0 or self.pricing.output_usd_per_million != 0:
+            if (self.pricing.input_usd_per_million != 0
+                    or self.pricing.cached_input_usd_per_million != 0
+                    or self.pricing.cache_write_input_usd_per_million != 0
+                    or self.pricing.output_usd_per_million != 0):
                 raise LiveConfigError("fake-live pricing rates must be zero")
 
     def to_dict(self) -> dict[str, Any]:
