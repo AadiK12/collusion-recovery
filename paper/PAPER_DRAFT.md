@@ -1,6 +1,6 @@
 # Restoring Independent Verification After Constrained Agent Interaction
 
-> **PRE-EXPERIMENT PAPER SHELL — NOT A RESULTS PAPER.** No empirical model result has been inserted. Every marker beginning with `RESULT REQUIRED`, `VERIFY`, `DECISION REQUIRED`, or `TODO` must be resolved before submission. Mock, fake-provider, calibration, pilot, and confirmation artifacts must remain separately labeled and must never be pooled into a primary estimate.
+> **PRE-EXPERIMENT PAPER SHELL — NOT A HYPOTHESIS-RESULTS PAPER.** The verified Gate 1 capability decision is recorded below; no hypothesis-bearing model result has been inserted. Every marker beginning with `RESULT REQUIRED`, `VERIFY`, `DECISION REQUIRED`, or `TODO` must be resolved before submission. Mock, fake-provider, calibration, pilot, and confirmation artifacts must remain separately labeled and must never be pooled into a primary estimate.
 
 The compact, compilable manuscript derived from this detailed source is [`paper/latex/main.tex`](latex/main.tex). Keep the Markdown protocol shell and LaTeX report synchronized at each evidence lock; neither may override the authoritative experiment protocol or claim ledger.
 
@@ -10,7 +10,7 @@ The compact, compilable manuscript derived from this detailed source is [`paper/
 **Additional track, only if the form permits and the final evidence supports it:** Track 2 — Detection and Audit of Collusion
 **Protocol:** [FROZEN PROTOCOL VERSION REQUIRED]
 **Code commit:** [CLEAN FULL COMMIT REQUIRED]
-**Paper status:** Pre-run methods draft
+**Paper status:** Pre-results methods draft; Gate 1 capability calibration complete
 
 **Secondary protocol:** [formation-peer-v1](../docs/FORMATION_PEER_CONTROLS.md), implemented for offline scripted validation only. Its live controller, prospective source-hash binding, and spending authorization remain outstanding. No empirical formation-control result is available. Main v1.1 A–F and B−A remain the primary study.
 
@@ -246,17 +246,17 @@ The existing main-study sample and six labels remain unchanged. `formation-peer-
 
 ### 3.13 Model, provider, and reproducibility metadata
 
-**[DECISION REQUIRED BEFORE LIVE EXECUTION]** Record the exact requested model alias or snapshot, returned model metadata, system fingerprint where provided, reasoning and output settings, service tier, execution dates, context limits, and timestamped pricing source. Provider identity drift pauses execution. Credentials remain outside repository artifacts.
+**[DECISION RECORDED FOR CAPABILITY EXECUTION; REBIND BEFORE HYPOTHESIS-BEARING EXECUTION]** Gate 1 requested and returned `gpt-6.1-sol` on the `default` service tier with low reasoning effort and a 4,096-token output ceiling. Provider metadata also reported `gpt-6.1-sol`; the system fingerprint was absent/null. The bound context limit was 1,050,000 tokens, and pricing was reverified at `2026-10-24T14:02:52-07:00` against the official GPT-6.1 Sol model page. Gate 2 must independently bind and reverify these fields before any hypothesis-bearing request. Provider identity drift pauses execution. Credentials remain outside repository artifacts.
 
 ## 4. Results
 
-> **EMPTY BY DESIGN — BRACKETED TEXT IS NOT A RESULT.** Populate main results only after locking the main report path; populate secondary results according to their independent status and verified data. Every number must be entered in `paper/CLAIM_EVIDENCE_LEDGER.md` first. Never copy mock/fake-provider rates or pool studies/splits within an estimate, panel, or compound interpretation. Separately labeled exploratory secondary pilot findings may accompany main confirmation. Resolve all `[RESULT REQUIRED]` markers before submission.
+> **HYPOTHESIS-BEARING RESULTS EMPTY BY DESIGN — BRACKETED TEXT IS NOT A RESULT.** The capability-calibration row is populated from verified ledger claim C01; all experimental results remain empty. Populate main results only after locking the main report path; populate secondary results according to their independent status and verified data. Every number must be entered in `paper/CLAIM_EVIDENCE_LEDGER.md` first. Never copy mock/fake-provider rates or pool studies/splits within an estimate, panel, or compound interpretation. Separately labeled exploratory secondary pilot findings may accompany main confirmation. Resolve all `[RESULT REQUIRED]` markers before submission.
 
 ### 4.1 Study flow and integrity
 
 | Split/phase | Blocks scheduled | Requests scheduled | Completed | Invalid/missing | Integrity decision | Cost |
 | --- | ---: | ---: | ---: | ---: | --- | ---: |
-| Fresh selected-version calibration | N/A | 20 new requests; historical Stage 2 reviews excluded | [RESULT REQUIRED] | [RESULT REQUIRED] | [PASS/FAIL REQUIRED] | [RESULT REQUIRED] |
+| Fresh selected-version calibration | N/A | 20 new requests; historical Stage 2 reviews excluded | 20 | 0 | PASSED; hard stop before smoke | `$0.1378975` |
 | Pilot formation | 5 | [RESULT REQUIRED] | [RESULT REQUIRED] | [RESULT REQUIRED] | [PASS/FAIL REQUIRED] | [RESULT REQUIRED] |
 | Main pilot complete | 5 | 1,380 nominal including calibration under v1.1; 1,580 under v1.2 | [RESULT REQUIRED] | [RESULT REQUIRED] | [DECISION REQUIRED] | [RESULT REQUIRED] |
 | Separate formation-peer-v1 pilot | 5 planned; separately identified | 280 additional nominal | [RESULT REQUIRED OR NOT RUN] | [RESULT REQUIRED OR NOT RUN] | [INTEGRITY REVIEW REQUIRED; NOT A MAIN GATE] | [RESULT REQUIRED OR NOT RUN] |
@@ -270,7 +270,7 @@ Report provider-identity stability, evidence-hash audits, branch-lineage audits,
 
 ### 4.2 Capability and joint-violation feasibility gates
 
-**Capability.** Correct-packet approvals: **[RESULT REQUIRED]/10**. Faulty-packet rejections: **[RESULT REQUIRED]/10**. Schema-valid verdicts: **[RESULT REQUIRED]/20**. Gate decision: **[RESULT REQUIRED]**.
+**Capability.** The fresh v1.1 configuration passed its predeclared calibration gate: 10/10 correct-packet approvals, 9/10 faulty-packet rejections, and 20/20 schema-valid verdicts. All 20 request payloads, wire payloads, and provider audits were complete. Run ID `1b61ea2d-e609-4c67-a649-b889722dba9b`, stored under `runs/empirical/gate1-calibration-v1.1-1b61ea2d-e609-4c67-a649-b889722dba9b`, used 20 attempts, 45,123 input tokens, 2,512 output/reasoning tokens, and `$0.1378975`; embedded report hash `6a5ca98d79b27be5ff71aa59d157cbd9cc236218098171d52f2d0511099321d8`. It recorded zero smoke or later-stage dispatches and `experiment_started: false`. This is evidence of capability on these fixtures only, not evidence about formation, persistence, recovery, peer influence, or collusion.
 
 **Pilot joint-violation feasibility gate (never confirmation evidence).** Constrained histories meeting the predeclared marker: **[PILOT RESULT REQUIRED]/5**. Full-evidence comparison histories meeting the same descriptive marker: **[PILOT RESULT REQUIRED]/5**. Gate decision and, if triggered, the status of the sole two-round fallback: **[RESULT REQUIRED; link decision record]**.
 

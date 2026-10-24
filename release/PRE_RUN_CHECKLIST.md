@@ -4,9 +4,21 @@ This checklist governs every transition from local validation to paid preflight,
 
 Prior validated checkpoint (October 24, 2026, commit `0ddc34c`): 283/283 tests passed and the checked v1.1 Gate 1 proposal inspected as `ready_awaiting_external_human_authorization`, binding proposal hash `a9a8e9a4b548afc8bd35de928498a4c6a60d7ed01e93be287bfe2cfed9fed3d7`. Its scope was 20 logical requests, at most 60 dispatch attempts, 184,387 input tokens, 81,920 output/reasoning tokens, `$1.280168`, and concurrency 1. Preserve that exact snapshot; it is not a current inspection of the amended methodology.
 
-The formation-peer amendment changed the bound scientific protocol. The main-only Gate 1 proposal/schema were subsequently regenerated against the finalized amended protocol and current official pricing. Credential-free inspection reports `ready_awaiting_external_human_authorization` with proposal hash `bac585908d48427d9048f4cc5677b42e5c1892f4065fb123ed8388e4a1bd9ed4`. This checklist and `GATE1_HUMAN_AUTHORIZATION_SCHEMA.json` are not authorization. Fresh v1.1 Gate 1 has not executed, and Gate 2 proposal/schema generation remains blocked until fresh Gate 1 passes. No provider call was made by the refresh.
+The formation-peer amendment changed the bound scientific protocol. The main-only Gate 1 proposal/schema were subsequently regenerated against the finalized amended protocol and current official pricing. Proposal `bac585908d48427d9048f4cc5677b42e5c1892f4065fb123ed8388e4a1bd9ed4` then received its exact one-use authorization and completed the bounded fresh v1.1 calibration. The terminal status is `completed_gate1_passed_hard_stop`: 10/10 clean approvals, 9/10 faulty rejections, and 20/20 schema-valid and audited responses. The run used 20 attempts, 45,123 input tokens, 2,512 output/reasoning tokens, and `$0.1378975`, with zero preflight, smoke, or later-stage dispatches and `experiment_started: false`. Its authorization is consumed and grants no Gate 2 authority.
 
 The selected [formation-peer-v1 secondary study](../docs/FORMATION_PEER_CONTROLS.md) is a separate mock-only implementation; empirical inclusion remains conditional on live integration, prospective allocation, and release review. Main A–F, primary B−A, six evaluation-time peer cells, and main Gate 1/Gate 2 scope remain unchanged and exclude its requests.
+
+## Completed Gate 1 record
+
+| Field | Recorded value |
+| --- | --- |
+| Run ID | `1b61ea2d-e609-4c67-a649-b889722dba9b` |
+| Run directory | `runs/empirical/gate1-calibration-v1.1-1b61ea2d-e609-4c67-a649-b889722dba9b` |
+| Proposal hash | `bac585908d48427d9048f4cc5677b42e5c1892f4065fb123ed8388e4a1bd9ed4` |
+| Embedded report hash | `6a5ca98d79b27be5ff71aa59d157cbd9cc236218098171d52f2d0511099321d8` |
+| Decision | Passed capability threshold; hard stop before smoke |
+| Scientific boundary | Capability only; no formation, recovery, peer-influence, or collusion evidence |
+| Next-stage authority | None; Gate 2 requires a new proposal, review, and authorization |
 
 ## Run identity
 
@@ -128,7 +140,7 @@ The selected [formation-peer-v1 secondary study](../docs/FORMATION_PEER_CONTROLS
 - [ ] At most one documented model/task revision with new fixtures is permitted.
 - [ ] The Gate 1 authorization is consumed or invalidated, the immutable gate decision is persisted, and the release stops before any smoke identity.
 
-**Gate 1 decision artifact:** [PENDING]
+**Gate 1 decision artifact:** ignored durable report for run ID `1b61ea2d-e609-4c67-a649-b889722dba9b` under `runs/empirical/gate1-calibration-v1.1-1b61ea2d-e609-4c67-a649-b889722dba9b`, embedded report hash `6a5ca98d79b27be5ff71aa59d157cbd9cc236218098171d52f2d0511099321d8`; decision `passed`; status `completed_gate1_passed_hard_stop`. Capability evidence only.
 
 ### Gate 2 — Block-0 experimental smoke
 

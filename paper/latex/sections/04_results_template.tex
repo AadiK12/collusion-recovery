@@ -3,11 +3,12 @@
 
 \noindent\fcolorbox{placeholderred}{white}{%
 \parbox{0.96\linewidth}{\small
-\textbf{Empty by design.} Populate this section only after the main report path
-(fresh confirmation or explicitly exploratory five-block pilot) is locked. Every
-number must first be entered and verified in the claim--evidence ledger. Never
-copy mock rates, reuse capability calibration as a study outcome, or pool pilot
-with confirmation.}}
+\textbf{Hypothesis-bearing results empty by design.} Only the verified capability
+checkpoint is populated. Populate experimental results only after the main report
+path (fresh confirmation or explicitly exploratory five-block pilot) is locked.
+Every number must first be entered and verified in the claim--evidence ledger.
+Never copy mock rates, reuse capability calibration as a study outcome, or pool
+pilot with confirmation.}}
 
 \subsection{Study flow and integrity}
 
@@ -25,7 +26,7 @@ cost. State whether the report is confirmation or exploratory pilot-only.}
 \toprule
 Stage & Scheduled & Attempted & Valid & Missing/invalid & Blocks \\
 \midrule
-Fresh capability calibration & 20 & -- & -- & -- & -- \\
+Fresh capability calibration & 20 & 20 & 20 & 0 & -- \\
 Main smoke (within pilot block 0) & 152 & -- & -- & -- & 1 \\
 Main locked report split & -- & -- & -- & -- & -- \\
 Formation-peer split, if run & -- & -- & -- & -- & -- \\
@@ -38,10 +39,19 @@ five-block pilot total; it is not an additional sixth block.
 
 \subsection{Capability and formation feasibility}
 
-\resultplaceholder{Report clean-packet approvals, faulty-packet rejections, and
-validity for the fresh v1.1 calibration. Then report the number of all scheduled C
-histories meeting the final-three joint-violation marker. These are gates and
-descriptive formation evidence, not the primary recovery effect.}
+The fresh v1.1 configuration passed the prespecified capability gate: 10/10
+clean-packet approvals, 9/10 faulty-packet rejections, and 20/20 schema-valid,
+payload-verified, and provider-audited responses. The calibration required 20
+attempts, 45,123 input tokens, 2,512 output/reasoning tokens, and \$0.1378975.
+The release recorded zero smoke or later-stage dispatches and
+\texttt{experiment\_started: false}. This establishes capability on the 20
+calibration fixtures only; it is not a result about formation, recovery, peer
+influence, or collusion.
+
+\resultplaceholder{After an authorized pilot, report the number of all scheduled
+C histories meeting the final-three joint-violation marker. That gate is
+descriptive formation evidence, not the primary recovery effect or proof of
+collusion.}
 
 \subsection{Primary recovery outcome}
 

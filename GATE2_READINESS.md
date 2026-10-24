@@ -1,13 +1,13 @@
 # Gate 1 to Gate 2 readiness boundary
 
-> **Current boundary after the methodology amendment:** the main-only Gate 1 proposal and authorization schema have been regenerated against the finalized amended protocol and current official pricing. Credential-free inspection reports `ready_awaiting_external_human_authorization`. Fresh v1.1 Gate 1 has not executed. The dedicated Gate 2 controller is implemented, but no Gate 2 proposal or authorization schema may be generated until empirical Gate 1 passes. Neither main release includes the separate formation-peer-v1 secondary study.
+> **Current boundary after the methodology amendment:** fresh main-only Gate 1 completed its 20-request capability calibration, passed the frozen threshold, and hard-stopped before smoke. The dedicated Gate 2 controller is implemented, but its proposal, authorization schema, and authorization remain absent. Neither main release includes the separate formation-peer-v1 secondary study.
 
-Status: **post-amendment Gate 1 proposal ready for independent review and exact external authorization; Gate 2 blocked pending an empirical passed fresh Gate 1 decision; experiment not started**.
+Status: **Gate 1 capability passed; Gate 2 preparation is now eligible but still no-dispatch; experiment not started**.
 
-The October 24 methodology pass first demonstrated the intended fail-closed behavior when the prior proposal no longer matched the amended protocol. The subsequent release pass reverified pricing, regenerated the proposal/schema, and reran credential-free `python -m collusion_recovery.gate1_calibration inspect`. It reports readiness with zero credential access, network calls, or paid calls. The proposal still needs independent review and a separately created one-use human authorization.
+The October 24 methodology pass first demonstrated the intended fail-closed behavior when the prior proposal no longer matched the amended protocol. The subsequent release pass reverified pricing, regenerated the proposal/schema, and passed credential-free inspection. After exact external authorization, the bounded release completed with terminal status `completed_gate1_passed_hard_stop`: 20/20 responses were schema-valid and audited, with 10/10 clean approvals and 9/10 faulty rejections. It used 20 attempts, 45,123 input tokens, 2,512 output/reasoning tokens, and `$0.1378975`. The report records zero preflight, smoke, or later-stage dispatches, `experiment_started: false`, and no authorization of a next stage.
 
 The first hypothesis-bearing request is the block-0 smoke stage. Nothing in
-this preparation pass sent one. The repository retains the retired v1.0
+the completed capability release sent one. The repository retains the retired v1.0
 readiness projection, now implements a fresh calibration-only Gate 1 release,
 and implements a separate v1.1 smoke-only Gate 2 controller. Each live release
 requires its own external one-use authorization.
@@ -16,7 +16,7 @@ The selected [formation-peer-v1 secondary study](docs/FORMATION_PEER_CONTROLS.md
 has an isolated scripted implementation and mock validation only. It is not a
 live controller, a new main A–F arm, or an extension of Gate 1/Gate 2 scope.
 Main A–F, primary B−A, and the six evaluation-time peer cells remain unchanged.
-The main-only release pass refreshes the Gate 1 proposal/schema but creates no authorization or live call.
+The main-only Gate 1 release excluded this study and grants it no authority.
 
 ## What was verified
 
@@ -146,20 +146,21 @@ passed inspection:
 | Maximum cost / concurrency | `$1.280168` / 1 |
 
 `release/GATE1_HUMAN_AUTHORIZATION_SCHEMA.json` specifies the external
-owner-supplied authorization record. It is not itself authorization. No human
-authorization has been created, claimed, or consumed, so Gate 1 has not made a
-provider call.
+owner-supplied authorization record. It is not itself authorization. At that
+prior checked snapshot, no human authorization had been created, claimed, or
+consumed and Gate 1 had made no provider call. The later completed release is
+recorded in the next section.
 
-## Current post-amendment v1.1 Gate 1 proposal — October 24, 2026
+## Completed post-amendment v1.1 Gate 1 release — October 24, 2026
 
 The proposal and authorization schema were regenerated after the canonical
 protocol reached its final amended bytes. Pricing was reverified at
 `2026-10-24T14:02:52-07:00` against the official
 [GPT-6.1 Sol model page](https://developers.openai.com/api/docs/models/gpt-6.1-sol),
 whose Standard rates remain $2/M ordinary input, $0.10/M cached input,
-$2.50/M cache writes, and $10/M output. Credential-free inspection returns
-`ready_awaiting_external_human_authorization`, `experiment_started: false`,
-and zero credential, network, and paid-call access.
+$2.50/M cache writes, and $10/M output. Credential-free inspection first
+returned `ready_awaiting_external_human_authorization`. The exact one-use
+authorization was then consumed by the calibration-only release.
 
 | Item | Value |
 | --- | --- |
@@ -177,8 +178,21 @@ and zero credential, network, and paid-call access.
 
 Retain the prior snapshot as provenance. Any later edit to the bound protocol
 or implementation must again fail closed and require fresh proposal/schema
-generation and review. The current schema is not an authorization, and no
-authorization has been created, claimed, or consumed.
+generation and review. The schema is not authorization and the consumed Gate 1
+authorization cannot be reused for Gate 2.
+
+The run ID is `1b61ea2d-e609-4c67-a649-b889722dba9b`, and its durable run
+directory is `runs/empirical/gate1-calibration-v1.1-1b61ea2d-e609-4c67-a649-b889722dba9b`; its embedded
+report hash is
+`6a5ca98d79b27be5ff71aa59d157cbd9cc236218098171d52f2d0511099321d8`.
+The immutable assessment records 20/20 schema-valid reviews, 20/20 verified
+request payloads, 20/20 verified wire payloads, 20/20 complete provider audits,
+10/10 clean approvals, and 9/10 faulty rejections. The run consumed 20 attempts,
+45,123 input tokens, 2,512 output/reasoning tokens, and `$0.1378975`. Its status
+is `completed_gate1_passed_hard_stop`, with zero preflight, smoke, and
+later-stage dispatches, `experiment_started: false`, and
+`next_stage_authorized: false`. This supports only the narrow capability-gate
+claim; it is not formation, recovery, peer-influence, or collusion evidence.
 
 ## Dedicated Gate 2 controller
 
@@ -203,9 +217,9 @@ report, and journal tail, and records one immutable smoke-integrity decision.
 That decision authorizes no provider call by itself.
 
 There is deliberately no checked `configs/gate2_smoke_proposal.json` or Gate 2
-authorization schema yet. Both must be generated only after empirical Gate 1
-passes so they bind the durable fresh-calibration decision rather than a
-hypothetical result. They must then be independently reviewed and receive a
+authorization schema yet. Gate 1 has now passed, so both may be generated only
+from the durable fresh-calibration decision rather than a hypothetical result.
+They must then be independently reviewed and receive a
 different unique, non-reusable external human authorization with exact
 billable-attempt, input-token, output/reasoning-token, dollar, concurrency, and
 context ceilings. The historical v1.0 numbers above do not become v1.1
@@ -218,12 +232,9 @@ historical evidence only; do not overwrite, delete, or reuse it.
 
 ## Remaining gates
 
-The current correct state is amended-protocol reinspection required, Gate 2
-blocked pending a passed fresh Gate 1 decision, and `experiment_started: false`.
-First inspect the final source/document state, refresh and independently review
-Gate 1 proposal bindings as required, and obtain the separate external human
-authorization for that exact release. After an empirical Gate 1 pass, the
-main-only sequence is:
+The current correct state is a passed fresh Gate 1 capability decision, no
+Gate 2 proposal or authorization, and `experiment_started: false`. The
+main-only sequence is now:
 
 1. generate and independently review the source-bound Gate 2 proposal/schema;
 2. obtain its separate external human authorization;

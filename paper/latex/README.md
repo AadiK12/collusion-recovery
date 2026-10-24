@@ -13,7 +13,7 @@
 ## Current status
 
 - The introduction, verified related-work synthesis, compact Methods, statistical plan, limitations, ethics, reproducibility statement, preexisting-work disclosure, and LLM-usage statement are drafted.
-- Results tables and figures are empty by design.
+- The verified Gate 1 capability row is populated: 10/10 clean approvals, 9/10 faulty rejections, and 20/20 valid/audited responses at `$0.1378975`. All hypothesis-bearing results tables and figures remain empty by design.
 - The abstract is a 196-word pre-results abstract and must be rewritten after the report path and evidence are locked.
 - The title intentionally avoids an empirical collusion claim.
 - `formation-peer-v1` is described as a separate prospective study and must be omitted from the final abstract unless it is actually run.
@@ -25,4 +25,4 @@ The project uses a conventional article layout for an editable LaTeX foundation.
 
 Open the `paper/latex` directory in Codex for the managed source editor and PDF preview. The app's built-in LaTeX compiler treats `main.tex` as the remembered main document and resolves `sections/*.tex` and `references.bib` in place.
 
-Do not manually insert measured numbers into prose first. Add verified values to the claim ledger, generate or review the corresponding table/figure artifact, and then replace only the marked result placeholders.
+Do not manually insert measured numbers into prose first. Add verified values to the claim ledger, generate or review the corresponding table/figure artifact, and then replace only the marked result placeholders. The capability checkpoint is ledger claim C01 and must remain explicitly outside every experimental estimand.

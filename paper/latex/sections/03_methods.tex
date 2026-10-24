@@ -204,8 +204,18 @@ pilot block 0; a five-block exploratory pilot; an immutable analysis and
 sample-size freeze; and fresh confirmation blocks. The 152-request smoke is
 included in, rather than added to, the five-block pilot schedule. Calibration
 must achieve at least 9/10 correct approvals, 9/10 faulty rejections, and 20/20
-valid responses. The main five-block plan contains 1,380 nominal requests in
-total, including calibration and the block-0 smoke subset. The optional
+valid responses. The tested configuration subsequently passed this gate with
+10/10 correct approvals, 9/10 faulty rejections, and 20/20 valid, payload-verified,
+and provider-audited responses. Gate~1 requested and returned
+\texttt{gpt-6.1-sol} at low reasoning effort on the default service tier, with a
+4,096-token output ceiling and a bound 1,050,000-token context limit; provider
+metadata matched the requested model and the system fingerprint was absent. The
+pricing source was reverified on 2026-10-24 before authorization. This calibration
+is a task-capability check and does not enter any experimental estimand. The
+release hard-stopped before smoke, so no hypothesis-bearing request had been made
+at this manuscript checkpoint.
+The main five-block plan contains 1,380 nominal requests in total, including
+calibration and the block-0 smoke subset. The optional
 five-block formation-peer pilot adds 280 requests under a separate live release
 and provenance lineage. Pilot and confirmation outcomes are never pooled.
 

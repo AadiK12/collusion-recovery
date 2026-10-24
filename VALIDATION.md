@@ -138,7 +138,7 @@ Focused validation now covers:
 
 ### Checked Gate 1 release boundary
 
-After the formation-peer methodology reconciliation, the main-only Gate 1 proposal and authorization schema were regenerated against the finalized amended protocol and pricing reverified on October 24, 2026. Credential-free inspection of `configs/gate1_calibration_proposal.json` returns `ready_awaiting_external_human_authorization` with `experiment_started: false`, `credentials_accessed: false`, `network_calls: 0`, and `paid_calls: 0`. The current checked values are:
+After the formation-peer methodology reconciliation, the main-only Gate 1 proposal and authorization schema were regenerated against the finalized amended protocol and pricing reverified on October 24, 2026. Before dispatch, credential-free inspection of `configs/gate1_calibration_proposal.json` returned `ready_awaiting_external_human_authorization` with `experiment_started: false`, `credentials_accessed: false`, `network_calls: 0`, and `paid_calls: 0`. The executed release was bound to:
 
 | Field | Value |
 | --- | --- |
@@ -153,13 +153,32 @@ After the formation-peer methodology reconciliation, the main-only Gate 1 propos
 | Per-request input/output limits | 9,331 / 4,096 |
 | Maximum cost / concurrency | `$1.280168` / 1 |
 
-`release/GATE1_HUMAN_AUTHORIZATION_SCHEMA.json` is a machine-readable contract for an external owner-supplied, short-lived, one-use authorization. It is not an authorization artifact. None has been created, claimed, or consumed, and Gate 1 has not executed.
+`release/GATE1_HUMAN_AUTHORIZATION_SCHEMA.json` is the machine-readable contract for the external owner-supplied, short-lived, one-use authorization. It is not itself authorization. The matching authorization was consumed by the bounded Gate 1 release and cannot authorize or be replayed for Gate 2.
+
+### Empirical Gate 1 capability decision
+
+Fresh v1.1 Gate 1 completed with run ID `1b61ea2d-e609-4c67-a649-b889722dba9b` in `runs/empirical/gate1-calibration-v1.1-1b61ea2d-e609-4c67-a649-b889722dba9b`, with status `completed_gate1_passed_hard_stop`. The immutable report embeds hash `6a5ca98d79b27be5ff71aa59d157cbd9cc236218098171d52f2d0511099321d8` and records:
+
+| Field | Observed value |
+| --- | ---: |
+| Clean-packet approvals | 10/10 |
+| Faulty-packet rejections | 9/10 |
+| Schema-valid verdicts | 20/20 |
+| Verified request / wire payloads | 20/20 / 20/20 |
+| Complete provider audits | 20/20 |
+| Dispatch attempts | 20 |
+| Input tokens | 45,123 |
+| Output/reasoning tokens | 2,512 |
+| Exact reconciled cost | `$0.1378975` |
+| Preflight / smoke / later-stage dispatches | 0 / 0 / 0 |
+
+The persisted state also records `gate1_passed: true`, `experiment_started: false`, and `next_stage_authorized: false`. Thus the result supports only “the configuration passed the predeclared capability gate” on these 20 fixtures. It is not evidence about history-conditioned behavior, formation, recovery, peer influence, or collusion, and it does not authorize the first hypothesis-bearing smoke request.
 
 ### Gate 2 and later-stage boundary
 
-The dedicated v1.1 Gate 2 controller accepts only the 152 logical block-0 smoke requests and at most 532 dispatch attempts, requires the empirical passed Gate 1 lineage, writes an immutable smoke report, and hard-stops. A separate no-dispatch external review must recompute and bind the smoke-integrity decision; that decision authorizes no later calls. The Gate 2 proposal and authorization schema are intentionally absent until fresh Gate 1 passes, so Gate 2 remains fail-closed.
+The dedicated v1.1 Gate 2 controller accepts only the 152 logical block-0 smoke requests and at most 532 dispatch attempts, requires the empirical passed Gate 1 lineage, writes an immutable smoke report, and hard-stops. A separate no-dispatch external review must recompute and bind the smoke-integrity decision; that decision authorizes no later calls. The Gate 2 proposal and authorization schema remain intentionally absent. The Gate 1 pass now permits their no-dispatch generation, but Gate 2 remains fail-closed until they are regenerated from the immutable decision, independently reviewed, and separately authorized.
 
-A successful smoke decision would still not make confirmation ready. Before Gate 4 or any confirmation release, `pilot_freeze_assessment` requires additional raw-audit hardening so the freeze independently reconstructs and verifies authoritative pilot requests and responses instead of relying on derived artifacts. Empirical result placeholders in the paper and claim ledger remain empty.
+A successful smoke decision would still not make confirmation ready. Before Gate 4 or any confirmation release, `pilot_freeze_assessment` requires additional raw-audit hardening so the freeze independently reconstructs and verifies authoritative pilot requests and responses instead of relying on derived artifacts. Hypothesis-bearing result placeholders in the paper and claim ledger remain empty; only the Gate 1 capability row is now populated.
 
 ## October 24 formation-control methodology reconciliation
 
@@ -171,4 +190,4 @@ At its own checkpoint, the methodology reconciliation changed Markdown context f
 
 Changes to `SPRINT_PROJECT_PLAN.md` and associated frozen methodology material invalidated the earlier proposal's protocol binding as intended. A subsequent explicit release pass refreshed the pricing timestamp, regenerated the main-only Gate 1 proposal/schema against the final amended bytes, and updated frozen validation clocks for that timestamp. The focused release subset passed 144/144 and `make test` passed 283/283 in 161.301 seconds. The pass changed no live request inventory, created no paid authorization, made no provider call, and produced no empirical result. Secondary live integration remains outstanding and needs its own reviewed release; the refreshed main-only proposal does not cover its requests.
 
-Credential-free `python -m collusion_recovery.gate1_calibration inspect` first failed closed with `Gate 1 proposal differs from the complete deterministic current contract`, confirming the stale binding. After regeneration it reports `ready_awaiting_external_human_authorization` with zero credential access, network calls, or paid calls. The earlier failure remains useful control evidence; only the refreshed hashes above describe current readiness.
+Credential-free `python -m collusion_recovery.gate1_calibration inspect` first failed closed with `Gate 1 proposal differs from the complete deterministic current contract`, confirming the stale binding. After regeneration its pre-dispatch state reported `ready_awaiting_external_human_authorization` with zero credential access, network calls, or paid calls. The earlier failure remains useful control evidence; the later empirical Gate 1 capability decision recorded above is the current terminal state.
