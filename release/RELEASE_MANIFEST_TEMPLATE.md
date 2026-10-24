@@ -6,7 +6,19 @@ The main report path does not merge the selected [formation-peer-v1 secondary st
 
 Record secondary reporting status independently: **[NOT RUN / OFFLINE ONLY / EXPLORATORY PILOT ONLY / SECONDARY CONFIRMATION]**. A main-confirmation report may include a distinctly labeled exploratory secondary section using verified FP-P rows; those results never support main confirmation, C10, or a cross-study compound claim. FP-C rows require a separate prospective confirmation freeze and empirical run. A completed secondary pilot is not relabeled NOT RUN merely because secondary confirmation was not conducted.
 
-Readiness must be recorded at the exact release state. The October 24, 2026 `0ddc34c` checkpoint documented 283/283 passing tests and the pre-amendment Gate 1 proposal/hash snapshot. The main-only Gate 1 proposal/schema were later regenerated against the amended protocol and current pricing; at that pre-dispatch checkpoint, credential-free inspection reported `ready_awaiting_external_human_authorization`. Preserve that snapshot as provenance. The exact one-use authorization was subsequently consumed by a passed capability release that hard-stopped before smoke. Any Gate 2 release still requires a new manifest, exact proposal/schema, independent review, and separate authorization.
+Readiness must be recorded at the exact release state. The October 24, 2026 `0ddc34c` checkpoint documented 283/283 passing tests and the pre-amendment Gate 1 proposal/hash snapshot. The main-only Gate 1 proposal/schema were later regenerated against the amended protocol and current pricing; at that pre-dispatch checkpoint, credential-free inspection reported `ready_awaiting_external_human_authorization`. Preserve that snapshot as provenance. The exact one-use authorization was subsequently consumed by a passed capability release that hard-stopped before smoke. The exact Gate 2 proposal/schema have now been generated, credential-free inspected, and independently audited, and the focused Gate 2 suite passed 21/21 tests; the full suite was not rerun at this artifact-generation checkpoint. A separate authorization remains pending.
+
+Current Gate 2 preparation checkpoint, which grants no dispatch authority:
+
+| Field | Recorded value |
+| --- | --- |
+| Run ID | `6abffb64-f71b-4868-89cb-28b0aff0c7e3` |
+| Proposal hash | `371e6e01b216bb62c1f2a7e77d40e85317585fcc44ff425534b8a14e1a9e3a27` |
+| Scope | 152 logical block-0 smoke requests; 532 maximum attempts |
+| Aggregate ceilings | 70,316,277 input tokens; 933,888 output/reasoning tokens; `$331.805585` |
+| Per-request / concurrency ceilings | 582,556 input tokens; 4,096 output tokens; one request in flight |
+| Inspection state | Zero credential access, network calls, and paid calls; `experiment_started: false` |
+| Remaining boundary | Unique Gate 2 authorization required |
 
 ## 1. Release identity
 

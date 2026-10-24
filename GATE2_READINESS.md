@@ -1,8 +1,8 @@
 # Gate 1 to Gate 2 readiness boundary
 
-> **Current boundary after the methodology amendment:** fresh main-only Gate 1 completed its 20-request capability calibration, passed the frozen threshold, and hard-stopped before smoke. The dedicated Gate 2 controller is implemented, but its proposal, authorization schema, and authorization remain absent. Neither main release includes the separate formation-peer-v1 secondary study.
+> **Current boundary after the methodology amendment:** fresh main-only Gate 1 completed its 20-request capability calibration, passed the frozen threshold, and hard-stopped before smoke. The dedicated Gate 2 proposal and authorization schema are now generated, pass credential-free inspection, and match an independent deterministic rebuild and lineage audit. No Gate 2 authorization or run exists. Neither main release includes the separate formation-peer-v1 secondary study.
 
-Status: **Gate 1 capability passed; Gate 2 preparation is now eligible but still no-dispatch; experiment not started**.
+Status: **Gate 1 capability passed; Gate 2 proposal/schema generated and independently audited; still no-dispatch and experiment not started**.
 
 The October 24 methodology pass first demonstrated the intended fail-closed behavior when the prior proposal no longer matched the amended protocol. The subsequent release pass reverified pricing, regenerated the proposal/schema, and passed credential-free inspection. After exact external authorization, the bounded release completed with terminal status `completed_gate1_passed_hard_stop`: 20/20 responses were schema-valid and audited, with 10/10 clean approvals and 9/10 faulty rejections. It used 20 attempts, 45,123 input tokens, 2,512 output/reasoning tokens, and `$0.1378975`. The report records zero preflight, smoke, or later-stage dispatches, `experiment_started: false`, and no authorization of a next stage.
 
@@ -216,15 +216,32 @@ the exact 152-result mechanical assessment, binds the Gate 1 lineage, smoke
 report, and journal tail, and records one immutable smoke-integrity decision.
 That decision authorizes no provider call by itself.
 
-There is deliberately no checked `configs/gate2_smoke_proposal.json` or Gate 2
-authorization schema yet. Gate 1 has now passed, so both may be generated only
-from the durable fresh-calibration decision rather than a hypothetical result.
-They must then be independently reviewed and receive a
-different unique, non-reusable external human authorization with exact
-billable-attempt, input-token, output/reasoning-token, dollar, concurrency, and
-context ceilings. The historical v1.0 numbers above do not become v1.1
-authorization merely because the logical-request and maximum-attempt counts
-are also 152 and 532.
+The checked `configs/gate2_smoke_proposal.json` and
+`release/GATE2_HUMAN_AUTHORIZATION_SCHEMA.json` are now generated from the
+durable fresh-calibration decision. Credential-free inspection returns
+`ready_awaiting_external_human_authorization` with zero credential access,
+network calls, or paid calls and `experiment_started: false`.
+
+| Item | Current v1.1 value |
+| --- | ---: |
+| Proposal hash | `371e6e01b216bb62c1f2a7e77d40e85317585fcc44ff425534b8a14e1a9e3a27` |
+| Successor run ID | `6abffb64-f71b-4868-89cb-28b0aff0c7e3` |
+| Logical requests | 152 |
+| Message / verdict identities | 76 / 76 |
+| Potentially billable content shapes | 228 |
+| Maximum dispatch attempts | 532 |
+| Maximum total input tokens | 70,316,277 |
+| Maximum total output/reasoning tokens | 933,888 |
+| Per-request input/output limits | 582,556 / 4,096 |
+| Maximum cost / concurrency | `$331.805585` / 1 |
+
+The cost is the strict maximal-shape reservation ceiling, not expected spend.
+An independent audit confirmed that both artifacts canonically match a fresh
+offline rebuild, their Stage 2 and Gate 1 lineage, exact caps, schema constants,
+and no-dispatch boundary. They still require a different unique, non-reusable
+external human authorization before dispatch. The historical v1.0
+numbers do not become v1.1 authorization merely because the logical-request and
+maximum-attempt counts are also 152 and 532.
 
 The legacy `python -m collusion_recovery gate2-readiness` command remains
 retired and always fails closed. The ignored `gate2_readiness.json` remains
@@ -232,15 +249,14 @@ historical evidence only; do not overwrite, delete, or reuse it.
 
 ## Remaining gates
 
-The current correct state is a passed fresh Gate 1 capability decision, no
-Gate 2 proposal or authorization, and `experiment_started: false`. The
-main-only sequence is now:
+The current correct state is a passed fresh Gate 1 capability decision, an
+independently audited Gate 2 proposal/schema, no Gate 2 authorization or run,
+and `experiment_started: false`. The main-only sequence is now:
 
-1. generate and independently review the source-bound Gate 2 proposal/schema;
-2. obtain its separate external human authorization;
-3. run only the block-0 smoke and hard-stop;
-4. record the external evidence-bound smoke-integrity decision; and
-5. only then consider a separately authorized later-pilot release.
+1. obtain a separate external human authorization for the exact reviewed caps;
+2. run only the block-0 smoke and hard-stop;
+3. record the external evidence-bound smoke-integrity decision; and
+4. only then consider a separately authorized later-pilot release.
 
 A successful smoke still does not unlock confirmation. The five-block pilot
 must complete, and `pilot_freeze_assessment` must first be hardened to

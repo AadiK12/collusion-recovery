@@ -6,6 +6,8 @@ Prior validated checkpoint (October 24, 2026, commit `0ddc34c`): 283/283 tests p
 
 The formation-peer amendment changed the bound scientific protocol. The main-only Gate 1 proposal/schema were subsequently regenerated against the finalized amended protocol and current official pricing. Proposal `bac585908d48427d9048f4cc5677b42e5c1892f4065fb123ed8388e4a1bd9ed4` then received its exact one-use authorization and completed the bounded fresh v1.1 calibration. The terminal status is `completed_gate1_passed_hard_stop`: 10/10 clean approvals, 9/10 faulty rejections, and 20/20 schema-valid and audited responses. The run used 20 attempts, 45,123 input tokens, 2,512 output/reasoning tokens, and `$0.1378975`, with zero preflight, smoke, or later-stage dispatches and `experiment_started: false`. Its authorization is consumed and grants no Gate 2 authority.
 
+The source-bound Gate 2 proposal and exact authorization schema have now been generated for run ID `6abffb64-f71b-4868-89cb-28b0aff0c7e3`. Credential-free inspection returned `ready_awaiting_external_human_authorization` with zero credential access, network calls, or paid calls and `experiment_started: false`. Proposal `371e6e01b216bb62c1f2a7e77d40e85317585fcc44ff425534b8a14e1a9e3a27` binds 152 logical requests, 532 dispatch attempts, 70,316,277 input tokens, 933,888 output/reasoning tokens, `$331.805585`, per-request ceilings of 582,556 input and 4,096 output tokens, and concurrency one. The focused Gate 2 suite passed 21/21 tests; the full suite was not rerun for this artifact-generation checkpoint. An independent deterministic rebuild and lineage/schema/no-dispatch audit passed. The unique external Gate 2 authorization remains pending, so no smoke dispatch is authorized.
+
 The selected [formation-peer-v1 secondary study](../docs/FORMATION_PEER_CONTROLS.md) is a separate mock-only implementation; empirical inclusion remains conditional on live integration, prospective allocation, and release review. Main A–F, primary B−A, six evaluation-time peer cells, and main Gate 1/Gate 2 scope remain unchanged and exclude its requests.
 
 ## Completed Gate 1 record
@@ -18,7 +20,20 @@ The selected [formation-peer-v1 secondary study](../docs/FORMATION_PEER_CONTROLS
 | Embedded report hash | `6a5ca98d79b27be5ff71aa59d157cbd9cc236218098171d52f2d0511099321d8` |
 | Decision | Passed capability threshold; hard stop before smoke |
 | Scientific boundary | Capability only; no formation, recovery, peer-influence, or collusion evidence |
-| Next-stage authority | None; Gate 2 requires a new proposal, review, and authorization |
+| Next-stage authority | None; Gate 2 proposal/schema independently audited, but authorization remains pending |
+
+## Current Gate 2 preparation record — no dispatch authority
+
+| Field | Recorded value |
+| --- | --- |
+| Run ID | `6abffb64-f71b-4868-89cb-28b0aff0c7e3` |
+| Proposal hash | `371e6e01b216bb62c1f2a7e77d40e85317585fcc44ff425534b8a14e1a9e3a27` |
+| Scope | 152 logical block-0 smoke requests; 532 maximum dispatch attempts |
+| Aggregate ceilings | 70,316,277 input tokens; 933,888 output/reasoning tokens; `$331.805585` |
+| Per-request / concurrency ceilings | 582,556 input tokens; 4,096 output tokens; one in flight |
+| Inspection | `ready_awaiting_external_human_authorization`; zero credentials/network/paid calls; `experiment_started: false` |
+| Focused validation | 21/21 Gate 2 tests passed; full suite not rerun at this checkpoint |
+| Remaining boundary | Unique external authorization required before smoke |
 
 ## Run identity
 
