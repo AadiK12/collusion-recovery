@@ -1,0 +1,85 @@
+\documentclass[10pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=0.78in]{geometry}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,tabularx,array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{hyperref}
+\usepackage[nameinlink,noabbrev]{cleveref}
+\usepackage{fancyhdr}
+
+\definecolor{linkblue}{HTML}{245A8D}
+\definecolor{noticeblue}{HTML}{EAF2F8}
+\definecolor{noticeborder}{HTML}{4B77A4}
+\definecolor{placeholderred}{HTML}{A33A2B}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=linkblue,
+  citecolor=linkblue,
+  urlcolor=linkblue,
+  pdftitle={Restoring Independent Verification After Constrained Agent Interaction}
+}
+\urlstyle{same}
+
+\setlist{nosep,leftmargin=*}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt plus 1pt minus 1pt}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.12}
+\newcommand{\far}{\ensuremath{\mathrm{FAR}}}
+\newcommand{\cpa}{\ensuremath{\mathrm{CPA}}}
+\newcommand{\resultplaceholder}[1]{\textcolor{placeholderred}{\textbf{RESULT REQUIRED:} #1}}
+\newcommand{\decisionplaceholder}[1]{\textcolor{placeholderred}{\textbf{DECISION REQUIRED:} #1}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Pre-results manuscript foundation}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\title{\textbf{Restoring Independent Verification After\\Constrained Agent Interaction}}
+\author{
+  Aadi Khanna\\[-1pt]
+  \small Affiliation to confirm
+  \and
+  Coauthor name to confirm\\[-1pt]
+  \small Affiliation to confirm
+}
+\date{AI Collusion Research Sprint --- October 2026\\
+\small Pre-results methods draft; main protocol v1.1}
+
+\begin{document}
+\maketitle
+
+\noindent\fcolorbox{noticeborder}{noticeblue}{%
+  \parbox{0.965\linewidth}{\small
+  \textbf{Pre-experiment manuscript.} No hypothesis-bearing main-study or
+  formation-peer result has been inserted. Mock outputs and historical capability
+  calibration are engineering evidence only. Red placeholders must be resolved
+  from the claim--evidence ledger after a report split is locked; they must never
+  be filled from mock, pilot-to-confirmation pooling, or expectation.}}
+
+\begin{abstract}
+\input{sections/00_abstract}
+\end{abstract}
+
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_methods}
+\input{sections/04_results_template}
+\input{sections/05_discussion}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+\input{sections/appendix}
+
+\end{document}

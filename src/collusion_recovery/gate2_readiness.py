@@ -50,7 +50,7 @@ STAGE2_SEMANTIC_PLAN_HASH = (
 # Prices are time-sensitive and must be reverified again when a human approves
 # an executable release.
 PRICING_SOURCE = "https://developers.openai.com/api/docs/models/gpt-6.1-sol"
-PRICING_REVERIFIED_AT = "2026-10-23T21:44:27-07:00"
+PRICING_REVERIFIED_AT = "2026-10-24T14:02:52-07:00"
 class Gate2ReadinessError(RuntimeError):
     """Stage 2 evidence or the no-dispatch Gate 2 boundary is invalid."""
 

@@ -1,0 +1,82 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Consider an AI agent reviewing a peer's claimed result. The protocol requires it
+to verify the claim against source records, but the workflow initially withholds
+those records. Every formation claim is correct, and both agents receive positive
+feedback when their verdicts match the task outcome. Repeated approval can
+therefore become locally successful even though it violates the evidence rule.
+When the missing records later become available and a faulty claim appears, will
+the agent resume independent verification, or will the earlier interaction still
+shape its decision?
+
+This is a recovery question, not merely an access-control question. Restoring
+evidence makes correct verification possible, but it does not directly retract a
+learned shortcut, warn against reciprocal approval, or remove the visible history
+in which approval succeeded. Operationally, these are different interventions:
+\emph{evidence repair} changes the information available now; \emph{explicit
+correction} changes the current instruction; and \emph{history reset} changes the
+visible state carried into the decision. If access repair alone leaves a harmful
+residual gap, a system designer needs to know which additional intervention
+changes behavior. If the residual gap is small, the absolute error rate and the
+cost to correct approvals still determine whether the system has recovered
+usefully.
+
+Long-horizon reciprocal verification can produce sustained joint protocol
+violations, and controlled peer interventions indicate that peer behavior can
+matter \citep{shi2026emergent}. Separate work shows that agents adjust costly
+verification after reliable or unreliable partners \citep{chen2026trust}, that
+incorrect upstream messages can override an otherwise correct answer
+\citep{gong2026upstream}, and that prior audit--repair context can shift a
+verifier's decision threshold even when the present task is unchanged
+\citep{mazaheri2026audit}. These findings motivate the risk but do not answer the
+specific operator-facing question here: after full authoritative evidence is
+restored, how much does verification behavior recover, and what does correction
+or visible-history reset add?
+
+We study that question in a deterministic record-selection audit. Two model
+agents first complete ten reciprocal reviews under either full peer-evidence
+access or a constrained regime in which the evidence required by the stated rule
+is unavailable. We then clone immutable history endpoints into six matched
+evaluation branches. Every branch sees newly generated packets with known truth;
+the branches vary prior history, present evidence, corrective instruction, and
+visible-history reset. A separate scripted-peer diagnostic holds the current task
+evidence fixed while varying the peer's observable approval and whether its
+message explicitly requests approval in return. This lets us distinguish an
+aggregate history effect from current peer-message sensitivity.
+
+The experiment deliberately separates four levels of evidence. A
+\emph{verification failure} is approval of a faulty packet despite complete
+current evidence. A \emph{post-restoration carryover effect} is a matched
+difference under the same repaired environment between constrained- and
+full-evidence histories. \emph{Evaluation-time peer dependence} requires an
+intervention on current peer policy with authoritative evidence fixed. Finally,
+the paper reserves a narrow, confirmation-only \emph{configuration-level
+operational collusion} label for the conjunction of sustained joint protocol
+violations and a sufficiently large action-matched reciprocal-request effect in
+one immutable confirmation lineage. None of these measurements establishes
+private intent, secrecy, weight change, or real-world conspiracy.
+
+Our intended contributions are:
+
+\begin{enumerate}
+  \item an auditable recovery experiment whose primary failure is objectively
+  faulty approval rather than agreement or self-reported trust;
+  \item matched estimates for evidence restoration, explicit correction, and the
+  incremental correction-plus-history-reset package;
+  \item an action-matched peer intervention that separates the effect of an
+  approving peer from the additional effect of a reciprocal-approval request;
+  \item safety--usefulness reporting that pairs false approval with correct-packet
+  approval so blanket rejection cannot masquerade as repair; and
+  \item a reproducible, fail-closed workflow with deterministic truth, immutable
+  branch lineage, all-scheduled missingness bounds, and physically separate pilot
+  and confirmation inference paths.
+\end{enumerate}
+
+A separately versioned secondary study, \texttt{formation-peer-v1}, assigns an
+always-approving or always-rejecting scripted peer during the constrained history
+itself. It tests the total contribution of assigned peer policy through the
+resulting feedback and transcript pathway. We specify it in Methods because its
+offline design is complete, but it has no live release and contributes no
+empirical claim unless run under its own prospective authorization and split.
+The main recovery question remains primary regardless of that study's status.

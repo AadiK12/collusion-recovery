@@ -72,11 +72,11 @@ def no_network():
     return stack
 
 
-TEST_NOW = datetime.fromisoformat("2026-10-23T22:05:00-07:00")
+TEST_NOW = datetime.fromisoformat("2026-10-24T14:20:00-07:00")
 
 
 def authorization(proposal, authorization_uuid=None, *,
-                  confirmed_at="2026-10-23T22:00:00-07:00"):
+                  confirmed_at="2026-10-24T14:15:00-07:00"):
     authorization_uuid = authorization_uuid or str(uuid.uuid4())
     run_id = proposal["successor_protocol"]["run_id"]
     value = {
@@ -511,7 +511,7 @@ class Gate2SuccessorTests(unittest.TestCase):
         values["authorization"] = {
             "kind": "paid",
             "authorization_id": "namespace-validation-test",
-            "approved_at": "2026-10-23T22:00:00-07:00",
+            "approved_at": "2026-10-24T14:15:00-07:00",
             "approved_budget_usd": self.proposal["exact_caps"]["max_cost_usd"],
             "allow_paid_calls": True,
         }
@@ -701,7 +701,7 @@ class Gate2SuccessorTests(unittest.TestCase):
                     proposal,
                     auth,
                     receipt_dir=receipts,
-                    now=datetime.fromisoformat("2026-10-23T22:16:00-07:00"),
+                    now=datetime.fromisoformat("2026-10-24T14:31:00-07:00"),
                 )
             with self.assertRaisesRegex(Gate2SuccessorError, "future"):
                 self._claim(
@@ -709,7 +709,7 @@ class Gate2SuccessorTests(unittest.TestCase):
                     proposal,
                     auth,
                     receipt_dir=receipts,
-                    now=datetime.fromisoformat("2026-10-23T21:58:00-07:00"),
+                    now=datetime.fromisoformat("2026-10-24T14:13:00-07:00"),
                 )
 
         with tempfile.TemporaryDirectory() as directory:
@@ -718,7 +718,7 @@ class Gate2SuccessorTests(unittest.TestCase):
             with self.assertRaisesRegex(Gate2SuccessorError, "pricing is stale"):
                 inspect_gate2_successor(
                     proposal_path,
-                    now=datetime.fromisoformat("2026-10-24T22:00:00-07:00"),
+                    now=datetime.fromisoformat("2026-10-25T14:04:00-07:00"),
                 )
 
     def test_live_path_claims_before_credential_or_client_access(self):
@@ -768,7 +768,7 @@ class Gate2SuccessorTests(unittest.TestCase):
     def test_first_use_validity_is_checked_before_run_preparation(self):
         proposal = self.proposal
         auth = authorization(proposal)
-        expired_now = datetime.fromisoformat("2026-10-23T22:16:00-07:00")
+        expired_now = datetime.fromisoformat("2026-10-24T14:31:00-07:00")
         with tempfile.TemporaryDirectory() as directory:
             authorization_path = Path(directory) / "authorization.json"
             authorization_path.write_text("{}\n", encoding="utf-8")
@@ -888,7 +888,7 @@ class Gate2SuccessorTests(unittest.TestCase):
     def test_expired_prepared_unclaimed_run_requires_new_versioned_release(self):
         proposal = self.proposal
         auth = authorization(proposal)
-        expired_now = datetime.fromisoformat("2026-10-23T22:16:00-07:00")
+        expired_now = datetime.fromisoformat("2026-10-24T14:31:00-07:00")
         with tempfile.TemporaryDirectory() as directory, no_network():
             root = Path(directory)
             run_path = root / auth["successor_run_directory"]
@@ -1147,7 +1147,7 @@ class Gate2SuccessorTests(unittest.TestCase):
                 ],
                 "run_instance_event_hash": binding["event_hash"],
                 "run_instance_hash": digest(binding["run_instance_nonce"]),
-                "claimed_at": "2026-10-23T22:05:00-07:00",
+                "claimed_at": "2026-10-24T14:20:00-07:00",
             }
             receipt = {**body, "receipt_hash": digest(body)}
             run.set_status(

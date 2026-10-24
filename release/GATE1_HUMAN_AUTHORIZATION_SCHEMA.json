@@ -34,10 +34,10 @@
       "type": "string"
     },
     "approved_pricing_contract_hash": {
-      "const": "486ad76d5825e4f6115d254126c07ed08c0ff75b4d742ce13016656ff9b37d55"
+      "const": "13975d13621c9e0636e89234b11658212fb368abd17a23170619d24e288b98bc"
     },
     "approved_protocol_bridge_hash": {
-      "const": "af9cb4ddb3e81d9141733d12e74d912ba5ba046a3916664690e37aa7dc25ace2"
+      "const": "c7b573e46c655e3761bf83b5c3d4d596868a2c450ebc07a123d4c0a8655326c9"
     },
     "approved_provider_identity": {
       "const": {
@@ -104,7 +104,7 @@
       "const": "I authorize exactly the Gate 1 v1.1 capability-calibration scope and exact ceilings bound by this proposal. I understand that this release hard-stops before smoke and does not authorize the experiment."
     },
     "proposal_hash": {
-      "const": "a9a8e9a4b548afc8bd35de928498a4c6a60d7ed01e93be287bfe2cfed9fed3d7"
+      "const": "bac585908d48427d9048f4cc5677b42e5c1892f4065fb123ed8388e4a1bd9ed4"
     }
   },
   "required": [

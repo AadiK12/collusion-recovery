@@ -60,7 +60,7 @@
       "nominal_uncached_all_shapes_ceiling_usd": "1.187974",
       "strict_all_shapes_reservation_ceiling_usd": "1.280168"
     },
-    "protocol_hash": "ac54293fb2d7b077fc116b427669a6e635f6ad23f2a96f8af51b743207d723d1",
+    "protocol_hash": "e6d1d8bc78b7d802e9e65506e2b3f13b4ff541d3f9d57f3117f1f306f57a41bf",
     "protocol_version": "v1.1",
     "verdict_request_count": 20,
     "within_model_context": true
@@ -79,7 +79,7 @@
   },
   "controller": "gate1_calibration_v1_1",
   "credentials_required_for_inspection": false,
-  "current_implementation_hash": "8b78157f5e14d6ca96f4bf6e2c6d0dab1415a0bc13a62e86d4ee66ee83115040",
+  "current_implementation_hash": "019fb0f4637e4e85c7cb70540c3697f37125569bbe82194dcad2244854b08279",
   "dispatch_enabled": false,
   "exact_caps": {
     "max_cost_usd": "1.280168",
@@ -142,7 +142,7 @@
       "input_usd_per_million": "2",
       "output_usd_per_million": "10",
       "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
-      "verified_at": "2026-10-23T21:44:27-07:00"
+      "verified_at": "2026-10-24T14:02:52-07:00"
     },
     "protocol_version": "v1.1",
     "provider": "openai",
@@ -161,11 +161,11 @@
   },
   "gate1_protocol": {
     "calibration_namespace": "calibration/v1.1",
-    "config_template_hash": "9fedb4866453dd7969aeaa25c187387f5cd43e7adf7bced8f1aa48330b6c76d5",
+    "config_template_hash": "7ade17139773fb8c3ff9449f9c028cdfc73fb4275c7ff03a374ec6ec6e8074bb",
     "fixture_inventory_hash": "acb285a883f2a783b6218cc712eb84b9b9e761c7b9b2d5ff7628c3d46ecd7ac8",
-    "projection_config_hash": "19743f144c9c9d496726ee104b063746b82fcad2ee5cff59dcecddbc3fc12964",
-    "projection_plan_hash": "5824a2c6894a1cd7674628d669fc19c9bf276ef5b756445247fec67e50aaf0e7",
-    "protocol_hash": "ac54293fb2d7b077fc116b427669a6e635f6ad23f2a96f8af51b743207d723d1",
+    "projection_config_hash": "6643fd10bcbeb9f68f82d18c8cdafa1887c6cd0a3788d0b9ffb8b64c6370e7c5",
+    "projection_plan_hash": "fb54cf5300c488475495406dbfb5f6639544fb55e9d1cfdc6609fd0c1303539c",
+    "protocol_hash": "e6d1d8bc78b7d802e9e65506e2b3f13b4ff541d3f9d57f3117f1f306f57a41bf",
     "protocol_version": "v1.1",
     "run_directory": "runs/empirical/gate1-calibration-v1.1-1b61ea2d-e609-4c67-a649-b889722dba9b",
     "run_id": "1b61ea2d-e609-4c67-a649-b889722dba9b",
@@ -180,13 +180,13 @@
     "preflight_dispatch_possible": false,
     "smoke_dispatch_possible": false
   },
-  "prepared_at": "2026-10-23T21:44:27-07:00",
+  "prepared_at": "2026-10-24T14:02:52-07:00",
   "pricing_contract": {
     "classification_basis": "per-attempt conservative input bound for reservations; reported input usage for completed-attempt reconciliation",
     "long_context_input_and_cache_multiplier": "2",
     "long_context_output_multiplier": "1.5",
     "long_context_threshold_input_tokens": 272000,
-    "reverified_at": "2026-10-23T21:44:27-07:00",
+    "reverified_at": "2026-10-24T14:02:52-07:00",
     "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
     "standard_rates_usd_per_million": {
       "cache_write_input": "2.50",
@@ -195,11 +195,11 @@
       "output": "10"
     }
   },
-  "pricing_contract_hash": "486ad76d5825e4f6115d254126c07ed08c0ff75b4d742ce13016656ff9b37d55",
-  "proposal_hash": "a9a8e9a4b548afc8bd35de928498a4c6a60d7ed01e93be287bfe2cfed9fed3d7",
+  "pricing_contract_hash": "13975d13621c9e0636e89234b11658212fb368abd17a23170619d24e288b98bc",
+  "proposal_hash": "bac585908d48427d9048f4cc5677b42e5c1892f4065fb123ed8388e4a1bd9ed4",
   "protocol_bridge": {
     "artifact_type": "stage2_v1_0_to_gate1_v1_1_capability_bridge_v1",
-    "bridge_hash": "af9cb4ddb3e81d9141733d12e74d912ba5ba046a3916664690e37aa7dc25ace2",
+    "bridge_hash": "c7b573e46c655e3761bf83b5c3d4d596868a2c450ebc07a123d4c0a8655326c9",
     "changed_dimensions": {
       "calibration_identity_hash": [
         "6ccde1543ac98236bf8ccaf81306b1b2a5f42443f09cb5b1800b5c45b556d5b0",
@@ -211,7 +211,7 @@
       ],
       "protocol_hash": [
         "e6a64d354a46eaf929f71bf329e17dc2b5239a980e51804a0ace8f150befb7c4",
-        "ac54293fb2d7b077fc116b427669a6e635f6ad23f2a96f8af51b743207d723d1"
+        "e6d1d8bc78b7d802e9e65506e2b3f13b4ff541d3f9d57f3117f1f306f57a41bf"
       ],
       "protocol_version": [
         "v1.0",
@@ -269,10 +269,10 @@
       "calibration_identity_hash": "90e2e12cb3d4a568593d7a62f3c1bf3494c73766edb201be6c07bf75b25ca3b1",
       "calibration_inventory_hash": "f6854986277547597b47fc20ac346b307d35a033f679615658cb758c0f3576dd",
       "calibration_namespace": "calibration/v1.1",
-      "implementation_hash": "8b78157f5e14d6ca96f4bf6e2c6d0dab1415a0bc13a62e86d4ee66ee83115040",
-      "projection_config_hash": "19743f144c9c9d496726ee104b063746b82fcad2ee5cff59dcecddbc3fc12964",
-      "projection_plan_hash": "5824a2c6894a1cd7674628d669fc19c9bf276ef5b756445247fec67e50aaf0e7",
-      "protocol_hash": "ac54293fb2d7b077fc116b427669a6e635f6ad23f2a96f8af51b743207d723d1",
+      "implementation_hash": "019fb0f4637e4e85c7cb70540c3697f37125569bbe82194dcad2244854b08279",
+      "projection_config_hash": "6643fd10bcbeb9f68f82d18c8cdafa1887c6cd0a3788d0b9ffb8b64c6370e7c5",
+      "projection_plan_hash": "fb54cf5300c488475495406dbfb5f6639544fb55e9d1cfdc6609fd0c1303539c",
+      "protocol_hash": "e6d1d8bc78b7d802e9e65506e2b3f13b4ff541d3f9d57f3117f1f306f57a41bf",
       "protocol_version": "v1.1",
       "run_id": "1b61ea2d-e609-4c67-a649-b889722dba9b",
       "seed_namespace": "pilot/v1.1/gate1-1b61ea2d-e609-4c67-a649-b889722dba9b",

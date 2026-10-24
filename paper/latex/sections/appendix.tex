@@ -1,0 +1,63 @@
+\section{Limitations and Dual-Use / Ethical Considerations}
+\label{app:ethics}
+
+\paragraph{Intended benefit.}
+The work is intended to help operators distinguish an access repair from actual
+recovery of independent checking, and to compare bounded countermeasures before
+agents receive real approval authority.
+
+\paragraph{Dual-use risk.}
+The same knowledge could help an adversary design interaction histories or peer
+messages that encourage unsupported approval. We therefore publish a constrained
+synthetic audit environment rather than a real operational target, disclose exact
+measurement and defense logic, and avoid optimization recipes for evasion. No
+model receives access to personal data, production credentials, financial
+systems, or real approval actions.
+
+\paragraph{Experimental safeguards.}
+All records are synthetic. Model output is treated as untrusted text and is never
+executed as code. Provider calls are stateless at the application layer and run at
+concurrency one within stage-specific request, retry, token, context, and dollar
+ceilings. Every paid boundary uses a separately reviewed single-use authorization
+and hard-stops before the next stage. Raw artifacts exclude secrets and private
+reasoning traces.
+
+\paragraph{Interpretation risk.}
+Calling ordinary error, base-rate learning, or message compliance ``collusion''
+would overstate the evidence. The paper therefore reports deterministic behavior
+first, reserves causal language for matched interventions, and uses a narrow
+confirmation-only configuration-level label. Null, mixed, or successful-repair
+findings remain reportable.
+
+\section{Preexisting Work Disclosure}
+
+Before the sprint began, the project had a research plan, deterministic synthetic
+fixture/oracle code, evidence boundaries, history checkpointing and branching,
+the six recovery arms, scripted controls, replay/rescoring, and mock-only local
+runs. During the sprint, the team added provider and release controls, bounded
+capability calibration, the finalized v1.1 methodology, analysis and annotation
+pipelines, the paper/claim ledger, and the offline formation-peer workflow. The
+final report will bind these statements to the repository's dated
+\texttt{PREEXISTING\_WORK.md} and clean commit.
+
+\section{LLM Usage Statement}
+
+OpenAI Codex assisted with planning, implementation, tests, source discovery, and
+drafting. Human authors remain responsible for the protocol, code, statistical
+analysis, citation accuracy, interpretation, and final submission. No generated
+claim or reference is treated as independent validation; empirical statements
+must resolve to the raw-artifact claim ledger.
+
+\section{Protocol and Artifact Inventory}
+
+The authoritative protocol is \texttt{SPRINT\_PROJECT\_PLAN.md}; the detailed
+secondary contract is \texttt{docs/FORMATION\_PEER\_CONTROLS.md}; annotation is
+specified in \texttt{analysis/annotation\_guide.md}; and permitted result language
+is controlled by \texttt{paper/CLAIM\_EVIDENCE\_LEDGER.md}. The final appendix
+will include exact prompt hashes, model and provider metadata, split namespaces,
+confirmation-size decision, release-manifest hash, and links to generated tables
+and figures.
+
+\decisionplaceholder{Confirm author names and affiliations; lock the main report
+path; verify every bibliography entry against its primary source; and replace all
+result placeholders only after the corresponding ledger rows are VERIFIED.}

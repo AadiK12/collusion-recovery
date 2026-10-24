@@ -1,14 +1,22 @@
 # Gate 1 to Gate 2 readiness boundary
 
-> **Current boundary:** the checked fresh v1.1 Gate 1 proposal is ready for external human authorization; it has not executed. The dedicated Gate 2 controller is implemented, but no Gate 2 proposal or authorization schema may be generated until empirical Gate 1 passes. The historical v1.0 projection below remains audit evidence only and cannot authorize either release.
+> **Current boundary after the methodology amendment:** the main-only Gate 1 proposal and authorization schema have been regenerated against the finalized amended protocol and current official pricing. Credential-free inspection reports `ready_awaiting_external_human_authorization`. Fresh v1.1 Gate 1 has not executed. The dedicated Gate 2 controller is implemented, but no Gate 2 proposal or authorization schema may be generated until empirical Gate 1 passes. Neither main release includes the separate formation-peer-v1 secondary study.
 
-Status: **Gate 1 `ready_awaiting_external_human_authorization`; Gate 2 blocked pending an empirical passed Gate 1 decision; experiment not started**.
+Status: **post-amendment Gate 1 proposal ready for independent review and exact external authorization; Gate 2 blocked pending an empirical passed fresh Gate 1 decision; experiment not started**.
+
+The October 24 methodology pass first demonstrated the intended fail-closed behavior when the prior proposal no longer matched the amended protocol. The subsequent release pass reverified pricing, regenerated the proposal/schema, and reran credential-free `python -m collusion_recovery.gate1_calibration inspect`. It reports readiness with zero credential access, network calls, or paid calls. The proposal still needs independent review and a separately created one-use human authorization.
 
 The first hypothesis-bearing request is the block-0 smoke stage. Nothing in
 this preparation pass sent one. The repository retains the retired v1.0
 readiness projection, now implements a fresh calibration-only Gate 1 release,
 and implements a separate v1.1 smoke-only Gate 2 controller. Each live release
 requires its own external one-use authorization.
+
+The selected [formation-peer-v1 secondary study](docs/FORMATION_PEER_CONTROLS.md), whose empirical inclusion remains conditional on a separate reviewed release,
+has an isolated scripted implementation and mock validation only. It is not a
+live controller, a new main A–F arm, or an extension of Gate 1/Gate 2 scope.
+Main A–F, primary B−A, and the six evaluation-time peer cells remain unchanged.
+The main-only release pass refreshes the Gate 1 proposal/schema but creates no authorization or live call.
 
 ## What was verified
 
@@ -104,23 +112,26 @@ The separate human artifact expected at
 `runs/empirical/stage2-2026-10-23/gate2_human_authorization.json` is absent by
 design. The readiness tool refuses to accept or act on a file at that path.
 
-## Current Gate 1 release boundary
+## Prior checked v1.1 Gate 1 snapshot — October 24, 2026
 
 The dedicated `src/collusion_recovery/gate1_calibration.py` controller and
-checked `configs/gate1_calibration_proposal.json` now implement the fresh
+checked `configs/gate1_calibration_proposal.json` implemented the fresh
 predecessor release. They schedule exactly 20 isolated `calibration/v1.1`
 reviews, bind the sealed historical Stage 2 provenance, prevent reuse of
 historical `calibration/v1` identities, consume a one-use authorization,
 persist the calibration decision, and hard-stop before smoke.
 
-Credential-free inspection returns
-`ready_awaiting_external_human_authorization` with `experiment_started: false`:
+At commit `0ddc34c`, `make test` passed 283/283 tests and credential-free
+inspection returned `ready_awaiting_external_human_authorization` with
+`experiment_started: false`. The inspection command was:
 
 ```bash
 PYTHONPATH=src uv run --frozen python -m collusion_recovery.gate1_calibration inspect
 ```
 
-The checked proposal binds:
+That checked proposal bound the following exact prior state. Preserve these
+values as dated evidence, not as a claim that the amended protocol has already
+passed inspection:
 
 | Item | Value |
 | --- | --- |
@@ -139,14 +150,51 @@ owner-supplied authorization record. It is not itself authorization. No human
 authorization has been created, claimed, or consumed, so Gate 1 has not made a
 provider call.
 
+## Current post-amendment v1.1 Gate 1 proposal — October 24, 2026
+
+The proposal and authorization schema were regenerated after the canonical
+protocol reached its final amended bytes. Pricing was reverified at
+`2026-10-24T14:02:52-07:00` against the official
+[GPT-6.1 Sol model page](https://developers.openai.com/api/docs/models/gpt-6.1-sol),
+whose Standard rates remain $2/M ordinary input, $0.10/M cached input,
+$2.50/M cache writes, and $10/M output. Credential-free inspection returns
+`ready_awaiting_external_human_authorization`, `experiment_started: false`,
+and zero credential, network, and paid-call access.
+
+| Item | Value |
+| --- | --- |
+| Proposal hash | `bac585908d48427d9048f4cc5677b42e5c1892f4065fb123ed8388e4a1bd9ed4` |
+| Implementation hash | `019fb0f4637e4e85c7cb70540c3697f37125569bbe82194dcad2244854b08279` |
+| Protocol hash | `e6d1d8bc78b7d802e9e65506e2b3f13b4ff541d3f9d57f3117f1f306f57a41bf` |
+| Pricing contract hash | `13975d13621c9e0636e89234b11658212fb368abd17a23170619d24e288b98bc` |
+| Protocol bridge hash | `c7b573e46c655e3761bf83b5c3d4d596868a2c450ebc07a123d4c0a8655326c9` |
+| Logical requests | 20 |
+| Maximum dispatch attempts | 60 |
+| Maximum total input tokens | 184,387 |
+| Maximum total output/reasoning tokens | 81,920 |
+| Per-request input/output limits | 9,331 / 4,096 |
+| Maximum cost / concurrency | `$1.280168` / 1 |
+
+Retain the prior snapshot as provenance. Any later edit to the bound protocol
+or implementation must again fail closed and require fresh proposal/schema
+generation and review. The current schema is not an authorization, and no
+authorization has been created, claimed, or consumed.
+
 ## Dedicated Gate 2 controller
 
-`src/collusion_recovery/gate2_successor.py` is reconciled to the current v1.1
-design. It is restricted to exactly 152 block-0 smoke requests and at most 532
-dispatch attempts, binds the empirical passed Gate 1 decision plus historical
+At the prior checked checkpoint, `src/collusion_recovery/gate2_successor.py`
+was reconciled to the main v1.1 design. Its main-only scope is exactly 152
+block-0 smoke requests and at most 532 dispatch attempts. The controller binds
+the empirical passed Gate 1 decision plus historical
 Stage 2 provenance, rejects calibration/preflight replay, writes an immutable
 smoke report, and hard-stops before any later formation, arm, probe, or
 confirmation request.
+
+The controller's reviewed scope excludes every formation-peer-v1 request.
+Adding the secondary methodology to documentation does not add requests to
+this inventory or grant permission to dispatch them. Any eventual main smoke
+proposal must bind the actual amended protocol after the fresh Gate 1 pass;
+the prior controller validation is not a replacement for that inspection.
 
 The smoke report does not unlock later work. A separate no-dispatch
 `record-smoke-decision` step requires a fresh external owner review, recomputes
@@ -170,9 +218,12 @@ historical evidence only; do not overwrite, delete, or reuse it.
 
 ## Remaining gates
 
-The current correct state is Gate 1 authorization-ready, Gate 2 blocked pending
-a passed fresh Gate 1 decision, and `experiment_started: false`. After an empirical
-Gate 1 pass, the sequence is:
+The current correct state is amended-protocol reinspection required, Gate 2
+blocked pending a passed fresh Gate 1 decision, and `experiment_started: false`.
+First inspect the final source/document state, refresh and independently review
+Gate 1 proposal bindings as required, and obtain the separate external human
+authorization for that exact release. After an empirical Gate 1 pass, the
+main-only sequence is:
 
 1. generate and independently review the source-bound Gate 2 proposal/schema;
 2. obtain its separate external human authorization;
@@ -189,3 +240,61 @@ to prepare a fresh confirmation release.
 If the sole v1.2 fallback is activated later, it requires fresh v1.2-capable
 Gate 1 and Gate 2 implementation review, proposals, decisions, caps, and
 separate authorizations. No v1.1 decision or proposal carries forward.
+
+## Separate formation-peer-v1 readiness boundary
+
+The current command is a no-network scripted rehearsal with `source: mock`,
+separate plan/source hashes, and artifacts that the main analyzer rejects. It
+has no live-provider entry point or resume path. Successful mock validation
+does not establish empirical readiness or authorize spending.
+
+Each secondary block assigns the same focal role to two matched constrained
+ten-episode histories: a scripted always-ACCEPT peer versus an always-REJECT
+peer, both emitting the same neutral message. The current peer verdict is
+revealed only after the focal verdict; the original shared score and individual
+correctness feedback remain truthful. From each immutable history endpoint,
+eight independent full-evidence single-verdict diagnostics use the same
+neutral current message and no current peer verdict or correction. Each
+diagnostic restarts its checkpoint, with the four own/peer truth combinations
+represented twice. These are immediate diagnostics, not a sequential
+eight-episode persistence test.
+
+| Secondary scope | Per block | Five blocks |
+| --- | ---: | ---: |
+| Nominal logical requests | **56** | **280** |
+| Scored focal reviews | **36** | **180** |
+| Maximum scripted attempts with one optional overlength retry per message | **76** | **380** |
+
+The 76-attempt number is a **scripted-only ceiling**, not a live dispatch or
+transport-retry budget. A prospective live implementation must derive its own
+full request/attempt, token/context, dollar, and retry envelope. The combined
+main v1.1 five-block pilot plus five secondary blocks is **1,660 logical
+requests**, including the main 20 calibration reviews and excluding the two
+transport-preflight calls, retries, and separate release overhead. This is
+planning arithmetic, not an executable combined release or authorization.
+
+Before any live secondary request, a separate review must bind its run IDs,
+config, protocol/version, exact plan, prompt/source/analysis hashes, every
+assigned block seed, counterbalanced focal roles, seeded condition order,
+split labels, prospective N/stopping rules, and its own unique authorization.
+Earlier calibration may be relevant only if the model/settings/task are
+unchanged and the prerequisite evidence and lineage are explicitly reviewed;
+neither applicability nor reuse of an authorization is assumed. Consumed
+Stage 2 authority and main-only Gate 1/Gate 2 authority cannot cover this study.
+
+Every assigned secondary block is reported, including no-violation and
+invalid/missing histories. A favorable secondary effect is not required for
+main-study advancement. Secondary pilot and confirmation are separate, the
+paired block is the independent unit, and samples are not enlarged until an
+effect becomes favorable. Report formation episodes 2–10, the episode-1
+pre-feedback negative control, and recovery FAR/CPA/balanced accuracy with
+their own uncertainty and all-scheduled bounds.
+
+The estimand is the total assigned peer-policy effect, including its truthful
+reward/feedback pathway and subsequent transcript changes. It does not isolate
+a pure peer-action effect, private intent, spontaneous negotiation, or
+mediation of main B−A. Independent recovery diagnostics do not support late
+persistence claims. The one-round secondary design is not automatically
+compatible with the main v1.2 fallback: preserve its artifacts and make an
+explicit prospective compatibility/version decision before further secondary
+dispatch if that fallback activates.

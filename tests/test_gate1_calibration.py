@@ -68,7 +68,7 @@ from collusion_recovery.stage2_lineage_snapshot import (
 )
 
 
-TEST_NOW = datetime.fromisoformat("2026-10-23T22:05:00-07:00")
+TEST_NOW = datetime.fromisoformat("2026-10-24T14:20:00-07:00")
 
 
 def no_network():
@@ -88,7 +88,7 @@ def no_network():
 
 def authorization(
         proposal, authorization_uuid=None, *,
-        confirmed_at="2026-10-23T22:00:00-07:00"):
+        confirmed_at="2026-10-24T14:15:00-07:00"):
     authorization_uuid = authorization_uuid or str(uuid.uuid4())
     external = {
         "artifact_type": "gate_1_calibration_human_authorization_v1_1",
@@ -388,7 +388,7 @@ class Gate1CalibrationTests(unittest.TestCase):
         values["authorization"] = {
             "kind": "paid",
             "authorization_id": "external-test",
-            "approved_at": "2026-10-23T22:00:00-07:00",
+            "approved_at": "2026-10-24T14:15:00-07:00",
             "approved_budget_usd": self.proposal["exact_caps"]["max_cost_usd"],
             "allow_paid_calls": True,
         }
@@ -413,12 +413,12 @@ class Gate1CalibrationTests(unittest.TestCase):
             )
         from collusion_recovery.gate1_calibration import _validate_first_claim_window
         expired = authorization(
-            self.proposal, confirmed_at="2026-10-23T21:45:00-07:00"
+            self.proposal, confirmed_at="2026-10-24T14:03:00-07:00"
         )
         with self.assertRaisesRegex(Gate1CalibrationError, "expired"):
             _validate_first_claim_window(expired, self.proposal, now=TEST_NOW)
         future = authorization(
-            self.proposal, confirmed_at="2026-10-23T22:07:00-07:00"
+            self.proposal, confirmed_at="2026-10-24T14:22:00-07:00"
         )
         with self.assertRaisesRegex(Gate1CalibrationError, "future"):
             _validate_first_claim_window(future, self.proposal, now=TEST_NOW)
@@ -978,11 +978,11 @@ class Gate1CalibrationTests(unittest.TestCase):
             for label, auth in (
                 ("stale", authorization(
                     self.proposal,
-                    confirmed_at="2026-10-23T21:45:00-07:00",
+                    confirmed_at="2026-10-24T14:03:00-07:00",
                 )),
                 ("future", authorization(
                     self.proposal,
-                    confirmed_at="2026-10-23T22:07:00-07:00",
+                    confirmed_at="2026-10-24T14:22:00-07:00",
                 )),
             ):
                 with self.subTest(label=label):
@@ -1100,8 +1100,8 @@ class Gate1CalibrationTests(unittest.TestCase):
                 }),
                 usage=None,
                 timing=ProviderTiming(
-                    "2026-10-23T22:00:00-07:00",
-                    "2026-10-23T22:00:01-07:00",
+                    "2026-10-24T14:15:00-07:00",
+                    "2026-10-24T14:15:01-07:00",
                     1.0,
                 ),
             )
@@ -1253,7 +1253,7 @@ class Gate1CalibrationTests(unittest.TestCase):
                 ],
                 "run_instance_event_hash": binding["event_hash"],
                 "run_instance_hash": digest(binding["run_instance_nonce"]),
-                "claimed_at": "2026-10-23T22:05:00-07:00",
+                "claimed_at": "2026-10-24T14:20:00-07:00",
             }
             receipt = {
                 **receipt_body,
@@ -1474,7 +1474,7 @@ class Gate1CalibrationTests(unittest.TestCase):
             self.assertFalse(registry.exists())
 
     def test_expired_prepared_unclaimed_run_requires_new_versioned_release(self):
-        expired_now = datetime.fromisoformat("2026-10-23T22:16:00-07:00")
+        expired_now = datetime.fromisoformat("2026-10-24T14:31:00-07:00")
         with tempfile.TemporaryDirectory() as td, no_network():
             root = Path(td)
             workspace = root / "repo"

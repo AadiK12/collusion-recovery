@@ -124,7 +124,7 @@ The first hypothesis-bearing request remained unmade. At this historical checkpo
 
 ## October 24 protocol v1.1 pre-experiment validation status
 
-The validation records above remain historical v1.0 checkpoints. The current source implements the final v1.1 schedule, prompts, estimators, figures, finalized `annotation-v1.1` workflow, fresh Gate 1 controller, and dedicated Gate 2 smoke controller. Scientific, controller, lineage, raw-response, analysis, and integrated tests are green, with no known v1.1 scientific or code blocker. On October 24, `make test` passed 283/283 tests in 1,037.995 seconds on the stable source state. No provider call occurred during this reconciliation and no hypothesis-bearing request has been sent.
+The validation records above remain historical v1.0 checkpoints. At this recorded pre-amendment checkpoint, the source implemented the final v1.1 schedule, prompts, estimators, figures, `annotation-v1.1` workflow, fresh Gate 1 controller, and dedicated Gate 2 smoke controller. On October 24, `make test` passed 283/283 tests in 1,037.995 seconds on that stable source state. No provider call occurred during that reconciliation and no hypothesis-bearing request had been sent. The later documentation amendment below preserves this result as a dated observation rather than a new test run or authorization of amended protocol hashes.
 
 Focused validation now covers:
 
@@ -138,13 +138,14 @@ Focused validation now covers:
 
 ### Checked Gate 1 release boundary
 
-Credential-free inspection of `configs/gate1_calibration_proposal.json` returns `ready_awaiting_external_human_authorization` with `experiment_started: false`. The checked proposal binds:
+After the formation-peer methodology reconciliation, the main-only Gate 1 proposal and authorization schema were regenerated against the finalized amended protocol and pricing reverified on October 24, 2026. Credential-free inspection of `configs/gate1_calibration_proposal.json` returns `ready_awaiting_external_human_authorization` with `experiment_started: false`, `credentials_accessed: false`, `network_calls: 0`, and `paid_calls: 0`. The current checked values are:
 
 | Field | Value |
 | --- | --- |
-| Proposal hash | `a9a8e9a4b548afc8bd35de928498a4c6a60d7ed01e93be287bfe2cfed9fed3d7` |
-| Implementation hash | `8b78157f5e14d6ca96f4bf6e2c6d0dab1415a0bc13a62e86d4ee66ee83115040` |
-| Protocol hash | `ac54293fb2d7b077fc116b427669a6e635f6ad23f2a96f8af51b743207d723d1` |
+| Proposal hash | `bac585908d48427d9048f4cc5677b42e5c1892f4065fb123ed8388e4a1bd9ed4` |
+| Implementation hash | `019fb0f4637e4e85c7cb70540c3697f37125569bbe82194dcad2244854b08279` |
+| Protocol hash | `e6d1d8bc78b7d802e9e65506e2b3f13b4ff541d3f9d57f3117f1f306f57a41bf` |
+| Pricing contract hash | `13975d13621c9e0636e89234b11658212fb368abd17a23170619d24e288b98bc` |
 | Scope | 20 fresh `calibration/v1.1` logical requests; 10 clean and 10 faulty |
 | Maximum dispatch attempts | 60 |
 | Maximum total input tokens | 184,387 |
@@ -159,3 +160,15 @@ Credential-free inspection of `configs/gate1_calibration_proposal.json` returns 
 The dedicated v1.1 Gate 2 controller accepts only the 152 logical block-0 smoke requests and at most 532 dispatch attempts, requires the empirical passed Gate 1 lineage, writes an immutable smoke report, and hard-stops. A separate no-dispatch external review must recompute and bind the smoke-integrity decision; that decision authorizes no later calls. The Gate 2 proposal and authorization schema are intentionally absent until fresh Gate 1 passes, so Gate 2 remains fail-closed.
 
 A successful smoke decision would still not make confirmation ready. Before Gate 4 or any confirmation release, `pilot_freeze_assessment` requires additional raw-audit hardening so the freeze independently reconstructs and verifies authoritative pilot requests and responses instead of relying on derived artifacts. Empirical result placeholders in the paper and claim ledger remain empty.
+
+## October 24 formation-control methodology reconciliation
+
+The planned [formation-peer-v1 secondary study](docs/FORMATION_PEER_CONTROLS.md) is now reflected throughout the methodology, execution, paper, claim, annotation, disclosure, and release documents. Main v1.1 A–F, primary B−A, the six evaluation-time peer cells, and the sole main v1.2 fallback remain unchanged. The secondary addition has two matched constrained histories with identical neutral messages and different scripted approval policies, truthful delayed verdict/reward feedback, and eight independent full-evidence diagnostics from each endpoint.
+
+Existing offline evidence for this study is **21 passing focused tests** and a five-block mock run with **280 scripted requests, 180 focal reviews, and zero paid calls**. The frozen primary substudy estimand is the two-sided episodes-2–10 `peer_accept − peer_reject` focal unsupported-approval difference, with no favored sign; the immediate diagnostic reports FAR, CPA, and balanced accuracy. This evidence validates implementation only, not peer influence or recovery in a model.
+
+At its own checkpoint, the methodology reconciliation changed Markdown context files only. Its validation was cross-document consistency, relative-link resolution, request arithmetic, scope/provenance checks, and `git diff --check`; it did not itself repeat the integrated suite. The main-only pilot count remains 1,380; the combined five-block planning count is 1,660, excluding preflight, retries, and separate release overhead. The secondary offline ceiling of 76 scripted attempts per block is not a live transport retry budget.
+
+Changes to `SPRINT_PROJECT_PLAN.md` and associated frozen methodology material invalidated the earlier proposal's protocol binding as intended. A subsequent explicit release pass refreshed the pricing timestamp, regenerated the main-only Gate 1 proposal/schema against the final amended bytes, and updated frozen validation clocks for that timestamp. The focused release subset passed 144/144 and `make test` passed 283/283 in 161.301 seconds. The pass changed no live request inventory, created no paid authorization, made no provider call, and produced no empirical result. Secondary live integration remains outstanding and needs its own reviewed release; the refreshed main-only proposal does not cover its requests.
+
+Credential-free `python -m collusion_recovery.gate1_calibration inspect` first failed closed with `Gate 1 proposal differs from the complete deterministic current contract`, confirming the stale binding. After regeneration it reports `ready_awaiting_external_human_authorization` with zero credential access, network calls, or paid calls. The earlier failure remains useful control evidence; only the refreshed hashes above describe current readiness.

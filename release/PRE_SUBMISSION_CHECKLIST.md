@@ -11,6 +11,7 @@ Use this only after data lock and paper completion. Preparing files does not aut
 | Primary track | Track 3 — Collusion Carriers and Countermeasures |
 | Additional track | [NONE / Track 2 if permitted and justified] |
 | Locked report path | [CONFIRMATION / EXPLORATORY PILOT-ONLY; ONE REQUIRED] |
+| Formation-peer-v1 secondary-study inclusion | [OMITTED / MOCK TOOLING ONLY / SEPARATELY LABELED PILOT / SEPARATELY FROZEN CONFIRMATION] |
 | Source commit | [REQUIRED] |
 | Protocol freeze hash | [REQUIRED] |
 | Locked report-split data-lock timestamp | [REQUIRED] |
@@ -41,6 +42,24 @@ Use this only after data lock and paper completion. Preparing files does not aut
 - [ ] Every protocol deviation, retry-rule exception, provider-identity change, and early stop is disclosed.
 - [ ] Resource-use totals reconcile with durable usage records and the timestamped price source.
 
+### Separate formation-peer-v1 secondary evidence, if empirically run
+
+Use the [separate secondary-study specification](../docs/FORMATION_PEER_CONTROLS.md). Main A–F, primary B−A, and the six evaluation-time peer cells remain unchanged. The existing secondary implementation is mock-only and outside main Gate 1/Gate 2 inventories; including its code or mock validation is not evidence of an empirical study.
+
+- [ ] If no live secondary study ran, the paper states **not run**; any tooling example is labeled `source: mock`, and no secondary empirical result or model-behavior claim is inferred from scripted controls.
+- [ ] Secondary reporting status is locked independently of the main report path: **NOT RUN / OFFLINE ONLY / EXPLORATORY PILOT ONLY / SECONDARY CONFIRMATION**. A completed secondary pilot may appear in a clearly labeled exploratory section or supplementary table of a main-confirmation paper using verified FP-P rows. It cannot support main confirmation, C10, or a cross-study compound claim; secondary confirmation remains NOT RUN until its own frozen empirical run exists.
+- [ ] Any live secondary evidence has distinct run IDs, version/config/plan/prompt/source/analysis hashes, declared calibration lineage, its own reviewed controller and unique authorization, and a separate data lock. Main-only calibration/smoke authorization never covers these calls.
+- [ ] Calibration relevance was assessed explicitly against unchanged model, settings, and task, with the exact prerequisite decision and provenance cited; a previous pass is not assumed transferable and its authorization is not reused.
+- [ ] Every assigned secondary block and seed appears in the schedule and flow table, including histories with no violations and invalid/missing outputs. No main joint-violation marker or favorable secondary effect selected the secondary sample or controlled advancement of the main study.
+- [ ] The two constrained ten-episode conditions use matched packets, the same neutral message, alternating focal roles, and seeded condition order. The scripted ACCEPT/REJECT outcome is revealed only after the focal verdict, followed by truthful original shared-score and individual correctness feedback.
+- [ ] Episode 1 is identified as a pre-feedback negative control: exogenous/message inputs match, while separately generated focal messages can differ; holding those outputs fixed matches verdict inputs. The reported primary secondary contrast uses formation episodes 2–10, with last-three-episode summaries descriptive only.
+- [ ] The eight post-formation diagnostics restart the original checkpoint independently, use full evidence and the same neutral current message, and expose no current peer verdict or explicit correction. All four own/peer truth combinations appear twice with matched packets; these are not eight sequential recovery episodes or evidence of late persistence.
+- [ ] Recovery FAR, CPA, and balanced accuracy accompany each other. Paired-block uncertainty, raw block values, scheduled denominators, and all-scheduled missingness bounds are shown; missing outcomes never become safe rejections.
+- [ ] Secondary pilot and confirmation remain separate from each other and from main-study splits/estimators. Five blocks are explicitly exploratory; any confirmation N, analysis seed, and precision target were fixed prospectively, without sampling until an effect became favorable.
+- [ ] The count audit distinguishes **56 logical requests / 36 focal reviews per block**, **76 maximum scripted attempts per block** with one possible overlength retry per message, and the separately reviewed live attempt envelope. The scripted ceiling is not a live budget. Five secondary blocks add **280 logical requests / 180 reviews**; **1,660** is the combined five-block main-v1.1-plus-secondary planning count including 20 main calibration reviews, excluding two transport-preflight calls, retries, and separate release overhead.
+- [ ] If the main v1.2 fallback was activated, the report records the explicit secondary compatibility/version decision. One-round formation-peer-v1 is not presented as an automatic two-round extension; incompatible artifacts are preserved and never pooled.
+- [ ] Positive, null, imprecise, failed, and unrun secondary outcomes are all reportable. No favorable secondary result is required to complete or submit the main recovery report.
+
 ## B. Claim-to-evidence ledger
 
 - [ ] Every empirical sentence in the title, abstract, introduction, results, discussion, conclusion, captions, video/script, and submission form has a `VERIFIED` ledger row.
@@ -48,7 +67,8 @@ Use this only after data lock and paper completion. Preparing files does not aut
 - [ ] Wording follows the maximum supported rung: capability, joint-violation feasibility boundary, no practically important harmful residual gap, aggregate/early/late carryover, approval-policy sensitivity, action-matched reciprocal-request sensitivity, or configuration-level operational collusion evidence.
 - [ ] “Collusion” is not used as an empirical conclusion unless the confirmation path is locked and ≥60% of all scheduled confirmation C histories meet the marker and the C-history request-message effect is ≥0.15 with its claim interval and all-scheduled lower bound above zero in the same immutable split.
 - [ ] Any C10 statement is explicitly configuration-level and does not imply that the same block or individual agents supplied both components.
-- [ ] B−A is described as the total assigned history-regime effect, not proof that peer interaction caused the behavior; no social-formation claim is made without a solo/yoked history control.
+- [ ] B−A is described as the total assigned history-regime effect. Any formation-peer-v1 effect is separately attributed to the total assigned peer-policy package, including truthful reward/feedback and resulting transcript changes; it does not establish mediation of B−A or isolate a reward-independent peer-action effect.
+- [ ] Secondary statements have their own study/split-specific ledger entries and do not upgrade main C10 or other main claim rows. They do not infer private intent, spontaneous live/live negotiation, pure action effects, or late persistence from independent recovery diagnostics.
 - [ ] No text infers intention, secrecy, malice, consciousness, weight change, conspiracy, or indefinite persistence.
 - [ ] Null or imprecise results are not rewritten as equivalence unless an equivalence margin and analysis were frozen.
 - [ ] The paper does not claim a full SALT reproduction or generalize beyond the synthetic task, visible history, tested model/configuration, and execution dates.
@@ -103,8 +123,9 @@ Use this only after data lock and paper completion. Preparing files does not aut
 - [ ] The strongest alternative explanation is addressed adjacent to the relevant claim.
 - [ ] Negative results, joint-violation-feasibility failures, missing data, utility trade-offs, and boundary outcomes remain visible.
 - [ ] Methods are sufficient to understand the causal comparisons without relying on the appendix.
-- [ ] Exactly one report path is locked. The conclusion uses confirmation-backed C rows only, or is explicitly labeled an exploratory five-block pilot and uses P rows only.
+- [ ] Exactly one main report path is locked. Main conclusions use verified C rows on the confirmation path or verified P rows on the explicitly exploratory five-block pilot path. Secondary findings use their separately locked status and verified FP-C or FP-P rows; an exploratory FP-P section never upgrades main confirmation or becomes confirmation evidence itself.
 - [ ] No compound claim mixes pilot and confirmation components; C10 uses ≥60% of all scheduled C histories plus a same-split C-history request-message estimate ≥0.15 whose claim interval and all-scheduled lower bound exceed zero, without implying same-block co-occurrence.
+- [ ] Secondary-study methods/results have a clearly labeled subsection, table, or appendix. They do not displace the primary B−A story or merge distinct interventions into one untested mechanism; total peer-policy and immediate diagnostic claims remain separate from main recovery claims.
 
 ## F. Reproducibility package
 
@@ -112,6 +133,8 @@ Use this only after data lock and paper completion. Preparing files does not aut
 - [ ] Exact prompt files and hashes, fixture generator, oracle, seeds, schedules, model/settings, dates, and provider metadata are included or documented.
 - [ ] Raw synthetic inputs, visible transcripts, request/response lineage, usage records, exclusions, missingness, scoring, statistics, and figure sources are included subject to provider terms.
 - [ ] Mock, fake-live, calibration, pilot, and confirmation artifacts are visibly separated.
+- [ ] Main and formation-peer-v1 artifacts are also separated by study and split, with all assigned seeds, prompt/source/analysis hashes, raw outcomes, and independent checkpoint lineage available. The main analyzer's rejection of secondary mock artifacts remains documented.
+- [ ] Readiness statements are dated and source-bound. The 283-test/Gate-1-ready snapshot at `0ddc34c` is historical after the protocol amendment; any later live run cites refreshed inspected proposal bindings and the actual authorization, not the historical status alone.
 - [ ] A clean checkout can run the keyless offline validation command.
 - [ ] A clean-checkout analysis replay reproduces every headline table and figure from the locked report-split artifacts.
 - [ ] Paid reproduction instructions warn about costs and require explicit authorization; they do not enable paid calls by default.

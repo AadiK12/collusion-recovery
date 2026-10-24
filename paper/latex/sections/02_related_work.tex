@@ -1,0 +1,61 @@
+\section{Related Work and Positioning}
+\label{sec:related}
+
+\paragraph{Long-horizon interaction and reciprocal verification.}
+Shi, Zhang, and Yang study repeated task completion, evidence exchange, peer
+verification, and shared feedback, reporting joint protocol violations across a
+range of model configurations and using controlled peers and history ablations to
+probe contributing factors \citep{shi2026emergent}. Their study establishes that
+history and peer behavior can matter in this class of environment. Our work is a
+smaller verification-only adaptation, not a reproduction of their benchmark. It
+changes the target from formation incidence to post-repair behavior on
+objectively faulty packets, and compares operator-available recovery actions
+under a deterministic oracle. The implementation was written independently; the
+upstream reference repository is used only as a methodological reference
+\citep{saltnlp2026repo}.
+
+\paragraph{Trust, checking, and peer influence.}
+Reduced verification can be adaptive when a partner is reliable and dangerous
+when it is not. Chen operationalizes inter-agent trust through costly checking and
+finds model-specific formation, breakage, and recovery patterns
+\citep{chen2026trust}. We therefore avoid treating reduced checking as harmful by
+definition: harm requires a faulty approval, while usefulness requires retaining
+correct approvals. Gong et al. hold a downstream task fixed while changing an
+upstream message and show that erroneous messages can displace answers supported
+by the receiver's own evidence \citep{gong2026upstream}. Their design motivates
+our current-message control. Our reciprocal-request contrast additionally holds
+the peer's visible \texttt{ACCEPT} action and message prefix fixed, but generic
+compliance with changed wording remains a live alternative explanation.
+
+\paragraph{Path dependence and recovery.}
+Prior context can shift behavior even on an unchanged present task. Mazaheri and
+Mazaheri find threshold movement after audit--repair context relative to a
+length-matched control, while cautioning that greater leniency is not necessarily
+harmful at every operating point \citep{mazaheri2026audit}. Shnaidman studies
+recovery after repeated false conversational pressure and separates
+history-preserving repairs from operations that remove pressure-bearing context
+\citep{shnaidman2026reset}. Our setting differs in using reciprocal reviewers,
+deterministic source records, and explicit faulty-versus-correct packet outcomes.
+Together, this literature rules out broad claims that context dependence, reset,
+or recovery evaluation are themselves novel.
+
+\paragraph{Workflow repair and corrective transfer.}
+EAIR frames multi-agent failures around organizational properties, explicit
+failure criteria, trace-grounded diagnosis, targeted repair, and behavioral
+retesting \citep{ma2026eair}. That system-level approach supports our insistence
+on observable contracts and utility-preserving repair. Rivera et al. instead
+install policy--monitor collusion through fine-tuning and study whether correction
+on one caught behavior transfers to held-out behaviors
+\citep{rivera2026organisms}. Their training-level intervention addresses a
+different causal object: our within-session text-history experiment cannot claim
+weight-level unlearning or corrective transfer.
+
+\paragraph{Positioning boundary.}
+The defensible contribution is the combination of a deterministic faulty-approval
+outcome, matched post-restoration branches, an action-matched direct-request
+diagnostic, and evidence-calibrated claim gates. We do not claim the first study of
+collusion, context effects, reset, correction, trust, or workflow repair. A main
+history contrast does not establish peer causation; a scripted-peer effect does
+not establish spontaneous agreement; and their conjunction does not reveal an
+agent's private motive. This boundary is part of the design rather than a
+post-hoc limitation.

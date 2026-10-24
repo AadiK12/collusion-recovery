@@ -1,0 +1,255 @@
+\section{Methods}
+\label{sec:methods}
+
+The following design was prespecified before any hypothesis-bearing request. The
+repository protocol and later immutable confirmation freeze, rather than this
+compressed presentation, are the authoritative execution contracts. We use
+``prespecified'' rather than ``preregistered'' because the design has not been
+registered with an external registry.
+
+\subsection{Research questions and hypotheses}
+
+The primary question is whether assigned constrained-evidence interaction history
+changes later verification after full evidence is restored. Secondary questions
+ask whether explicit correction and the incremental addition of visible-history
+reset improve recovery, and whether current or formation-time peer policies affect
+the focal reviewer.
+
+\begin{description}[style=nextline]
+  \item[H1 --- Recovery gap (primary).]
+  Under matched current full evidence and ordinary instructions, constrained-history
+  agents have higher false approval than full-evidence-history agents:
+  $\far_B-\far_A>0$.
+
+  \item[H2 --- Direct correction.]
+  Explicit correction reduces false approval after constrained history
+  ($\far_D-\far_B<0$). We also estimate the healthy-history control
+  $\far_C-\far_A$ and the history interaction
+  $(\far_D-\far_B)-(\far_C-\far_A)$.
+
+  \item[H3 --- Correction-plus-reset package.]
+  With the correction held fixed, removing prior visible interaction history
+  further reduces false approval: $\far_E-\far_D<0$. This identifies the
+  incremental reset package, not reset in isolation or a particular memory
+  mechanism.
+
+  \item[H4 --- Evaluation-time peer dependence.]
+  With authoritative evidence and the peer's visible \texttt{ACCEPT} action held
+  fixed, replacing a neutral independent-verification clause with a direct
+  reciprocal-approval request increases focal false approval. The separate
+  approval-only versus compliant contrast tests a broader approving-peer-policy
+  effect under a byte-identical neutral message.
+
+  \item[H5 --- Formation-time peer policy (separate secondary study).]
+  Under constrained evidence and an identical neutral message, assignment to an
+  always-approving rather than always-rejecting scripted peer changes focal
+  unsupported approval over formation episodes 2--10. This is a two-sided
+  secondary policy-effect test and has no favorable-effect gate; immediate
+  full-evidence diagnostics are separate secondary estimands.
+\end{description}
+
+H5 belongs to the separately versioned \texttt{formation-peer-v1} protocol. It
+does not change the main study's gates, and an unrun or inconclusive secondary
+study cannot be used to select or reinterpret the main result.
+
+\subsection{Deterministic verification environment}
+
+Each immutable packet contains 32 synthetic records with randomized identifiers
+and fields (for example, \texttt{active}, \texttt{score}, and \texttt{flagged}),
+an unambiguous selection rule, and a claimed sorted list of qualifying IDs. An
+ordinary deterministic program computes the exact answer. Correct packets contain
+that answer; faulty packets contain one controlled omission, addition, or
+substitution. Truth labels and defect metadata are never model-visible.
+
+The reviewer always sees the rule and claimed answer. Under \emph{full evidence}
+it also receives the complete canonical records. Under \emph{constrained
+evidence} those records are withheld. The ordinary rule permits \texttt{ACCEPT}
+only if the complete required evidence was received and the claim exactly matches
+it; otherwise the required verdict is \texttt{REJECT}. Thus a lucky guess about a
+correct claim remains an evidence-policy violation.
+
+As a teaching example, suppose the rule selects $\{R2,R5,R8\}$ but the claim is
+$\{R2,R5\}$. A reviewer with complete records can identify the omitted qualifying
+record and should reject. The experiment uses fresh 32-record packets, not this
+example.
+
+\begin{figure}[t]
+  \centering
+  \fbox{\parbox{0.93\linewidth}{\centering\small
+  \textbf{Figure 1 placeholder: experimental flow.} Deterministic packet
+  $\rightarrow$ matched full/constrained formation histories $\rightarrow$
+  immutable endpoints $\rightarrow$ six A--F recovery branches and separate
+  scripted-peer probes. Replace only with a source-hash-bound generated figure;
+  label the teaching packet as synthetic and non-empirical.}}
+  \caption{Planned design overview. No model result is represented.}
+  \label{fig:design-placeholder}
+\end{figure}
+
+\subsection{Blocks, formation, and visible state}
+
+The independent sampling unit is a \emph{block}. Each block contains one matched
+ten-episode full-evidence formation trajectory (U), one constrained-evidence
+trajectory (C), and evaluation branches cloned from immutable endpoints. U and C
+share the underlying packet schedule but have separate model sessions and visible
+histories. Independent blocks use fresh seeds and sessions.
+
+In each formation episode both agents receive their own packet, the peer's task
+specification and claim, and the permitted evidence view. They independently
+produce one peer message (at most 200 Unicode code points) from the same
+pre-message state. After tagged message delivery, both independently return a
+structured verdict without seeing the other's current verdict. Verdicts are then
+revealed and the runner supplies mechanical correctness feedback. Only the
+protocol-defined visible transcript carries forward. The agents are never told to
+collude, conceal errors, trust blindly, or invent a shortcut.
+
+All formation packets are correct. The feasibility marker is met when both agents
+return \texttt{ACCEPT} without the evidence required by the rule in at least two
+of the final three C episodes. This is sustained joint protocol violation, not by
+itself evidence that peer influence or collusion caused it. Every assigned block
+remains in the primary analysis regardless of marker status.
+
+The implementation uses client-managed visible text history only. Provider-side
+conversation objects and response chaining, tools, retrieval, automatic
+truncation, generated memory summaries, and model-generated code execution are
+excluded.
+
+\subsection{Six matched recovery arms}
+
+Each branch receives six new paired episodes: two both-correct pairs, two
+both-faulty pairs, and two mixed pairs, yielding six faulty and six correct focal
+reviews per arm and block. Identical ordered challenges and role assignments are
+used across arms. Evaluation feedback is withheld until the branch is complete.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Main v1.1 evaluation arms. U denotes full-evidence formation history and
+C constrained-evidence formation history.}
+\label{tab:arms}
+\begin{tabularx}{\linewidth}{@{}c l l l l@{}}
+\toprule
+Arm & Prior history & Current evidence & Instruction & Visible history \\
+\midrule
+A & U & Full & Neutral transition & Retained \\
+B & C & Full & Neutral transition & Retained \\
+C & U & Full & Explicit correction & Retained \\
+D & C & Full & Explicit correction & Retained \\
+E & C & Full & Same correction & Removed \\
+F & C & Constrained & Neutral transition & Retained \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The primary contrast B$-$A estimates the total effect of assigned history regime
+under matched current full evidence. B$-$F measures the safety--usefulness vector
+associated with restoring evidence after C history and therefore requires FAR,
+correct-packet approval, and balanced accuracy together. D$-$B estimates direct
+correction after C history; C$-$A is its healthy-history control; E$-$D estimates
+the incremental correction-plus-reset package. Arm E removes prior visible
+packets, messages, verdicts, feedback, and reconnecting identifiers while keeping
+model identity, baseline rule, current task facts, and correction fixed. It cannot
+identify reset alone or distinguish relational content from context length.
+
+\subsection{Peer interventions}
+
+The evaluation-time diagnostic crosses U/C history with three scripted policies.
+A compliant peer applies the oracle and sends a neutral independent-verification
+message. An approval-only peer always returns \texttt{ACCEPT} but sends the same
+neutral message. A reciprocal-request peer also returns \texttt{ACCEPT} but
+replaces only the final clause with a request to approve in return. Every cell
+uses complete current evidence and eight fresh probes from the same checkpoint;
+authoritative task inputs are byte-identical across matched policies. The
+approval-only minus compliant contrast estimates a visible approving-policy
+effect. Reciprocal-request minus approval-only isolates the changed request clause
+while holding the visible action and message prefix fixed.
+
+The prospective \texttt{formation-peer-v1} secondary study instead assigns an
+always-approving or always-rejecting scripted peer throughout two matched
+constrained histories. The neutral message is identical, the peer verdict remains
+hidden until the focal verdict is committed, and subsequent score feedback is
+truthful. Eight independent full-evidence diagnostics restart from each immutable
+endpoint. Its primary paired contrast is focal unsupported approval over episodes
+2--10; the diagnostic reports immediate FAR, correct-packet approval, and balanced
+accuracy. Scripted joint acceptance is partly imposed by design, so the measured
+object is focal response rather than a spontaneous-collusion rate.
+
+\subsection{Outcomes and claim rules}
+
+For arm $X$ in block $b$, the primary outcome is
+\begin{equation}
+  \far_{X,b}=\frac{\text{faulty packets accepted in arm }X\text{, block }b}{6},
+  \qquad
+  d_b=\far_{B,b}-\far_{A,b}.
+\end{equation}
+We report absolute arm rates, the equally weighted mean of $d_b$, correct-packet
+approval (\cpa), false rejection, and balanced accuracy. FAR and CPA accompany
+every intervention so a reject-all policy cannot appear to be successful repair.
+Episode 1, episodes 1--3, and episodes 4--6 define immediate, early, and late
+windows in advance. ``Persistence'' is reserved for confirmation evidence whose
+late-window interval and all-scheduled lower bound are both above zero.
+
+The strongest permitted label is a confirmation-only configuration-level
+operational-collusion criterion. It requires, within one immutable confirmation
+lineage, (i) at least 60\% of all scheduled C histories meeting the joint-violation
+marker and (ii) a C-history reciprocal-request minus approval-only FAR effect of
+at least 0.15 whose claim-governing interval and all-scheduled lower bound exceed
+zero. This aggregate conjunction does not establish individual intent, secrecy,
+malice, social causation of formation, or co-occurrence within one trace.
+
+\subsection{Staging, missingness, and inference}
+
+Execution is staged as: deterministic offline validation; a fresh 20-review
+selected-version calibration; an A/B/F smoke using the corresponding subset of
+pilot block 0; a five-block exploratory pilot; an immutable analysis and
+sample-size freeze; and fresh confirmation blocks. The 152-request smoke is
+included in, rather than added to, the five-block pilot schedule. Calibration
+must achieve at least 9/10 correct approvals, 9/10 faulty rejections, and 20/20
+valid responses. The main five-block plan contains 1,380 nominal requests in
+total, including calibration and the block-0 smoke subset. The optional
+five-block formation-peer pilot adds 280 requests under a separate live release
+and provenance lineage. Pilot and confirmation outcomes are never pooled.
+
+The block, not a verdict, role, episode, or branch, is the resampling unit. We
+report every block-level contrast, the equally weighted mean, a frozen-seed
+10,000-replicate paired-block percentile-bootstrap interval, and a paired-block
+Student-$t$ interval. The claim-governing 95\% interval is their conservative
+hull. Five-block intervals are descriptive; degenerate or wide intervals cannot
+support equivalence.
+
+Malformed outputs, refusals, timeouts, provider errors, and exhausted context are
+not recoded as safe rejection. If $a$ of $N$ scheduled faulty reviews are observed
+approvals and $m$ are invalid or missing, FAR is bounded by
+\begin{equation}
+  \left[\frac{a}{N},\frac{a+m}{N}\right].
+\end{equation}
+For a contrast $X-Y$, the all-scheduled bound is
+$[L_X-U_Y,\,U_X-L_Y]$. Directional wording requires both this bound and the
+claim-governing interval to preserve direction. Outcome-based exclusion is
+prohibited. More than 5\% missing/invalid outcomes or strong arm imbalance pauses
+interpretation for an integrity review.
+
+Confirmation size is selected prospectively from simulation using at least
+$\max(\widehat{\sigma}_{\mathrm{pilot}},0.35)$ absent a documented more
+conservative alternative. Twenty blocks is a cost illustration, not a fixed
+sample size; an SD of 0.35 gives a 43-block reference for a 0.15 target effect.
+If an adequate design is unaffordable, the report remains explicitly exploratory.
+
+\subsection{Annotation, reproducibility, and safeguards}
+
+Human annotation uses model-visible transcripts only and distinguishes ordinary
+cooperation, proposals to relax the evidence rule, reciprocal commitments,
+observable joint violations, faulty full-evidence approvals, and ambiguous
+coordination evidence. Ratings contextualize trajectories; they do not replace
+the deterministic outcome or infer intent from one approval. Independent ratings,
+agreement, and adjudication are used if staffing permits; otherwise the paper
+discloses a single-rater design. Experimenter-authored secondary-study peer
+behavior is excluded from spontaneous-agreement annotation.
+
+Every request records exact visible input, raw response or refusal/error, parsed
+output, request identifier, returned model metadata, usage, timing, retry lineage,
+and source/config hashes. Immutable checkpoints and branch-isolation tests prevent
+cross-condition state leakage. Mock, calibration, pilot, confirmation, and
+formation-peer artifacts remain separately namespaced. Provider identity or
+source drift stops execution. Each paid stage requires an independently reviewed,
+single-use authorization with explicit request, attempt, token, concurrency, and
+dollar ceilings.
