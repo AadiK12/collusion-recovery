@@ -6,13 +6,15 @@ what correction and correction-plus-reset changed, and only then discuss peer
 diagnostics. Use the strongest wording authorized by the verified claim ledger,
 not the most dramatic interpretation compatible with a point estimate.}
 
-The only hypothesis-bearing evidence currently available is the retained block-0
-smoke. C rejected throughout, A and B had identical verdict vectors and perfect metrics after evidence
-restoration, and F rejected correct as well as faulty packets. This pattern is
-consistent with decisions tracking current evidence availability in this block.
-With one independent block and a failed formation marker, it does not establish
-recovery, equivalence, or an absent history-conditioned effect. The five-block gate
-and primary estimate remain pending.
+The available hypothesis-bearing evidence consists of the retained block-0 smoke
+and a partial formation-only Gate~3 release. Block 0 had C rejection throughout,
+identical A/B verdict vectors with perfect restored-evidence metrics, and reject-all
+F behavior. Blocks 1 and 2 also completed C with 20/20 rejections, while block 3
+C is partial and block 4 is unrun. This makes the v1.1 3/5 threshold logically
+unreachable at no more than 2/5, but it does not complete the prespecified Gate~3
+assessment. With no complete pilot or post-restoration A/B results beyond block 0,
+the evidence does not establish recovery, equivalence, or an absent
+history-conditioned effect. The primary estimate is unavailable.
 
 The practical interpretation depends on the joint safety--usefulness pattern. A
 positive post-restoration FAR gap with preserved CPA would indicate that restoring
@@ -51,6 +53,14 @@ object but does not cover hidden provider changes or every deployed memory syste
 Small block counts make uncertainty wide; the five-block pilot cannot establish a
 meaningful null. Hosted generation is stochastic, and client seeds guarantee only
 the deterministic fixture schedule, not identical model outputs.
+
+Gate~3 also ended before its planned hard stop because one provider HTTP 500 was
+ambiguous rather than known not to have completed. The unretried outcome and 92
+undispatched identities preserve the release boundary but leave the prespecified
+assessment incomplete. Choosing v1.2 at this point would therefore be an
+early-futility methodological deviation, not an automatic completed-gate
+transition, and would require fresh separately authorized calibration, smoke, and
+pilot data that are never pooled with v1.1.
 
 Finally, the confirmation-only operational-collusion label is an explicit
 behavioral convention. It is designed to demand more than parallel approval, but

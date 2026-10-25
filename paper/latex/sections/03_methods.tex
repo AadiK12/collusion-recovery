@@ -214,15 +214,23 @@ pricing source was reverified on 2026-10-24 before authorization. This calibrati
 is a task-capability check and does not enter any experimental estimand. A separate
 Gate~2 release subsequently ran only the 152-request block-0 smoke, passed its
 mechanical and external evidence-integrity review, and hard-stopped before later
-stages. The Gate~3 Phase~1 proposal and authorization schema have been generated
-for blocks 1--4 U/C formation and passed credential-free inspection as awaiting
-external authorization; inspection accessed no credential and made no network or
-paid call. The release remains unauthorized and unexecuted. Its later 888-request
-completion phase requires a separate release.
+stages. A separately authorized Gate~3 Phase~1 release then targeted only blocks
+1--4 U/C formation. It attempted 228 planned identities before an HTTP 500 on the
+block-3/C/zero-based-episode-6/Bob verdict was recorded as ambiguous. The
+controller did not retry and stopped fail-closed with 227 usable observations,
+5/8 checkpoints, and 92 identities undispatched. Conservative consumed accounting
+was 2,624,832 input tokens, 20,412 output/reasoning tokens, and \$6.7658595,
+including the ambiguous request's full reservation; no evaluation, probe,
+block-0 replay, or later-stage request ran. Its one-use authorization is consumed,
+no formal five-block assessment exists, and the later 888-request completion
+phase remains unauthorized.
 The main five-block plan contains 1,380 nominal requests in total, including
 calibration and the block-0 smoke subset. The optional
 five-block formation-peer pilot adds 280 requests under a separate live release
-and provenance lineage. Pilot and confirmation outcomes are never pooled.
+and provenance lineage. If v1.2 is chosen without a completed Gate~3 trigger
+artifact, it is disclosed as an early-futility methodological deviation; its
+fresh calibration, smoke, and pilot require separate authorizations. v1.1,
+v1.2, pilot, and confirmation outcomes are never pooled.
 
 The block, not a verdict, role, episode, or branch, is the resampling unit. We
 report every block-level contrast, the equally weighted mean, a frozen-seed

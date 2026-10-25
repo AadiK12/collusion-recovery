@@ -198,9 +198,9 @@ and balanced accuracy 0.5. This one independent block did not establish the
 intended precursor or a recovery gap. It cannot support equivalence or an absent-
 effect claim, and it must remain in the pilot without rerunning or selection.
 
-### Generated and inspected Gate 3 Phase 1 boundary
+### Gate 3 Phase 1 contract and partial execution boundary
 
-The next implementation is restricted to blocks 1–4 U/C formation. Source-only
+The Gate 3 Phase 1 implementation was restricted to blocks 1–4 U/C formation. Source-only
 commit `54da46735396a0b312b16b1f1e64decbfe1250b9` produced implementation hash
 `0f82c7a3b2de6e84827dec0ed8d2608050a50d04e33a7d7f7bf01c6d59759217`.
 Generated proposal `configs/gate3_formation_phase1_proposal.json`, hash
@@ -219,18 +219,40 @@ PYTHONPATH=src uv run --frozen python -m collusion_recovery.gate3_phase1 \
   --proposal configs/gate3_formation_phase1_proposal.json inspect
 ```
 
-It returned `ready_awaiting_external_human_authorization` with
+Before execution it returned `ready_awaiting_external_human_authorization` with
 `credentials_accessed: false`, `network_calls: 0`, `paid_calls: 0`, and
 `next_stage_authorized: false`. This validates deterministic release bindings;
-it is not authorization or empirical evidence.
+it was not itself authorization or empirical evidence. The exact one-use
+authorization was subsequently claimed and consumed by run
+`3e0d7744-45d7-4db5-a36a-a46b634c0b98`.
 
-No Gate 3 authorization exists and no Gate 3 call has occurred. Phase 1 must
-hard-stop before the five-block formation decision. Since block 0 is false, at
-least three of blocks 1–4 must meet the marker to reach the frozen 3/5 threshold.
-The remaining 888 main-pilot requests require a distinct Phase 2 proposal and
-authorization. Before Gate 4 or confirmation, `pilot_freeze_assessment` still
-requires raw-audit hardening so the freeze independently reconstructs and verifies
-authoritative pilot requests and responses.
+The run attempted 228 planned formation identities. Of those, 227 returned
+`ok`; the block-3/C/zero-based-episode-6/Bob verdict returned HTTP 500 and was
+recorded as `ambiguous_timeout` because completion and billing could not be
+excluded. The controller did not retry and stopped at
+`paused_ambiguous_timeout`. It persisted 227 usable observations and 5/8
+checkpoints, leaving 92/320 logical identities undispatched. Consumed accounting
+was 2,624,832 input tokens, 20,412 output/reasoning tokens, and `$6.7658595`.
+All 228 attempts belonged to the authorized U/C formation inventory; no block-0
+replay, A--F evaluation, probe, or later-stage call occurred.
+
+Blocks 1 and 2 completed U at 20/20 `ACCEPT` and C at 20/20 `REJECT`;
+block 3 U completed at 20/20 `ACCEPT`, block 3 C is partial, and block 4 is
+unrun. Gate 2's block-0 marker is verified false; the block-1 and block-2 markers
+are false in their completed trajectory artifacts but provisional without a formal
+Gate 3 assessment. Even assigning qualifying markers to both unresolved
+blocks yields at most 2/5, below the 3/5 pass rule. This is a partial-run futility
+upper bound, not a completed Gate 3 assessment, not `0/5`, and not evidence of an
+absent recovery effect or collusion.
+
+The expected successful hard stop and formal read-only five-block assessment were
+never reached. The Gate 3 authorization is consumed, and the 888 Phase 2 requests
+remain unauthorized. The durable evidence and hashes are indexed in
+`GATE3_PARTIAL_RUN_REPORT.md`. Any v1.2 path must be a prospectively recorded
+early-futility methodological decision/deviation because no completed Gate 3
+trigger artifact exists; its calibration, smoke, and pilot releases each require
+fresh review and authorization and may not pool v1.1 observations. Before Gate 4
+or confirmation, `pilot_freeze_assessment` still requires raw-audit hardening.
 
 ## October 24 formation-control methodology reconciliation
 

@@ -1,6 +1,6 @@
-# Gate 3 Phase 1 readiness
+# Gate 3 Phase 1 release boundary
 
-> **Status on October 24, 2026 Pacific time:** the Gate 3 Phase 1 proposal and authorization schema have been generated and credential-free inspection returned `ready_awaiting_external_human_authorization`. No authorization exists, no credential was accessed, and no network or paid call was made. This document records readiness; it is not authorization.
+> **Current status on October 24, 2026 Pacific time:** the previously inspected Gate 3 Phase 1 contract was authorized once and partially executed. Run `3e0d7744-45d7-4db5-a36a-a46b634c0b98` is fail-closed at `paused_ambiguous_timeout` after 228 in-scope attempts. Its authorization is consumed. The release is incomplete, no formal five-block assessment exists, and no Phase 2 authority exists. See [GATE3_PARTIAL_RUN_REPORT.md](GATE3_PARTIAL_RUN_REPORT.md).
 
 ## Bound release
 
@@ -12,11 +12,11 @@
 | Proposal hash | `1b85e13a8b10c98ad4314611de0da56624328225b54a0aa7764ac72ecabd3b5e` |
 | Authorization schema | `release/GATE3_PHASE1_HUMAN_AUTHORIZATION_SCHEMA.json` |
 | Run ID | `3e0d7744-45d7-4db5-a36a-a46b634c0b98` |
-| Run directory | `runs/empirical/gate3-formation-phase1-v1.1-3e0d7744-45d7-4db5-a36a-a46b634c0b98` |
+| Private live run directory | `runs/empirical/gate3-formation-phase1-v1.1-3e0d7744-45d7-4db5-a36a-a46b634c0b98` |
 | Scope | Blocks 1–4, U/C formation only; 320 logical requests |
 | Excluded | Block-0 replay, A–F evaluation arms, probes, formation decision, and every later stage |
 
-## Exact ceilings
+## Exact authorized ceilings
 
 | Resource | Ceiling |
 | --- | ---: |
@@ -30,29 +30,30 @@
 | Long-context content shapes | 104 |
 | Requests in flight | 1 |
 | Nominal maximal-shape cost | `$254.465624` |
-| Strict proposal cost ceiling | `$312.634350` |
+| Strict authorized cost ceiling | `$312.634350` |
 
-The fixed post-calibration v1.1 hypothesis schedule is partitioned without overlap:
+These were ceilings for the now-consumed one-use release, not expected spend and not reusable authority.
+
+## Partial execution
+
+The controller attempted 228 planned formation identities: 227 completed `ok` and one block-3/C/zero-based-episode-6 (seventh formation episode)/Bob verdict returned an HTTP 500 recorded conservatively as `ambiguous_timeout`. It persisted 227 usable observations and 5/8 checkpoints, then stopped without a retry. Ninety-two planned identities remained undispatched. Consumed accounting was 2,624,832 input tokens, 20,412 output/reasoning tokens, and `$6.7658595`. No out-of-scope call occurred.
+
+Completed block-1 and block-2 U trajectories each produced 20/20 `ACCEPT`; their C trajectories each produced 20/20 `REJECT`. Block 0 is integrity-verified false, while the block-1 and block-2 markers are false in their completed trajectory artifacts but remain provisional because no formal Gate 3 assessment exists. Even if both unresolved blocks qualified, v1.1 could reach at most `2/5`, below the frozen `3/5` threshold. This is a partial-run futility upper bound. It is not a completed assessment, not `0/5`, and not an absent-effect or collusion result.
+
+The fixed post-calibration v1.1 hypothesis schedule remains partitioned without overlap:
 
 - 152 Gate 2 block-0 requests: completed and retained.
-- 320 Gate 3 Phase 1 blocks 1–4 U/C formation requests: ready for a fresh authorization, not run.
-- 888 remaining evaluation and probe requests: not authorized and reserved for a separate Phase 2 release only if the five-block formation gate passes.
+- 320 Gate 3 Phase 1 blocks 1–4 U/C formation identities: 228 attempted, 92 undispatched; release incomplete.
+- 888 evaluation and probe requests: never authorized or dispatched.
 
-Together these partitions contain 1,360 hypothesis-bearing requests. Phase 1 must hard-stop after blocks 1–4 formation with status `completed_gate3_phase1_awaiting_formation_decision_hard_stop`; the execution release records neither the composite decision nor authority for a later stage. A separate read-only assessment may reconstruct that decision only after the hard stop. Because block 0 did not meet the marker, at least three of blocks 1–4 must qualify to reach the frozen 3/5 formation threshold.
+The expected successful hard-stop status `completed_gate3_phase1_awaiting_formation_decision_hard_stop` was never reached. No read-only five-block decision was produced.
 
-## Credential-free inspection
+## Historical credential-free inspection
 
-```bash
-PYTHONPATH=src uv run --frozen python -m collusion_recovery.gate3_phase1 \
-  --proposal configs/gate3_formation_phase1_proposal.json inspect
-```
+Before authorization, the checked contract returned `ready_awaiting_external_human_authorization` with `credentials_accessed: false`, `network_calls: 0`, `paid_calls: 0`, and `next_stage_authorized: false`. Pricing was reverified at `2026-10-24T18:31:56-07:00`. That label is historical and must not be read as the current state or as replay permission.
 
-The checked result was `ready_awaiting_external_human_authorization` with `credentials_accessed: false`, `network_calls: 0`, `paid_calls: 0`, and `next_stage_authorized: false`. Pricing was reverified at `2026-10-24T18:31:56-07:00`; the contract fails closed once that verification is more than 24 hours old. Re-run inspection against the exact final bytes before authorization; any binding drift must fail closed and requires regeneration and review.
+The schema required a fresh, external, short-lived, owner-only, single-use authorization. That authorization was subsequently claimed and consumed by this partial run. Earlier Gate 1 or Gate 2 approvals were already consumed, and the Gate 3 approval cannot be reused.
 
-## Authorization boundary
+## Current authorization boundary
 
-The schema is a contract for a fresh, external, short-lived, owner-only, single-use authorization artifact. It is not authorization itself. Once created, an authorization must be claimed within 15 minutes and cannot be more than 60 seconds future-dated. The exact human acknowledgement required by that schema is:
-
-> I authorize exactly the Gate 3 phase-1 blocks 1-4 U/C formation scope and exact ceilings bound by this proposal. I understand this release hard-stops before the formation decision and authorizes no evaluation arms, probes, or later stage.
-
-Only an authorization matching the checked schema and proposal may permit the Phase 1 execution path. Earlier Gate 1 or Gate 2 approvals are consumed and cannot be reused. Phase 1 does not authorize the later 888 requests, Gate 4, confirmation, the formation-peer secondary study, publication, or any claim of collusion or recovery.
+No current authorization permits continuation, retry, assessment completion by dispatch, Phase 2, Gate 4, confirmation, the formation-peer secondary study, publication, or any claim of collusion or recovery. The pending scientific choice is either to stop and report the v1.1 feasibility boundary or to prospectively prepare the sole allowed v1.2 fallback as an early-futility methodological decision/deviation because no completed Gate 3 trigger artifact exists. The v1.2 calibration, smoke, and pilot each require separate review and authorization. v1.1 and v1.2 observations must never be pooled.

@@ -30,6 +30,8 @@ Use this only after data lock and paper completion. Preparing files does not aut
 - [ ] No mock, fake-provider, calibration, or pilot output is presented as confirmation evidence.
 - [ ] Every assigned block in the locked report split appears in the empirical flow, including incomplete or failed blocks.
 - [ ] Scheduled, attempted, completed, invalid, missing, refused, timed-out, and ambiguous outcomes are reported by phase and cell.
+- [ ] Gate 3 Phase 1 is labeled partial and `paused_ambiguous_timeout`: 228 attempts, 227 `ok`, one ambiguous HTTP 500, 227 usable observations, 92 undispatched identities, and 5/8 checkpoints; no completed Gate 3 assessment or `0/5` claim appears.
+- [ ] The “at most 2/5” statement is labeled a partial-run futility upper bound from the verified false block-0 marker and provisional false block-1 and block-2 markers, not a completed five-block result, absent-effect claim, or collusion finding.
 - [ ] Missing/invalid verdicts were not coerced to `REJECT`; all-scheduled bounds accompany complete-case estimates.
 - [ ] The primary estimate is the frozen equally weighted mean of block-level `FAR_B−FAR_A`; signs were independently checked.
 - [ ] Independent block count, verdict denominators, bootstrap unit, replicate count, and interval interpretation are explicit.
@@ -40,6 +42,7 @@ Use this only after data lock and paper completion. Preparing files does not aut
 - [ ] Peer-policy claims state that the peer was scripted, evidence and peer actions were matched where required, and the three policies were compliant, approval-only, and reciprocal-request.
 - [ ] Reciprocity-specific language is based on reciprocal-request minus approval-only, not merely reciprocal-request minus compliant; the peer action and message prefix are matched, the neutral-versus-request clause change is disclosed, and approval-only minus compliant and the total contrast are reported separately.
 - [ ] Every protocol deviation, retry-rule exception, provider-identity change, and early stop is disclosed.
+- [ ] If v1.2 was activated, the paper identifies the early-futility methodological decision/deviation made without a completed Gate 3 trigger artifact, shows separate approvals for fresh calibration, smoke, and pilot, and demonstrates that no v1.1 observation was pooled.
 - [ ] Resource-use totals reconcile with durable usage records and the timestamped price source.
 
 ### Separate formation-peer-v1 secondary evidence, if empirically run
@@ -134,6 +137,7 @@ Use the [separate secondary-study specification](../docs/FORMATION_PEER_CONTROLS
 - [ ] Raw synthetic inputs, visible transcripts, request/response lineage, usage records, exclusions, missingness, scoring, statistics, and figure sources are included subject to provider terms.
 - [ ] Mock, fake-live, calibration, pilot, and confirmation artifacts are visibly separated.
 - [ ] Main and formation-peer-v1 artifacts are also separated by study and split, with all assigned seeds, prompt/source/analysis hashes, raw outcomes, and independent checkpoint lineage available. The main analyzer's rejection of secondary mock artifacts remains documented.
+- [ ] The Gate 3 partial-run evidence index and canonical metadata-minimal archive hash `7e49882f5f3148c1f8cde12b30ad61b8ebe14fa3556360bb6d41d29baf0a1e09` are recorded; authorization secrets and nonces are excluded.
 - [ ] Readiness statements are dated and source-bound. The 283-test/Gate-1-ready snapshot at `0ddc34c` is historical after the protocol amendment; any later live run cites refreshed inspected proposal bindings and the actual authorization, not the historical status alone.
 - [ ] A clean checkout can run the keyless offline validation command.
 - [ ] A clean-checkout analysis replay reproduces every headline table and figure from the locked report-split artifacts.
