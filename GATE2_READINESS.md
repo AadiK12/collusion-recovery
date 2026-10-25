@@ -242,11 +242,12 @@ owner review passed that integrity gate. The immutable decision has status
 - F had FAR 0/6, CPA 0/6, and balanced accuracy 0.5 because it rejected correct as
   well as faulty packets while current peer evidence remained unavailable.
 
-Thus Gate 2 passed mechanically but was scientifically negative. Block 0 did not
-establish the intended precursor and showed no A–B recovery difference. This is a
-meaningful one-block observation, not evidence that the effect is absent, an
-equivalence result, a five-block estimate, or evidence of collusion. The block must
-remain in the pilot without rerunning, tuning, or selective exclusion.
+Thus Gate 2 passed mechanically and produced a descriptive negative feasibility
+marker. Block 0 did not establish the intended precursor and showed no observed
+A–B difference in this debugging-scale smoke. This is a retained one-block
+observation, not a scientific effect result, evidence that the effect is absent,
+an equivalence result, a five-block estimate, or evidence of collusion. The block
+must remain in the pilot without rerunning, tuning, or selective exclusion.
 
 The legacy `python -m collusion_recovery gate2-readiness` command remains
 retired and always fails closed. The ignored `gate2_readiness.json` remains
@@ -301,12 +302,32 @@ The exact evidence anchors and archive pointer are recorded in
 requests remain unauthorized and undispatched. No approval permits retry or
 continuation.
 
-If the sole v1.2 fallback is chosen, it must be prospectively disclosed as an
-early-futility methodological decision/deviation because no completed Gate 3
-trigger artifact exists. Fresh v1.2 calibration, smoke, and pilot releases each
-require their own implementation review, proposal, caps, and authorization.
-No v1.1 observation, decision, proposal, or authority carries forward or may be
-pooled with v1.2.
+The sole v1.2 fallback has been selected for prospective offline preparation and
+is disclosed as an early-futility methodological decision/deviation because no
+completed Gate 3 trigger artifact exists. Fresh v1.2 calibration, smoke, Phase 1,
+and Phase 2 releases each require their own prerequisite evidence,
+implementation review, proposal, caps, and authorization. No v1.1 observation,
+decision, proposal, or authority carries forward or may be pooled with v1.2.
+
+The v1.2 change is formation-only: `baseline_v1_2.txt` supplies the two-round
+formation interface, while calibration, evaluation, and probes retain the
+original baseline. Its canonical protocol hash binds the frozen base protocol
+and addendum together. Current Gate 1 support is only an offline projection;
+there is no live controller, execution-ready proposal, authorization-issuance
+path, checked-in static proposal, or checked-in v1.2 authorization schema. Its
+inherited October 24, 2026 pricing is stale and must be freshly verified. Gate 2
+and Gate 3 Phase 1 are plan projections whose live controllers and cross-run
+prerequisite assessments are not implemented.
+
+The projected retry path applies only when received exception and response
+statuses are integers exactly equal to the same 500/502/503/504, request IDs
+match, and no output or usage is present. Its durable, fully reserved transport
+incident never enters model-visible history. Only numeric delta-seconds
+`Retry-After` or numeric `Retry-After-Ms` can extend the delay. The first
+non-ambiguous returned outcome is terminal; refusals and invalid responses stay
+missing/invalid, and no second ambiguous-5xx-owned retry is permitted. An unseen
+attempt may have completed and differed from the retry, so affected identities
+and sensitivity bounds remain required even within the release cap.
 
 ## Separate formation-peer-v1 readiness boundary
 
@@ -361,7 +382,6 @@ The estimand is the total assigned peer-policy effect, including its truthful
 reward/feedback pathway and subsequent transcript changes. It does not isolate
 a pure peer-action effect, private intent, spontaneous negotiation, or
 mediation of main B−A. Independent recovery diagnostics do not support late
-persistence claims. The one-round secondary design is not automatically
-compatible with the main v1.2 fallback: preserve its artifacts and make an
-explicit prospective compatibility/version decision before further secondary
-dispatch if that fallback activates.
+persistence claims. The prospective v1.2 compatibility decision keeps the
+one-round secondary design separate and unchanged: preserve its artifacts and do
+not dispatch, convert, or pool them under a main v1.2 release.

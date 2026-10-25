@@ -10,11 +10,13 @@ from collusion_recovery.analysis import (
     PEER_CONTRASTS,
     V1_1_PEER_CONTRASTS,
     _audit_durable_scientific_request,
+    _flatten_tables,
     _operational_collusion_summary,
     _persistence_summary,
     analyze_artifact_run,
     _score_provider_output,
     _terminal_scientific_event,
+    _transport_claim_sensitivity,
     contrast,
     export_result_tables,
     load_and_rescore,
@@ -502,6 +504,9 @@ class AnalysisPipelineTests(unittest.TestCase):
         self.assertTrue(result["cost_accounting"]["complete"])
         self.assertFalse(result["latency_seconds"]["complete"])
         self.assertEqual(result["maximum_reserved_context_tokens"], 30)
+        self.assertEqual(result["ambiguous_5xx_recovery"]["eligible_incidents"], 0)
+        self.assertFalse(
+            result["ambiguous_5xx_recovery"]["sensitivity_note_required"])
 
         missing_cost = usage_summary([
             {"identity": "one", "attempt": 0, "status": "ok",
@@ -512,6 +517,106 @@ class AnalysisPipelineTests(unittest.TestCase):
         self.assertIsNone(missing_cost["cost_usd"])
         self.assertEqual(missing_cost["cost_accounting"]["partial_sum_usd"], "0.10")
         self.assertFalse(missing_cost["cost_accounting"]["complete"])
+
+        recovery_usage = usage_summary([
+            {"identity": "one", "attempt": 0, "status": "ambiguous_timeout",
+             "phase": "formation", "cell": "C", "action": "message",
+             "block": 2, "episode": 4, "role": "alice", "message_round": 1,
+             "claim_sensitivity_review_ids": [self.rows[0]["review_id"]],
+             "transport_retry_eligible": True, "transport_recovered": False},
+            {"identity": "one", "attempt": 1, "status": "ok",
+             "phase": "formation", "cell": "C", "action": "message",
+             "block": 2, "episode": 4, "role": "alice", "message_round": 1,
+             "transport_retry_eligible": False, "transport_recovered": True},
+        ])
+        recovery = recovery_usage["ambiguous_5xx_recovery"]
+        self.assertEqual(recovery["eligible_incidents"], 1)
+        self.assertEqual(recovery["affected_logical_identities"], 1)
+        self.assertEqual(recovery["affected_identity_ids"], ["one"])
+        self.assertEqual(recovery["recovered_logical_identities"], 1)
+        self.assertEqual(recovery["recovered_identity_ids"], ["one"])
+        self.assertEqual(recovery["unresolved_affected_logical_identities"], 0)
+        self.assertEqual(recovery["unresolved_affected_identity_ids"], [])
+        self.assertTrue(recovery["sensitivity_note_required"])
+        self.assertEqual(recovery["affected_identity_details"], [{
+            "identity": "one",
+            "phase": "formation",
+            "cell": "C",
+            "action": "message",
+            "block": 2,
+            "episode": 4,
+            "role": "alice",
+            "message_round": 1,
+            "eligible_incident_attempts": [0],
+            "recovery_attempts": [1],
+            "claim_sensitivity_review_ids": [self.rows[0]["review_id"]],
+            "recovered": True,
+            "transport_retry_returned": True,
+            "final_status": "ok",
+            "unseen_first_outcome": "unresolved",
+        }])
+        sensitivity = recovery["outcome_sensitivity"]
+        self.assertEqual(
+            sensitivity["unseen_completed_and_different_count_bounds"],
+            {"lower": 0, "upper": 1},
+        )
+        self.assertEqual(
+            sensitivity["unseen_completed_and_different_fraction_bounds"],
+            {"lower": 0.0, "upper": 1.0, "denominator": 1},
+        )
+        self.assertFalse(sensitivity["transport_counterfactual_point_identified"])
+
+        export_summary = dict(self.summary)
+        export_summary["protocol_version"] = "v1.2"
+        export_summary["usage"] = recovery_usage
+        recovery_tables = _flatten_tables(export_summary)
+        self.assertEqual(
+            recovery_tables["ambiguous_5xx_affected_identities"],
+            recovery["affected_identity_details"],
+        )
+        self.assertEqual(
+            recovery_tables["ambiguous_5xx_outcome_sensitivity"],
+            [sensitivity],
+        )
+
+        claim_sensitivity = _transport_claim_sensitivity(
+            self.rows, recovery_usage, 10, "v1.0"
+        )
+        self.assertTrue(claim_sensitivity["required"])
+        self.assertEqual(
+            claim_sensitivity["status"],
+            "claim_level_worst_case_bounds_computed",
+        )
+        self.assertEqual(
+            claim_sensitivity["impacted_review_identity_ids"],
+            [self.rows[0]["review_id"]],
+        )
+        self.assertFalse(
+            claim_sensitivity[
+                "publication_claims_ready_without_transport_qualification"
+            ]
+        )
+
+        unresolved = usage_summary([
+            {"identity": "two", "attempt": 0, "status": "ambiguous_timeout",
+             "transport_retry_eligible": True, "transport_recovered": False,
+             "claim_sensitivity_review_ids": []},
+            {"identity": "two", "attempt": 1, "status": "overlength",
+             "transport_retry_eligible": False, "transport_recovered": True},
+            {"identity": "two", "attempt": 2, "status": "ambiguous_timeout",
+             "transport_retry_eligible": True, "transport_recovered": False,
+             "claim_sensitivity_review_ids": []},
+        ])["ambiguous_5xx_recovery"]
+        self.assertEqual(unresolved["recovered_logical_identities"], 0)
+        self.assertEqual(unresolved["unresolved_affected_identity_ids"], ["two"])
+        self.assertFalse(unresolved["affected_identity_details"][0]["recovered"])
+        self.assertTrue(
+            unresolved["affected_identity_details"][0]["transport_retry_returned"]
+        )
+        self.assertEqual(
+            unresolved["affected_identity_details"][0]["final_status"],
+            "ambiguous_timeout",
+        )
 
     def test_durable_retry_reconstruction_uses_only_prior_overlength_rows(self):
         packet = generate_fixture("analysis/retry-projection", None).packet

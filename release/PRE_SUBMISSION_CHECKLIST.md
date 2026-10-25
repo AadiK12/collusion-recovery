@@ -42,7 +42,26 @@ Use this only after data lock and paper completion. Preparing files does not aut
 - [ ] Peer-policy claims state that the peer was scripted, evidence and peer actions were matched where required, and the three policies were compliant, approval-only, and reciprocal-request.
 - [ ] Reciprocity-specific language is based on reciprocal-request minus approval-only, not merely reciprocal-request minus compliant; the peer action and message prefix are matched, the neutral-versus-request clause change is disclosed, and approval-only minus compliant and the total contrast are reported separately.
 - [ ] Every protocol deviation, retry-rule exception, provider-identity change, and early stop is disclosed.
-- [ ] If v1.2 was activated, the paper identifies the early-futility methodological decision/deviation made without a completed Gate 3 trigger artifact, shows separate approvals for fresh calibration, smoke, and pilot, and demonstrates that no v1.1 observation was pooled.
+- [ ] The paper identifies the selected v1.2 early-futility methodological decision/deviation made without a completed Gate 3 trigger artifact, shows separate approvals for every fresh calibration, smoke, Phase 1, and Phase 2 release that actually ran, and demonstrates that no v1.1 observation was pooled.
+- [ ] The v1.2 methods state that only formation changes: `baseline_v1_2.txt`
+  is formation-only, calibration/evaluation/probes preserve the old baseline,
+  and the protocol hash binds the frozen base plus addendum.
+- [ ] If v1.2 did not run, the paper says its current artifacts are projections
+  only: no live Gate 1 controller, execution-ready/static proposal,
+  authorization-issuance path, static authorization schema, Gate 2/Phase 1 live
+  controllers, or cross-run prerequisite assessments exist; inherited October
+  24 pricing is not presented as a current v1.2 price check.
+- [ ] If the v1.2 5xx path was used, evidence shows integer exception and
+  response statuses exactly equal to the same 500/502/503/504, matching request
+  IDs, absent output/usage, identical retry wire bytes, and only numeric
+  delta-seconds retry headers. The durable transport incident was excluded from
+  model-visible history; the first non-ambiguous outcome stayed terminal,
+  refusals/invalid responses stayed missing/invalid, and no second
+  ambiguous-5xx-owned retry occurred.
+- [ ] Every v1.2 ambiguous-5xx-affected identity is listed and the paper shows
+  unresolved-outcome sensitivity, acknowledging that the unseen attempt may
+  have completed and differed from the retry. Staying under the cap is not used
+  to erase that limitation.
 - [ ] Resource-use totals reconcile with durable usage records and the timestamped price source.
 
 ### Separate formation-peer-v1 secondary evidence, if empirically run
@@ -60,7 +79,7 @@ Use the [separate secondary-study specification](../docs/FORMATION_PEER_CONTROLS
 - [ ] Recovery FAR, CPA, and balanced accuracy accompany each other. Paired-block uncertainty, raw block values, scheduled denominators, and all-scheduled missingness bounds are shown; missing outcomes never become safe rejections.
 - [ ] Secondary pilot and confirmation remain separate from each other and from main-study splits/estimators. Five blocks are explicitly exploratory; any confirmation N, analysis seed, and precision target were fixed prospectively, without sampling until an effect became favorable.
 - [ ] The count audit distinguishes **56 logical requests / 36 focal reviews per block**, **76 maximum scripted attempts per block** with one possible overlength retry per message, and the separately reviewed live attempt envelope. The scripted ceiling is not a live budget. Five secondary blocks add **280 logical requests / 180 reviews**; **1,660** is the combined five-block main-v1.1-plus-secondary planning count including 20 main calibration reviews, excluding two transport-preflight calls, retries, and separate release overhead.
-- [ ] If the main v1.2 fallback was activated, the report records the explicit secondary compatibility/version decision. One-round formation-peer-v1 is not presented as an automatic two-round extension; incompatible artifacts are preserved and never pooled.
+- [ ] The report records the explicit v1.2 secondary compatibility decision: one-round formation-peer-v1 remains separate, is not presented as a two-round extension, and its artifacts are preserved and never pooled.
 - [ ] Positive, null, imprecise, failed, and unrun secondary outcomes are all reportable. No favorable secondary result is required to complete or submit the main recovery report.
 
 ## B. Claim-to-evidence ledger

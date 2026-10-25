@@ -10,13 +10,14 @@ ambiguous on resume and is never dispatched again.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, is_dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from contextlib import contextmanager
 import fcntl
 import hashlib
 from importlib import metadata as importlib_metadata
 import json
+import math
 import os
 import platform
 from pathlib import Path
@@ -120,10 +121,33 @@ GATE2_SUCCESSOR_NAMESPACE = (
 GATE3_PHASE1_CONTROLLER_ID = "gate3_formation_phase1_v1"
 GATE3_PHASE1_RUN_ID = "3e0d7744-45d7-4db5-a36a-a46b634c0b98"
 GATE3_PHASE1_BINDING_EVENT = "gate3_phase1_binding"
+GATE3_PHASE1_FROZEN_IMPLEMENTATION_HASH = (
+    "0f82c7a3b2de6e84827dec0ed8d2608050a50d04e33a7d7f7bf01c6d59759217"
+)
+V1_2_GATE1_CONTROLLER_ID = "gate1_calibration_v1_2"
+V1_2_GATE1_RUN_ID = "ec19ca7e-ebf8-476b-9f80-fa1c1b6bec8a"
+V1_2_GATE2_CONTROLLER_ID = "gate2_smoke_v1_2"
+V1_2_GATE2_RUN_ID = "f160ecc8-8eab-42c2-b133-de432287a80f"
+V1_2_GATE3_PHASE1_CONTROLLER_ID = "gate3_formation_phase1_v1_2"
+V1_2_GATE3_PHASE1_RUN_ID = "e93c4f9a-5118-446e-8935-4724e164222c"
+V1_2_GATE3_PHASE2_CONTROLLER_ID = "gate3_remaining_phase2_v1_2"
+V1_2_GATE3_PHASE2_RUN_ID = "0bf185b9-ed8e-43b7-a20e-f8014e02f039"
+V1_2_CALIBRATION_NAMESPACE = "fallback-two-round/v1.2/calibration"
+V1_2_GATE1_NAMESPACE = (
+    "fallback-two-round/v1.2/pilot/"
+    f"gate1-{V1_2_GATE1_RUN_ID}"
+)
+V1_2_GATE2_NAMESPACE = (
+    "fallback-two-round/v1.2/pilot/"
+    f"gate2-{V1_2_GATE2_RUN_ID}"
+)
 DEDICATED_EXECUTION_CONTROLLERS = MappingProxyType({
     GATE1_CALIBRATION_RUN_ID: GATE1_CALIBRATION_CONTROLLER_ID,
     GATE2_SUCCESSOR_RUN_ID: GATE2_SUCCESSOR_CONTROLLER_ID,
     GATE3_PHASE1_RUN_ID: GATE3_PHASE1_CONTROLLER_ID,
+    V1_2_GATE1_RUN_ID: V1_2_GATE1_CONTROLLER_ID,
+    V1_2_GATE2_RUN_ID: V1_2_GATE2_CONTROLLER_ID,
+    V1_2_GATE3_PHASE1_RUN_ID: V1_2_GATE3_PHASE1_CONTROLLER_ID,
 })
 GATE_FOR_STAGE = {
     "smoke": "calibration",
@@ -147,6 +171,9 @@ V1_1_FREEZE_REQUIRED_PROMPTS = {
     "prompt_file/peer_reciprocal_request.txt", "canonical_renderer/source",
     "visibility_boundary/source",
 }
+V1_2_FREEZE_REQUIRED_PROMPTS = (
+    V1_1_FREEZE_REQUIRED_PROMPTS | {"prompt_file/baseline_v1_2.txt"}
+)
 FREEZE_REQUIRED_ANALYSIS = {
     "primary_outcome", "primary_contrast", "independent_unit",
     "include_all_assigned_blocks", "meaningful_far_difference",
@@ -161,6 +188,9 @@ V1_1_FREEZE_REQUIRED_ANALYSIS = FREEZE_REQUIRED_ANALYSIS | {
     "persistence_windows",
     "persistence_claim_rule", "claim_interval",
     "directional_claim_requires_all_scheduled_bound", "operational_collusion_rule",
+}
+V1_2_FREEZE_REQUIRED_ANALYSIS = V1_1_FREEZE_REQUIRED_ANALYSIS | {
+    "formation_message_rounds", "formation_round_visibility",
 }
 FREEZE_REQUIRED_RETRY = {
     "message_overlength", "retryable_transport", "ambiguous_completion",
@@ -206,10 +236,25 @@ EXPECTED_FIVE_BLOCK_PILOT_COUNTS = {
     },
     "checkpoints": 10,
 }
+EXPECTED_FIVE_BLOCK_PILOT_COUNTS_V1_2 = {
+    "logical_requests": 1580,
+    "by_stage": {
+        "calibration": 20, "smoke": 192, "formation": 480,
+        "remaining_arms": 648, "probes": 240,
+    },
+    "by_phase": {
+        "calibration": 20, "formation": 600, "evaluation": 720, "probe": 240,
+    },
+    "checkpoints": 10,
+}
 
 
-def _expected_five_block_pilot_counts(source: str) -> dict[str, Any]:
-    counts = json.loads(canonical(EXPECTED_FIVE_BLOCK_PILOT_COUNTS))
+def _expected_five_block_pilot_counts(
+        source: str, protocol_version: str = "v1.1") -> dict[str, Any]:
+    template = (EXPECTED_FIVE_BLOCK_PILOT_COUNTS_V1_2
+                if protocol_version == "v1.2"
+                else EXPECTED_FIVE_BLOCK_PILOT_COUNTS)
+    counts = json.loads(canonical(template))
     if source == "empirical-live":
         counts["logical_requests"] += 2
         counts["by_stage"] = {"preflight": 2, **counts["by_stage"]}
@@ -279,6 +324,15 @@ CANONICAL_ANALYSIS_RULES_V1_1 = {
         "same_block_cooccurrence_required": False,
     },
 }
+CANONICAL_ANALYSIS_RULES_V1_2 = {
+    **CANONICAL_ANALYSIS_RULES_V1_1,
+    "protocol_version": "v1.2",
+    "formation_message_rounds": 2,
+    "formation_round_visibility": (
+        "round 1 messages are simultaneous; round 2 messages are simultaneous and see "
+        "both round 1 messages; verdicts are simultaneous after both round 2 messages"
+    ),
+}
 CANONICAL_RETRY_EXCLUSION_POLICY = {
     "message_overlength": "one explicit retry; never truncate",
     "retryable_transport": "at most configured known-not-completed retries",
@@ -288,6 +342,41 @@ CANONICAL_RETRY_EXCLUSION_POLICY = {
     "authentication_quota_budget_fatal": "stop the run",
     "analysis_exclusions": "none based on outcome direction or formation qualification",
 }
+V1_2_AMBIGUOUS_5XX_RETRY_POLICY = {
+    "policy_version": "ambiguous-http-5xx-v1",
+    "protocol_version": "v1.2",
+    "eligible_http_statuses": [500, 502, 503, 504],
+    "maximum_retries_per_logical_identity": 1,
+    "minimum_delay_seconds": 5,
+    "maximum_delay_seconds": 60,
+    "release_affected_identity_cap": "max(1,ceil(logical_requests/100))",
+    "sdk_max_retries": 0,
+    "accounting": "each ambiguous attempt consumes its full reservation",
+    "observation_rule": (
+        "the first non-ambiguous returned outcome after at most one prospectively "
+        "eligible retry is retained; refusals and invalid responses keep their ordinary "
+        "missing-or-invalid meaning, and failed HTTP responses remain transport incidents"
+    ),
+    "model_visibility": (
+        "transport-only incidents remain durable for audit and accounting but never enter "
+        "model-visible attempt lists or retained scientific history"
+    ),
+}
+V1_2_RETRY_EXCLUSION_POLICY = {
+    **CANONICAL_RETRY_EXCLUSION_POLICY,
+    "ambiguous_completion": (
+        "consume full reservation and never retry, except the separately typed and "
+        "bounded v1.2 ambiguous HTTP-5xx policy"
+    ),
+    "ambiguous_http_5xx": V1_2_AMBIGUOUS_5XX_RETRY_POLICY,
+}
+V1_2_AMBIGUOUS_5XX_RETRY_POLICY_HASH = digest(V1_2_AMBIGUOUS_5XX_RETRY_POLICY)
+
+
+def canonical_retry_exclusion_policy(protocol_version: str) -> dict[str, Any]:
+    policy = (V1_2_RETRY_EXCLUSION_POLICY if protocol_version == "v1.2"
+              else CANONICAL_RETRY_EXCLUSION_POLICY)
+    return json.loads(canonical(policy))
 
 
 def canonical_analysis_rules(protocol_version: str) -> dict[str, Any]:
@@ -295,6 +384,8 @@ def canonical_analysis_rules(protocol_version: str) -> dict[str, Any]:
         return json.loads(canonical(CANONICAL_ANALYSIS_RULES))
     if protocol_version == "v1.1":
         return json.loads(canonical(CANONICAL_ANALYSIS_RULES_V1_1))
+    if protocol_version == "v1.2":
+        return json.loads(canonical(CANONICAL_ANALYSIS_RULES_V1_2))
     raise ValueError("unsupported protocol version for analysis rules")
 
 
@@ -303,6 +394,8 @@ def _freeze_required_prompts(protocol_version: str) -> set[str]:
         return FREEZE_REQUIRED_PROMPTS
     if protocol_version == "v1.1":
         return V1_1_FREEZE_REQUIRED_PROMPTS
+    if protocol_version == "v1.2":
+        return V1_2_FREEZE_REQUIRED_PROMPTS
     raise ValueError("unsupported protocol version for prompt freeze")
 
 
@@ -311,6 +404,8 @@ def _freeze_required_analysis(protocol_version: str) -> set[str]:
         return FREEZE_REQUIRED_ANALYSIS
     if protocol_version == "v1.1":
         return V1_1_FREEZE_REQUIRED_ANALYSIS
+    if protocol_version == "v1.2":
+        return V1_2_FREEZE_REQUIRED_ANALYSIS
     raise ValueError("unsupported protocol version for analysis freeze")
 
 
@@ -503,6 +598,23 @@ def _implementation_inventory() -> dict[str, str]:
 
 def _implementation_hash() -> str:
     return digest(_implementation_inventory())
+
+
+def _protocol_path(protocol_version: str) -> Path:
+    root = Path(__file__).resolve().parents[2]
+    if protocol_version == "v1.2":
+        return root / "PROTOCOL_V1_2_ADDENDUM.md"
+    return root / "SPRINT_PROJECT_PLAN.md"
+
+
+def _protocol_hash(protocol_version: str) -> str:
+    if protocol_version == "v1.2":
+        root = Path(__file__).resolve().parents[2]
+        return digest({
+            "base_protocol_sha256": file_hash(root / "SPRINT_PROJECT_PLAN.md"),
+            "addendum_sha256": file_hash(root / "PROTOCOL_V1_2_ADDENDUM.md"),
+        })
+    return file_hash(_protocol_path(protocol_version))
 
 
 def _base_runtime_inventory() -> dict[str, Any]:
@@ -722,13 +834,35 @@ class _PlanBuilder:
             contributors: list[str] = []
             previous: tuple[str, ...] = ()
             for episode in range(10):
-                messages = tuple(self.add(stage, "formation", "message",
-                                    {"block": block, "history": history, "episode": episode, "role": role},
-                                    previous) for role in ROLES)
-                verdicts = tuple(self.add(stage, "formation", "verdict",
-                                    {"block": block, "history": history, "episode": episode, "role": role},
-                                    messages) for role in ROLES)
-                contributors.extend((*messages, *verdicts))
+                if self.config.protocol_version == "v1.2":
+                    round_one = tuple(self.add(
+                        stage, "formation", "message",
+                        {"block": block, "history": history, "episode": episode,
+                         "role": role, "message_round": 1},
+                        previous,
+                    ) for role in ROLES)
+                    round_two = tuple(self.add(
+                        stage, "formation", "message",
+                        {"block": block, "history": history, "episode": episode,
+                         "role": role, "message_round": 2},
+                        round_one,
+                    ) for role in ROLES)
+                    message_frontier = (*round_one, *round_two)
+                else:
+                    round_one = tuple(self.add(
+                        stage, "formation", "message",
+                        {"block": block, "history": history, "episode": episode,
+                         "role": role},
+                        previous,
+                    ) for role in ROLES)
+                    message_frontier = round_one
+                verdicts = tuple(self.add(
+                    stage, "formation", "verdict",
+                    {"block": block, "history": history, "episode": episode,
+                     "role": role},
+                    message_frontier,
+                ) for role in ROLES)
+                contributors.extend((*message_frontier, *verdicts))
                 previous = verdicts
             self.checkpoints.append(CheckpointSpec(self.checkpoint_id(block, history), block,
                                                    history, tuple(contributors)))
@@ -743,10 +877,10 @@ class _PlanBuilder:
             previous: tuple[str, ...] = ()
             for episode in range(6):
                 episode_metadata = {}
-                if self.config.protocol_version == "v1.1":
+                if self.config.protocol_version in {"v1.1", "v1.2"}:
                     pair = design["evaluation"][episode]
                     episode_metadata = {
-                        "protocol_version": "v1.1",
+                        "protocol_version": self.config.protocol_version,
                         "pair_composition": design["evaluation_compositions"][episode],
                         "role_correctness": {
                             role: pair[index].packet.is_correct
@@ -772,9 +906,9 @@ class _PlanBuilder:
             parent = self.checkpoint_id(block, history)
             for episode, (role, own, peer) in enumerate(design["probes"]):
                 probe_metadata = {}
-                if self.config.protocol_version == "v1.1":
+                if self.config.protocol_version in {"v1.1", "v1.2"}:
                     probe_metadata = {
-                        "protocol_version": "v1.1",
+                        "protocol_version": self.config.protocol_version,
                         "own_packet_correct": own.packet.is_correct,
                         "peer_packet_correct": peer.packet.is_correct,
                     }
@@ -807,7 +941,7 @@ def build_gate1_calibration_plan(config: LiveConfig) -> RunPlan:
                 "fixture_namespace": config.calibration_namespace,
             },
         )
-    protocol_hash = file_hash(Path(__file__).resolve().parents[2] / "SPRINT_PROJECT_PLAN.md")
+    protocol_hash = _protocol_hash(config.protocol_version)
     return RunPlan(
         config.run_id,
         config.source,
@@ -839,7 +973,7 @@ def build_gate2_successor_smoke_plan(config: LiveConfig) -> RunPlan:
     builder = _PlanBuilder(config)
     builder.formation(0, "smoke", design)
     builder.evaluations(0, "smoke", design, ("A", "B", "F"))
-    protocol_hash = file_hash(Path(__file__).resolve().parents[2] / "SPRINT_PROJECT_PLAN.md")
+    protocol_hash = _protocol_hash(config.protocol_version)
     plan = RunPlan(
         config.run_id,
         config.source,
@@ -887,7 +1021,7 @@ def build_gate3_phase1_plan(config: LiveConfig) -> RunPlan:
     builder = _PlanBuilder(config)
     for block in range(1, 5):
         builder.formation(block, "formation", designs[block])
-    protocol_hash = file_hash(Path(__file__).resolve().parents[2] / "SPRINT_PROJECT_PLAN.md")
+    protocol_hash = _protocol_hash(config.protocol_version)
     plan = RunPlan(
         config.run_id,
         config.source,
@@ -897,7 +1031,7 @@ def build_gate3_phase1_plan(config: LiveConfig) -> RunPlan:
         protocol_hash,
         digest(config.to_dict()),
         _frozen_mapping(build_gate3_phase1_fixture_inventory(config, designs)),
-        _implementation_hash(),
+        GATE3_PHASE1_FROZEN_IMPLEMENTATION_HASH,
         tuple(builder.requests),
         tuple(builder.checkpoints),
     )
@@ -916,6 +1050,119 @@ def build_gate3_phase1_plan(config: LiveConfig) -> RunPlan:
     return plan
 
 
+def build_v1_2_gate1_calibration_plan(config: LiveConfig) -> RunPlan:
+    """Build the fresh v1.2 Gate 1 release: 20 isolated verdicts only."""
+    if (config.run_id != V1_2_GATE1_RUN_ID
+            or config.protocol_version != "v1.2"
+            or config.source != "empirical-live"
+            or config.run_type != "pilot"
+            or config.stage != "calibration"
+            or config.blocks != 5
+            or config.split != V1_2_GATE1_NAMESPACE
+            or config.seed_namespace != V1_2_GATE1_NAMESPACE
+            or config.calibration_namespace != V1_2_CALIBRATION_NAMESPACE):
+        raise ValueError("v1.2 Gate 1 requires its exact fresh calibration configuration")
+    builder = _PlanBuilder(config)
+    for fixture_index in range(20):
+        builder.add(
+            "calibration", "calibration", "verdict",
+            {"fixture_index": fixture_index, "role": "reviewer",
+             "fixture_namespace": config.calibration_namespace},
+        )
+    plan = RunPlan(
+        config.run_id, config.source, config.run_type, config.split,
+        config.protocol_version, _protocol_hash(config.protocol_version),
+        digest(config.to_dict()),
+        _frozen_mapping(build_calibration_fixture_inventory(config)),
+        _implementation_hash(), tuple(builder.requests), (),
+    )
+    if plan.planned_counts() != {
+            "logical_requests": 20,
+            "by_stage": {"calibration": 20},
+            "by_phase": {"calibration": 20},
+            "checkpoints": 0,
+            }:
+        raise ValueError("v1.2 Gate 1 canonical plan has drifted")
+    return plan
+
+
+def build_v1_2_gate2_smoke_plan(config: LiveConfig) -> RunPlan:
+    """Build the fresh v1.2 Gate 2 block-0 smoke: 192 requests only."""
+    if (config.run_id != V1_2_GATE2_RUN_ID
+            or config.protocol_version != "v1.2"
+            or config.source != "empirical-live"
+            or config.run_type != "pilot"
+            or config.stage != "smoke"
+            or config.blocks != 5
+            or config.split != V1_2_GATE2_NAMESPACE
+            or config.seed_namespace != V1_2_GATE2_NAMESPACE
+            or config.calibration_namespace != V1_2_CALIBRATION_NAMESPACE):
+        raise ValueError("v1.2 Gate 2 requires its exact fresh smoke configuration")
+    design = block_design(config.seed_namespace, 0, config.protocol_version)
+    builder = _PlanBuilder(config)
+    builder.formation(0, "smoke", design)
+    builder.evaluations(0, "smoke", design, ("A", "B", "F"))
+    plan = RunPlan(
+        config.run_id, config.source, config.run_type, config.split,
+        config.protocol_version, _protocol_hash(config.protocol_version),
+        digest(config.to_dict()),
+        _frozen_mapping(build_gate2_smoke_fixture_inventory(config, design)),
+        _implementation_hash(), tuple(builder.requests), tuple(builder.checkpoints),
+    )
+    if (plan.planned_counts() != {
+            "logical_requests": 192,
+            "by_stage": {"smoke": 192},
+            "by_phase": {"formation": 120, "evaluation": 72},
+            "checkpoints": 2,
+            }
+            or sum(request.action == "message" for request in plan.requests) != 116
+            or sum(request.action == "verdict" for request in plan.requests) != 76
+            or any(len(checkpoint.contributors) != 60
+                   for checkpoint in plan.checkpoints)):
+        raise ValueError("v1.2 Gate 2 canonical smoke plan has drifted")
+    return plan
+
+
+def build_v1_2_gate3_phase1_plan(config: LiveConfig) -> RunPlan:
+    """Build fresh v1.2 Gate 3 phase 1: blocks 1--4 U/C formation only."""
+    if (config.run_id != V1_2_GATE3_PHASE1_RUN_ID
+            or config.protocol_version != "v1.2"
+            or config.source != "empirical-live"
+            or config.run_type != "pilot"
+            or config.stage != "formation"
+            or config.blocks != 5
+            or config.split != V1_2_GATE2_NAMESPACE
+            or config.seed_namespace != V1_2_GATE2_NAMESPACE
+            or config.calibration_namespace != V1_2_CALIBRATION_NAMESPACE):
+        raise ValueError("v1.2 Gate 3 phase 1 requires its exact fresh formation configuration")
+    designs = {
+        block: block_design(config.seed_namespace, block, config.protocol_version)
+        for block in range(1, 5)
+    }
+    builder = _PlanBuilder(config)
+    for block in range(1, 5):
+        builder.formation(block, "formation", designs[block])
+    plan = RunPlan(
+        config.run_id, config.source, config.run_type, config.split,
+        config.protocol_version, _protocol_hash(config.protocol_version),
+        digest(config.to_dict()),
+        _frozen_mapping(build_gate3_phase1_fixture_inventory(config, designs)),
+        _implementation_hash(), tuple(builder.requests), tuple(builder.checkpoints),
+    )
+    if (plan.planned_counts() != {
+            "logical_requests": 480,
+            "by_stage": {"formation": 480},
+            "by_phase": {"formation": 480},
+            "checkpoints": 8,
+            }
+            or sum(request.action == "message" for request in plan.requests) != 320
+            or sum(request.action == "verdict" for request in plan.requests) != 160
+            or any(len(checkpoint.contributors) != 60
+                   for checkpoint in plan.checkpoints)):
+        raise ValueError("v1.2 Gate 3 phase-1 canonical formation plan has drifted")
+    return plan
+
+
 def build_request_plan(config: LiveConfig) -> RunPlan:
     """Build the immutable, explicitly versioned pilot/confirmation schedule.
 
@@ -924,6 +1171,16 @@ def build_request_plan(config: LiveConfig) -> RunPlan:
     arms and probes.  Thus ``stage`` is a maximum authorized stopping point;
     extending a run within that ceiling does not mutate its plan.
     """
+    v1_2_fixed_ids = {
+        V1_2_GATE1_RUN_ID,
+        V1_2_GATE2_RUN_ID,
+        V1_2_GATE3_PHASE1_RUN_ID,
+    }
+    if (config.source == "empirical-live"
+            and config.protocol_version == "v1.2"
+            and config.run_id not in v1_2_fixed_ids):
+        raise ValueError(
+            "empirical v1.2 plans require a fixed staged-release run id")
     if config.run_id == GATE1_CALIBRATION_RUN_ID:
         return build_gate1_calibration_plan(config)
     if (config.run_id == GATE2_SUCCESSOR_RUN_ID
@@ -931,6 +1188,12 @@ def build_request_plan(config: LiveConfig) -> RunPlan:
         return build_gate2_successor_smoke_plan(config)
     if config.run_id == GATE3_PHASE1_RUN_ID:
         return build_gate3_phase1_plan(config)
+    if config.run_id == V1_2_GATE1_RUN_ID:
+        return build_v1_2_gate1_calibration_plan(config)
+    if config.run_id == V1_2_GATE2_RUN_ID:
+        return build_v1_2_gate2_smoke_plan(config)
+    if config.run_id == V1_2_GATE3_PHASE1_RUN_ID:
+        return build_v1_2_gate3_phase1_plan(config)
     if config.run_type not in {"pilot", "confirmation"}:
         raise ValueError("the v1 request planner supports pilot or confirmation runs")
     builder = _PlanBuilder(config)
@@ -969,7 +1232,7 @@ def build_request_plan(config: LiveConfig) -> RunPlan:
             builder.evaluations(block, "remaining_arms", design, tuple(ARMS))
     for block, design in enumerate(designs):
         builder.probes(block, design)
-    protocol_hash = file_hash(Path(__file__).resolve().parents[2] / "SPRINT_PROJECT_PLAN.md")
+    protocol_hash = _protocol_hash(config.protocol_version)
     return RunPlan(config.run_id, config.source, config.run_type, config.split,
                    config.protocol_version, protocol_hash, digest(config.to_dict()),
                    _frozen_mapping(build_fixture_inventory(config, designs)),
@@ -1279,6 +1542,9 @@ class DurableRun:
                 GATE1_CALIBRATION_CONTROLLER_ID,
                 GATE2_SUCCESSOR_CONTROLLER_ID,
                 GATE3_PHASE1_CONTROLLER_ID,
+                V1_2_GATE1_CONTROLLER_ID,
+                V1_2_GATE2_CONTROLLER_ID,
+                V1_2_GATE3_PHASE1_CONTROLLER_ID,
         }:
             raise ResumeError("execution controller is unknown or malformed")
         from .stage2_release_state import (
@@ -1786,12 +2052,20 @@ class DurableRun:
             manifest.update(updates, updated_at=utc_now())
             _atomic_json(self.path / "manifest.json", manifest)
 
-    def append(self, kind: str, **data: Any) -> dict[str, Any]:
+    def _append_event(
+            self, kind: str, data: Mapping[str, Any], *,
+            recorded_at: str | None = None) -> dict[str, Any]:
+        reserved = {
+            "sequence", "previous_event_hash", "kind", "recorded_at", "event_hash",
+        }
+        if reserved.intersection(data):
+            raise OrchestrationError("durable journal data overrides reserved event metadata")
+        data = dict(data)
         _reject_secret_values(data, "durable journal event")
         with self._lock:
             previous = self.events[-1]["event_hash"] if self.events else None
             event = {"sequence": len(self.events), "previous_event_hash": previous,
-                     "kind": kind, "recorded_at": utc_now(), **data}
+                     "kind": kind, "recorded_at": recorded_at or utc_now(), **data}
             event_hash = digest(event)
             event["event_hash"] = event_hash
             with self.journal_path.open("a", encoding="utf-8") as handle:
@@ -1805,6 +2079,30 @@ class DurableRun:
                             last_event_hash=event_hash)
             _atomic_json(self.path / "manifest.json", manifest)
             return event
+
+    def append(self, kind: str, **data: Any) -> dict[str, Any]:
+        return self._append_event(kind, data)
+
+    def _append_delayed_event(
+            self, kind: str, *, recorded_at: datetime,
+            delay_seconds: float, **data: Any) -> dict[str, Any]:
+        """Append a delay-bound event using one timestamp for record and deadline."""
+        if (recorded_at.tzinfo is None or recorded_at.utcoffset() is None
+                or type(delay_seconds) not in {int, float}
+                or not math.isfinite(delay_seconds) or delay_seconds < 0):
+            raise OrchestrationError("durable delayed event timing is malformed")
+        recorded_at = recorded_at.astimezone(timezone.utc)
+        recorded_text = recorded_at.isoformat()
+        delayed = {
+            **data,
+            "delay_seconds": delay_seconds,
+            "not_before": (
+                recorded_at + timedelta(seconds=delay_seconds)
+            ).isoformat(),
+        }
+        return self._append_event(
+            kind, delayed, recorded_at=recorded_text,
+        )
 
     def set_status(self, status: str, **fields: Any) -> None:
         _reject_secret_values(fields, "durable manifest status")
@@ -2143,8 +2441,39 @@ class ExecutionReport:
 class StagedExecutor:
     def __init__(self, run: DurableRun, provider: Any,
                  request_factory: Callable[[ScheduledRequest, ExecutionContext], Any],
-                 *, sleep: Callable[[float], None] | None = None):
-        if (run.config.run_id in DEDICATED_EXECUTION_CONTROLLERS
+                 *, sleep: Callable[[float], None] | None = None,
+                 now: Callable[[], datetime] | None = None,
+                 dedicated_controller: str | None = None):
+        required_controller = DEDICATED_EXECUTION_CONTROLLERS.get(run.config.run_id)
+        if (getattr(run.config, "source", None) == "empirical-live"
+                and getattr(run.config, "protocol_version", None) == "v1.2"
+                and run.config.run_id not in {
+                    V1_2_GATE1_RUN_ID,
+                    V1_2_GATE2_RUN_ID,
+                    V1_2_GATE3_PHASE1_RUN_ID,
+                }):
+            raise AuthorizationRequiredError(
+                "empirical v1.2 execution requires a fixed staged-release run id")
+        if (getattr(run.config, "source", None) == "empirical-live"
+                and getattr(run.config, "protocol_version", None) == "v1.2"
+                and run.config.run_id in {
+                    V1_2_GATE2_RUN_ID, V1_2_GATE3_PHASE1_RUN_ID,
+                }):
+            raise AuthorizationRequiredError(
+                "v1.2 Gate 2 and Gate 3 are projection-only until their dedicated "
+                "live controllers and cross-run assessments are implemented")
+        reusable_v1_2_controller = (
+            getattr(run.config, "protocol_version", None) == "v1.2"
+            and required_controller is not None
+            and dedicated_controller == required_controller
+            and run.manifest.get("execution_controller") == required_controller
+        )
+        if required_controller is None and dedicated_controller is not None:
+            raise AuthorizationRequiredError(
+                "a dedicated controller cannot be attached to a generic run id"
+            )
+        if (not reusable_v1_2_controller and (
+                required_controller is not None
                 or run.manifest.get("execution_controller")
                 in set(DEDICATED_EXECUTION_CONTROLLERS.values())
                 or any(
@@ -2154,7 +2483,7 @@ class StagedExecutor:
                         GATE3_PHASE1_BINDING_EVENT,
                     }
                     for event in run.events
-                )):
+                ))):
             raise AuthorizationRequiredError(
                 "dedicated release runs require the smoke-only controller, the "
                 "calibration-only controller, or the formation-only controller "
@@ -2194,6 +2523,12 @@ class StagedExecutor:
             self._transport_hash = transport_hash
         self.sleep = sleep or ((lambda _seconds: None)
                                if run.config.source == "fake-live" else time.sleep)
+        self.now = now or (lambda: datetime.now(timezone.utc))
+        current_time = self.now()
+        if (not isinstance(current_time, datetime)
+                or current_time.tzinfo is None
+                or current_time.utcoffset() is None):
+            raise OrchestrationError("executor clock must return an aware datetime")
         (authorized_budget, _authorized_stage, _authorized_block,
          release_limits) = _authorized_execution_scope(run)
         self.ledger = BudgetLedger.replay(
@@ -2256,6 +2591,186 @@ class StagedExecutor:
         elif manifest.get("runtime") != runtime:
             self.run.set_status(manifest["status"], runtime=runtime)
 
+    @staticmethod
+    def _eligible_ambiguous_5xx(row: Mapping[str, Any]) -> bool:
+        provider = row.get("provider_result")
+        evidence = provider.get("transport_evidence") if isinstance(provider, Mapping) else None
+        return bool(
+            row.get("status") == "ambiguous_timeout"
+            and isinstance(evidence, Mapping)
+            and evidence.get("retry_eligible") is True
+            and evidence.get("http_status") in {500, 502, 503, 504}
+            and evidence.get("response_http_status") == evidence.get("http_status")
+            and evidence.get("request_id_consistent") is True
+            and evidence.get("response_received") is True
+            and evidence.get("output_absent") is True
+            and evidence.get("usage_absent") is True
+        )
+
+    def _v1_2_5xx_identity_cap(self) -> int:
+        return max(1, math.ceil(len(self.run.plan.requests) / 100))
+
+    def _v1_2_5xx_affected_identities(self) -> list[str]:
+        identities: list[str] = []
+        for row in self.run.result_events():
+            identity = row.get("identity")
+            if (self._eligible_ambiguous_5xx(row)
+                    and isinstance(identity, str) and identity not in identities):
+                identities.append(identity)
+        return identities
+
+    @staticmethod
+    def _v1_2_5xx_delay(row: Mapping[str, Any]) -> float:
+        provider = row.get("provider_result")
+        evidence = provider.get("transport_evidence") if isinstance(provider, Mapping) else {}
+        candidate = evidence.get("retry_after_seconds") if isinstance(evidence, Mapping) else None
+        delay = 5.0 if candidate is None else max(5.0, float(candidate))
+        return delay
+
+    def _v1_2_5xx_retry_state(
+            self, spec: ScheduledRequest,
+            results: list[dict[str, Any]]) -> tuple[str, float | None]:
+        """Return ``retry`` or a precise stop state for the last ambiguous 5xx."""
+        if (self.run.config.protocol_version != "v1.2" or not results
+                or not self._eligible_ambiguous_5xx(results[-1])):
+            return "not_applicable", None
+        eligible = [row for row in results if self._eligible_ambiguous_5xx(row)]
+        if len(eligible) > 1:
+            return "paused_ambiguous_5xx_retry_exhausted", None
+        delay = self._v1_2_5xx_delay(results[-1])
+        if delay > 60:
+            return "paused_ambiguous_5xx_retry_after_exceeded", None
+        affected = self._v1_2_5xx_affected_identities()
+        if spec.identity not in affected:
+            raise ResumeError("eligible ambiguous HTTP-5xx identity is absent from its audit")
+        if affected.index(spec.identity) + 1 > self._v1_2_5xx_identity_cap():
+            return "paused_ambiguous_5xx_release_cap", None
+        return "retry", delay
+
+    def _v1_2_dependency_closure_hash(self, identity: str) -> str:
+        closure = {identity}
+        changed = True
+        checkpoint_ids = {
+            checkpoint.checkpoint_id
+            for checkpoint in self.run.plan.checkpoints
+            if identity in checkpoint.contributors
+        }
+        while changed:
+            changed = False
+            for spec in self.run.plan.requests:
+                if (spec.identity not in closure
+                        and (closure.intersection(spec.dependencies)
+                             or spec.parent_checkpoint in checkpoint_ids)):
+                    closure.add(spec.identity)
+                    changed = True
+        return digest(sorted(closure))
+
+    def _v1_2_5xx_schedule_event(
+            self, spec: ScheduledRequest,
+            results: list[dict[str, Any]]) -> dict[str, Any]:
+        state, delay = self._v1_2_5xx_retry_state(spec, results)
+        if state != "retry" or delay is None:
+            raise OrchestrationError("ambiguous HTTP-5xx retry is not permitted")
+        failed = results[-1]
+        provider = failed["provider_result"]
+        evidence = provider["transport_evidence"]
+        affected = self._v1_2_5xx_affected_identities()
+        existing = [
+            event for event in self.run.events
+            if event.get("kind") == "ambiguous_5xx_retry_scheduled"
+            and (
+                event.get("failed_result_event_hash") == failed.get("event_hash")
+                or (
+                    event.get("identity") == spec.identity
+                    and event.get("failed_attempt") == failed.get("attempt")
+                )
+            )
+        ]
+        if len(existing) > 1:
+            raise ResumeError("ambiguous HTTP-5xx retry was scheduled more than once")
+        if existing:
+            event = existing[0]
+            exact = {
+                "identity": spec.identity,
+                "failed_attempt": failed.get("attempt"),
+                "next_attempt": len(results),
+                "failed_result_event_hash": failed.get("event_hash"),
+                "provider_request_id": evidence.get("provider_request_id"),
+                "http_status": evidence.get("http_status"),
+                "request_hash": failed.get("request_hash"),
+                "wire_payload_hash": failed.get("wire_payload_hash"),
+                "retry_index": 1,
+                "per_identity_retry_cap": 1,
+                "release_affected_identity_cap": self._v1_2_5xx_identity_cap(),
+                "release_affected_identity_index": affected.index(spec.identity) + 1,
+                "delay_seconds": delay,
+                "retry_policy_hash": V1_2_AMBIGUOUS_5XX_RETRY_POLICY_HASH,
+            }
+            expected_keys = {
+                "sequence", "previous_event_hash", "kind", "recorded_at", "event_hash",
+                *exact.keys(), "not_before",
+            }
+            if (set(event) != expected_keys
+                    or any(event.get(name) != value for name, value in exact.items())):
+                raise ResumeError("ambiguous HTTP-5xx retry schedule was mutated")
+            self._v1_2_5xx_schedule_not_before(event)
+            return event
+        recorded = self.now().astimezone(timezone.utc)
+        return self.run._append_delayed_event(
+            "ambiguous_5xx_retry_scheduled",
+            recorded_at=recorded,
+            identity=spec.identity,
+            failed_attempt=failed.get("attempt"),
+            next_attempt=len(results),
+            failed_result_event_hash=failed.get("event_hash"),
+            provider_request_id=evidence.get("provider_request_id"),
+            http_status=evidence.get("http_status"),
+            request_hash=failed.get("request_hash"),
+            wire_payload_hash=failed.get("wire_payload_hash"),
+            retry_index=1,
+            per_identity_retry_cap=1,
+            release_affected_identity_cap=self._v1_2_5xx_identity_cap(),
+            release_affected_identity_index=affected.index(spec.identity) + 1,
+            delay_seconds=delay,
+            retry_policy_hash=V1_2_AMBIGUOUS_5XX_RETRY_POLICY_HASH,
+        )
+
+    @staticmethod
+    def _v1_2_5xx_schedule_not_before(event: Mapping[str, Any]) -> datetime:
+        try:
+            recorded_at = datetime.fromisoformat(
+                str(event["recorded_at"]).replace("Z", "+00:00"))
+            not_before = datetime.fromisoformat(
+                str(event["not_before"]).replace("Z", "+00:00"))
+            delay = event["delay_seconds"]
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ResumeError("ambiguous HTTP-5xx retry schedule timestamp is malformed") from exc
+        if (recorded_at.tzinfo is None or recorded_at.utcoffset() is None
+                or not_before.tzinfo is None or not_before.utcoffset() is None
+                or type(delay) not in {int, float} or not math.isfinite(delay)
+                or delay < 5 or delay > 60):
+            raise ResumeError("ambiguous HTTP-5xx retry schedule timing is malformed")
+        recorded_at = recorded_at.astimezone(timezone.utc)
+        expected = recorded_at + timedelta(seconds=delay)
+        if (event.get("recorded_at") != recorded_at.isoformat()
+                or event.get("not_before") != expected.isoformat()):
+            raise ResumeError("ambiguous HTTP-5xx retry schedule was mutated")
+        return expected
+
+    def _wait_for_v1_2_5xx_retry(self, event: Mapping[str, Any]) -> None:
+        not_before = self._v1_2_5xx_schedule_not_before(event)
+        remaining = (not_before.astimezone(timezone.utc)
+                     - self.now().astimezone(timezone.utc)).total_seconds()
+        if remaining > 0:
+            self.sleep(min(remaining, 60.0))
+            # A custom or interrupted sleeper must not permit an early dispatch.
+            # The schedule remains durable and can be resumed after ``not_before``.
+            still_remaining = (not_before.astimezone(timezone.utc)
+                               - self.now().astimezone(timezone.utc)).total_seconds()
+            if still_remaining > 0:
+                raise ResumeError(
+                    "ambiguous HTTP-5xx retry delay has not elapsed")
+
     def _status_terminal(self, spec: ScheduledRequest, results: list[dict[str, Any]]) -> bool:
         if not results:
             return False
@@ -2264,7 +2779,12 @@ class StagedExecutor:
             if len(results) >= maximum:
                 return True
         status = results[-1]["status"]
-        if status in OBSERVATION_STATUSES or status in STOP_STATUSES:
+        if status in OBSERVATION_STATUSES:
+            return True
+        if status == "ambiguous_timeout":
+            state, _delay = self._v1_2_5xx_retry_state(spec, results)
+            return state != "retry"
+        if status in STOP_STATUSES:
             return True
         if status == "overlength":
             count = sum(r["status"] == status for r in results)
@@ -2287,6 +2807,12 @@ class StagedExecutor:
         if not results:
             return None
         status = results[-1]["status"]
+        if status == "ambiguous_timeout":
+            state, _delay = self._v1_2_5xx_retry_state(spec, results)
+            if state == "retry":
+                return None
+            if state != "not_applicable":
+                return state
         if (status in PERSISTENT_GLOBAL_STOPS
                 or (self.run.config.source == "empirical-live"
                     and status == "ambiguous_timeout")):
@@ -2493,9 +3019,8 @@ class StagedExecutor:
             return self._report(manifest_status, target_stage, through_block, 0, 0, selected,
                                 self.run.manifest.get("stop_identity"))
         # Authentication/quota/budget/fatal failures remain global hard stops.
-        # An ambiguous call is also never retried and never satisfies a
-        # dependency, although a later explicit resume may continue unrelated
-        # calibration identities.
+        # Ambiguous completion is also terminal except for the narrow,
+        # prospectively frozen v1.2 HTTP-5xx recovery surface below.
         for spec in selected:
             prior_stop = self._hard_stop(spec)
             if prior_stop is not None:
@@ -2533,7 +3058,12 @@ class StagedExecutor:
             while not self._status_terminal(spec, results):
                 attempt = len(results)
                 if results:
-                    self._backoff(attempt)
+                    retry_state, _delay = self._v1_2_5xx_retry_state(spec, results)
+                    if retry_state == "retry":
+                        schedule = self._v1_2_5xx_schedule_event(spec, results)
+                        self._wait_for_v1_2_5xx_retry(schedule)
+                    else:
+                        self._backoff(attempt)
                 context = ExecutionContext(self.run, attempt, tuple(results))
                 request = self.request_factory(spec, context)
                 try:
@@ -2546,6 +3076,13 @@ class StagedExecutor:
                 wire_payload_hash = None
                 if wire_payload is not None:
                     wire_payload_hash = self.run.save_wire_payload(wire_payload)
+                if results and self._eligible_ambiguous_5xx(results[-1]):
+                    scheduled = self._v1_2_5xx_schedule_event(spec, results)
+                    if (scheduled.get("next_attempt") != attempt
+                            or wire_payload_hash != scheduled.get("wire_payload_hash")):
+                        raise ResumeError(
+                            "ambiguous HTTP-5xx retry changed the exact wire payload"
+                        )
                 try:
                     reservation = self.ledger.reserve(
                         spec.identity, attempt,
@@ -2595,21 +3132,39 @@ class StagedExecutor:
                     result_dict["status"] = provider_status
                     result_dict["ambiguous"] = True
                     result_dict["known_not_completed"] = False
+                recovered_rows = [
+                    row for row in results if self._eligible_ambiguous_5xx(row)
+                ]
+                if recovered_rows and provider_status in (
+                        OBSERVATION_STATUSES | {"overlength"}):
+                    result_dict["transport_recovered"] = True
+                    result_dict["ambiguous_5xx_retry_count"] = len(recovered_rows)
+                    result_dict["prior_ambiguous_result_event_hashes"] = [
+                        row["event_hash"] for row in recovered_rows
+                    ]
+                    result_dict["retry_policy_hash"] = (
+                        V1_2_AMBIGUOUS_5XX_RETRY_POLICY_HASH
+                    )
+                    result_dict["dependency_closure_hash"] = (
+                        self._v1_2_dependency_closure_hash(spec.identity)
+                    )
                 provider_identity = _provider_identity_candidate(
                     self.run.config, provider_status, result_dict)
                 accounting = self.ledger.preview_reconciliation(
                     reservation.reservation_id, usage,
                     ambiguous=ambiguous,
                     known_not_completed=known_not_completed)
-                self.run.append("result", identity=spec.identity, attempt=attempt,
-                                reservation_id=reservation.reservation_id,
-                                request_hash=request_hash,
-                                wire_payload_hash=wire_payload_hash,
-                                status=provider_status,
-                                ambiguous=ambiguous, known_not_completed=known_not_completed,
-                                usage=usage, budget_accounting=accounting,
-                                provider_identity=provider_identity,
-                                provider_result=result_dict)
+                self.run.append(
+                    "result", identity=spec.identity, attempt=attempt,
+                    reservation_id=reservation.reservation_id,
+                    request_hash=request_hash,
+                    wire_payload_hash=wire_payload_hash,
+                    status=provider_status,
+                    ambiguous=ambiguous, known_not_completed=known_not_completed,
+                    usage=usage, budget_accounting=accounting,
+                    provider_identity=provider_identity,
+                    provider_result=result_dict,
+                )
                 try:
                     self.ledger.reconcile(reservation.reservation_id, usage,
                                           ambiguous=ambiguous,
@@ -2628,6 +3183,18 @@ class StagedExecutor:
                     return self._report(identity_stop, target_stage, through_block,
                                         dispatched, skipped,
                                         selected, spec.identity)
+                if provider_status == "ambiguous_timeout":
+                    retry_state, _delay = self._v1_2_5xx_retry_state(spec, results)
+                    if retry_state == "retry":
+                        self._v1_2_5xx_schedule_event(spec, results)
+                        continue
+                    status = (f"paused_{provider_status}"
+                              if retry_state == "not_applicable" else retry_state)
+                    stop_identity = spec.identity
+                    self.run.set_status(status, stop_identity=stop_identity,
+                                        budget=self.ledger.snapshot())
+                    return self._report(status, target_stage, through_block,
+                                        dispatched, skipped, selected, stop_identity)
                 if provider_status in STOP_STATUSES:
                     status, stop_identity = f"paused_{provider_status}", spec.identity
                     self.run.set_status(status, stop_identity=stop_identity,
@@ -2958,7 +3525,8 @@ def build_pilot_freeze_evidence(pilot_run: DurableRun,
                 or config.split != namespaces.get("pilot")
                 or config.seed_namespace != namespaces.get("pilot")
                 or config.blocks != 5
-                or plan.planned_counts() != _expected_five_block_pilot_counts(config.source)
+                or plan.planned_counts() != _expected_five_block_pilot_counts(
+                    config.source, config.protocol_version)
                 or plan.protocol_hash != confirmation_plan.protocol_hash
                 or plan.implementation_hash != confirmation_plan.implementation_hash
                 or config.model != confirmation_config.model
@@ -3067,7 +3635,8 @@ def _validate_pilot_freeze_evidence(value: Any, config: LiveConfig,
         "protocol_hash": plan.protocol_hash,
         "implementation_hash": plan.implementation_hash,
         "completed_through_stage": "probes",
-        "planned_counts": _expected_five_block_pilot_counts(config.source),
+        "planned_counts": _expected_five_block_pilot_counts(
+            config.source, config.protocol_version),
         "manifest_status": "completed_stage",
     }
     if any(canonical(evidence.get(name)) != canonical(expected)
@@ -3116,7 +3685,8 @@ def _validate_pilot_freeze_evidence(value: Any, config: LiveConfig,
             }
             or type(execution_window.get("attempts")) is not int
             or execution_window["attempts"]
-            < _expected_five_block_pilot_counts(config.source)["logical_requests"]
+            < _expected_five_block_pilot_counts(
+                config.source, config.protocol_version)["logical_requests"]
             or not isinstance(execution_window.get("calendar_dates_utc"), list)
             or not execution_window["calendar_dates_utc"]):
         raise ValueError("pilot API execution window is malformed")
@@ -3142,7 +3712,8 @@ def _validate_pilot_freeze_evidence(value: Any, config: LiveConfig,
             or type(assessment.get("experimental_verdicts_scheduled")) is not int
             or assessment.get("experimental_verdicts_scheduled") != 800
             or type(assessment.get("experimental_messages_scheduled")) is not int
-            or assessment.get("experimental_messages_scheduled") != 560
+            or assessment.get("experimental_messages_scheduled") != (
+                760 if config.protocol_version == "v1.2" else 560)
             or type(assessment.get("message_delivery_failures")) is not int
             or assessment.get("message_delivery_failures") != 0
             or canonical(assessment.get("message_delivery_failure_rate"))
@@ -3196,7 +3767,6 @@ def validate_protocol_freeze_artifact(artifact: Any, config: LiveConfig,
     if created_at.tzinfo is None or created_at.utcoffset() is None:
         raise ValueError("freeze creation timestamp requires an explicit UTC offset")
 
-    protocol_path = Path(__file__).resolve().parents[2] / "SPRINT_PROJECT_PLAN.md"
     exact = {
         "artifact_type": "protocol-freeze",
         "artifact_version": 1,
@@ -3205,7 +3775,7 @@ def validate_protocol_freeze_artifact(artifact: Any, config: LiveConfig,
         "source": config.source,
         "warning": config.warning,
         "protocol_version": config.protocol_version,
-        "protocol_hash": file_hash(protocol_path),
+        "protocol_hash": _protocol_hash(config.protocol_version),
         "config_hash": digest(config.to_dict()),
         "run_id": config.run_id,
         "run_type": config.run_type,
@@ -3238,12 +3808,16 @@ def validate_protocol_freeze_artifact(artifact: Any, config: LiveConfig,
         raise ValueError("freeze config does not match the immutable plan")
 
     namespaces = frozen.get("namespaces")
+    pilot_prefix = ("fallback-two-round/v1.2/pilot/"
+                    if config.protocol_version == "v1.2" else "pilot/")
+    confirmation_prefix = ("fallback-two-round/v1.2/confirm/"
+                           if config.protocol_version == "v1.2" else "confirm/")
     if (not isinstance(namespaces, Mapping)
             or set(namespaces) != {"pilot", "confirmation"}
             or not isinstance(namespaces.get("pilot"), str)
-            or not namespaces["pilot"].startswith("pilot/")
+            or not namespaces["pilot"].startswith(pilot_prefix)
             or not isinstance(namespaces.get("confirmation"), str)
-            or not namespaces["confirmation"].startswith("confirm/")
+            or not namespaces["confirmation"].startswith(confirmation_prefix)
             or namespaces["pilot"] == namespaces["confirmation"]
             or namespaces[config.run_type] != config.split):
         raise ValueError("freeze namespaces are invalid or do not bind the current split")
@@ -3289,8 +3863,9 @@ def validate_protocol_freeze_artifact(artifact: Any, config: LiveConfig,
         raise ValueError(
             f"freeze analysis rules differ from protocol {config.protocol_version}"
         )
-    if canonical(dict(retry)) != canonical(CANONICAL_RETRY_EXCLUSION_POLICY):
-        raise ValueError("freeze retry/exclusion rules differ from protocol v1.0")
+    if canonical(dict(retry)) != canonical(
+            canonical_retry_exclusion_policy(config.protocol_version)):
+        raise ValueError("freeze retry/exclusion rules differ from the selected protocol")
     if (not isinstance(annotation, Mapping) or set(annotation) != {"text", "sha256"}
             or not isinstance(annotation.get("text"), str) or not annotation["text"].strip()
             or hashlib.sha256(annotation["text"].encode("utf-8")).hexdigest()
@@ -3333,7 +3908,7 @@ def write_protocol_freeze(path: str | Path, *, config: LiveConfig, plan: RunPlan
             != canonical(canonical_analysis_rules(config.protocol_version))
             or not isinstance(retry_exclusion_policy, Mapping)
             or canonical(dict(retry_exclusion_policy))
-            != canonical(CANONICAL_RETRY_EXCLUSION_POLICY)):
+            != canonical(canonical_retry_exclusion_policy(config.protocol_version))):
         raise ValueError(
             "freeze requires the exact protocol-v1 versioned analysis and "
             "retry/exclusion rules"
@@ -3344,12 +3919,16 @@ def write_protocol_freeze(path: str | Path, *, config: LiveConfig, plan: RunPlan
         raise ValueError("confirmation freeze requires a finalized annotation guide")
     if not isinstance(annotation_sample_seed, str) or not annotation_sample_seed:
         raise ValueError("freeze requires a preselected annotation sample seed")
+    pilot_prefix = ("fallback-two-round/v1.2/pilot/"
+                    if config.protocol_version == "v1.2" else "pilot/")
+    confirmation_prefix = ("fallback-two-round/v1.2/confirm/"
+                           if config.protocol_version == "v1.2" else "confirm/")
     if (not isinstance(namespaces, Mapping)
             or set(namespaces) != {"pilot", "confirmation"}
             or not isinstance(namespaces["pilot"], str)
-            or not namespaces["pilot"].startswith("pilot/")
+            or not namespaces["pilot"].startswith(pilot_prefix)
             or not isinstance(namespaces["confirmation"], str)
-            or not namespaces["confirmation"].startswith("confirm/")
+            or not namespaces["confirmation"].startswith(confirmation_prefix)
             or namespaces["pilot"] == namespaces["confirmation"]
             or namespaces[config.run_type] != config.split):
         raise ValueError(
@@ -3380,7 +3959,7 @@ def write_protocol_freeze(path: str | Path, *, config: LiveConfig, plan: RunPlan
         "pilot_evidence": pilot_evidence,
         "created_at": utc_now(), "source": config.source, "warning": config.warning,
         "protocol_version": config.protocol_version,
-        "protocol_hash": file_hash(Path(__file__).resolve().parents[2] / "SPRINT_PROJECT_PLAN.md"),
+        "protocol_hash": _protocol_hash(config.protocol_version),
         "config_hash": digest(config.to_dict()),
         "run_id": config.run_id, "run_type": config.run_type, "split": config.split,
         "namespaces": json.loads(canonical(dict(namespaces))),

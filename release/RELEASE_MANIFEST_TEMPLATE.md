@@ -32,7 +32,17 @@ Completed Gate 2 evidence and current Gate 3 partial-run boundary:
 | Gate 3 evidence archive | `GATE3_PARTIAL_RUN_REPORT.md`; canonical metadata-minimal archive SHA-256 `7e49882f5f3148c1f8cde12b30ad61b8ebe14fa3556360bb6d41d29baf0a1e09` |
 | Later scope | Remaining 888 requests unauthorized and undispatched |
 
-Gate 3's one-use authorization is consumed and cannot be replayed. No existing approval permits retry, continuation, assessment completion by dispatch, or Phase 2. If v1.2 is chosen, record it prospectively as an early-futility methodological decision/deviation because no completed Gate 3 trigger artifact exists; separately review and authorize fresh calibration, smoke, and pilot releases, and never pool v1.1 observations.
+Gate 3's one-use authorization is consumed and cannot be replayed. No existing approval permits retry, continuation, assessment completion by dispatch, or Phase 2. Protocol v1.2 has been selected for prospective offline preparation as an early-futility methodological decision/deviation because no completed Gate 3 trigger artifact exists. Separately review and authorize fresh calibration, smoke, Phase 1, and Phase 2 releases, and never pool v1.1 observations.
+
+Current v1.2 artifacts are projections only. `baseline_v1_2.txt` changes the
+formation interface alone; calibration, evaluation, and probes preserve the
+original baseline, and the protocol hash binds the frozen base protocol plus
+addendum. There is no live Gate 1 controller, execution-ready/static proposal,
+authorization-issuance path, or checked-in static v1.2 authorization schema.
+Gate 2 and Gate 3 Phase 1 likewise lack live controllers and cross-run
+prerequisite assessments. The inherited October 24, 2026 pricing is stale for a
+v1.2 release and must be freshly verified. A projection must never be entered as
+an executed, review-ready, or authorized artifact in this manifest.
 
 ## 1. Release identity
 
@@ -55,8 +65,8 @@ Gate 3's one-use authorization is consumed and cannot be replayed. No existing a
 
 | Artifact | Version / namespace | Path or immutable locator | SHA-256 | Reviewer |
 | --- | --- | --- | --- | --- |
-| Scientific protocol | Frozen selected version | `SPRINT_PROJECT_PLAN.md` | [REQUIRED] | [REQUIRED] |
-| Protocol revisions | [NONE / LIST] | [REQUIRED] | [REQUIRED] | [REQUIRED] |
+| Scientific protocol | Frozen selected base version | `SPRINT_PROJECT_PLAN.md` | [REQUIRED] | [REQUIRED] |
+| Protocol revisions | [NONE / v1.2 ADDENDUM] | `PROTOCOL_V1_2_ADDENDUM.md` when v1.2; record composite base-plus-addendum protocol hash | [REQUIRED] | [REQUIRED] |
 | Historical Stage 2 provenance / consumed-release receipt | `calibration/v1` historical only | [REQUIRED] | [REQUIRED] | [REQUIRED] |
 | Selected-version Gate 1 controller/config/proposal | [`calibration/v1.1` OR `fallback-two-round/v1.2/calibration`] | [REQUIRED] | [REQUIRED] | [REQUIRED] |
 | Calibration request plan | [`calibration/v1.1` OR `fallback-two-round/v1.2/calibration`] | [REQUIRED] | [REQUIRED] | [REQUIRED] |
@@ -91,7 +101,7 @@ The main Gate 1/Gate 2/Gate 3 rows above exclude formation-peer-v1 requests. The
 
 ### Pilot run IDs
 
-- `6abffb64-f71b-4868-89cb-28b0aff0c7e3` — retained block-0 Gate 2 smoke; integrity passed; scientifically negative one-block result.
+- `6abffb64-f71b-4868-89cb-28b0aff0c7e3` — retained block-0 Gate 2 smoke; integrity passed; descriptive negative feasibility marker from one debugging-scale block, not a scientific effect result.
 - `3e0d7744-45d7-4db5-a36a-a46b634c0b98` — partial Gate 3 Phase 1 formation run; paused ambiguous; never a completed pilot.
 - [REQUIRED FOR ANY SEPARATELY AUTHORIZED FUTURE RELEASE]
 
@@ -122,10 +132,10 @@ Mark all unrun items **NOT RUN** and all scripted artifacts **MOCK ONLY**. Never
 | Prospective secondary confirmation N / analysis seed / freeze | [NOT RUN OR SECONDARY CONFIRMATION] | [CONDITIONAL] | [CONDITIONAL] | [CONDITIONAL] |
 | Secondary confirmation plan / run IDs / data lock | [NOT RUN OR DISTINCT CONFIRMATION IDS] | [CONDITIONAL] | [CONDITIONAL] | [CONDITIONAL] |
 | Secondary missing/failed/excluded run inventory | [NONE OR ALL RETAINED IDS WITH REASONS] | [CONDITIONAL] | [CONDITIONAL] | [CONDITIONAL] |
-| Main-v1.2 compatibility/version decision | [NOT ACTIVATED / EXPLICIT PROSPECTIVE DECISION] | [CONDITIONAL] | [CONDITIONAL] | [CONDITIONAL] |
+| Main-v1.2 compatibility/version decision | ONE-ROUND SECONDARY REMAINS SEPARATE; LINK `V1_2_ACTIVATION_DECISION.md` | [REQUIRED] | [REQUIRED] | [REQUIRED] |
 | Secondary claim-evidence ledger | [SECONDARY STUDY AND SPLIT LABELS] | [CONDITIONAL] | [CONDITIONAL] | [CONDITIONAL] |
 
-An earlier calibration pass is relevant only if a reviewed record establishes the unchanged model/settings/task and names the precise lineage; its authorization is never reusable. The one-round secondary protocol is not automatically compatible with the main two-round v1.2 fallback. Preserve existing secondary artifacts and record a prospective compatibility/version decision before any continuation.
+An earlier calibration pass is relevant only if a reviewed record establishes the unchanged model/settings/task and names the precise lineage; its authorization is never reusable. The prospective compatibility decision keeps the one-round secondary protocol outside the main two-round v1.2 fallback. Preserve existing secondary artifacts; any changed secondary version requires its own new prospective decision and lineage.
 
 ## 3. Provider and execution metadata
 
@@ -142,6 +152,8 @@ An earlier calibration pass is relevant only if a reviewed record establishes th
 | Approved request/token/dollar caps | [REQUIRED] |
 | Actual request/token/cost totals | [REQUIRED] |
 | Provider-identity drift | [NONE / FULL ACCOUNT] |
+| v1.2 ambiguous-5xx affected identities | [NONE / EVERY IDENTITY AND ATTEMPT PAIR] |
+| v1.2 unresolved-outcome sensitivity | [NOT APPLICABLE / ARTIFACT PATH AND HASH] |
 
 Do not include API keys, organization/project secrets, authorization headers, client cookies, or private billing identifiers.
 
@@ -235,6 +247,19 @@ The combined five-block main v1.1 plus secondary planning total is **1,660 logic
 - [ ] All hashes were computed from the exact release candidates after final edits.
 - [ ] The primary estimate uses only the locked report split: confirmation data and eligible `C` rows on the confirmation path, or pilot data and eligible `P` rows on the explicitly exploratory pilot-only path.
 - [ ] The main release implements and identifies its single frozen protocol version (v1.1 or, if the sole fallback was activated, v1.2). Optional formation-peer-v1 artifacts are separately versioned and labeled, never merged into main arms or estimates; no superseded readiness artifact is presented as current authorization or current protocol evidence.
+- [ ] For v1.2, the formation-only baseline selection and composite
+  base-plus-addendum protocol hash reproduce; calibration/evaluation/probes use
+  the original baseline exactly.
+- [ ] Any v1.2 ambiguous-5xx recovery has received integer exception/response
+  statuses exactly equal to the same eligible code, matching request IDs,
+  absent output/usage, identical retry wire bytes, and numeric delta-seconds
+  retry metadata only. The incident remains durable and fully reserved but is
+  absent from model-visible history; the first non-ambiguous outcome is terminal,
+  refusals/invalid responses remain missing/invalid, and no second
+  ambiguous-5xx-owned retry occurred.
+- [ ] All affected identities and an unresolved-outcome sensitivity artifact are
+  present because an unseen attempt may have completed and differed; compliance
+  with the cap is not presented as eliminating this uncertainty.
 - [ ] All scheduled blocks and outcomes in the locked report split are accounted for; on the confirmation path this includes every scheduled confirmation block.
 - [ ] Challenge-pair balance, six peer-policy cells, timing windows, and—on the confirmation path—the confirmation-size decision reproduce from the frozen selected-version artifacts.
 - [ ] The compliant/approval-only message hashes match exactly, approval-only/reciprocal messages pass the common-prefix audit, and no superseded peer-prompt hash is presented as belonging to the selected protocol.

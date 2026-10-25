@@ -29,7 +29,7 @@ class LiveConfigError(ValueError):
 STAGE_ORDER = ("preflight", "calibration", "smoke", "formation", "remaining_arms", "probes")
 RUN_TYPES = {"pilot", "confirmation"}
 SOURCES = {"fake-live", "empirical-live"}
-SUPPORTED_PROTOCOL_VERSIONS = {"v1.0", "v1.1"}
+SUPPORTED_PROTOCOL_VERSIONS = {"v1.0", "v1.1", "v1.2"}
 _SAFE_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._/-]{0,127}\Z")
 _SECRET_KEYS = {
     "api_key", "apikey", "authorization", "authorization_header", "bearer",
@@ -321,12 +321,14 @@ class LiveConfig:
         if self.run_type not in RUN_TYPES:
             raise LiveConfigError("run_type must be pilot or confirmation")
         run_prefix = {"pilot": "pilot/", "confirmation": "confirm/"}[self.run_type]
-        # Historical v1.0 namespaces remain byte-for-byte loadable.  New v1.1
-        # runs must make the protocol boundary explicit so a fresh plan cannot
-        # accidentally reuse a v1.0 split or fixture namespace.
+        # Historical v1.0 namespaces remain byte-for-byte loadable.  v1.1 and
+        # the separately versioned v1.2 fallback make their protocol boundary
+        # explicit so neither can reuse another version's split or fixtures.
         required_prefix = (
             run_prefix if self.protocol_version == "v1.0"
             else f"{run_prefix}{self.protocol_version}/"
+            if self.protocol_version == "v1.1"
+            else f"fallback-two-round/v1.2/{run_prefix}"
         )
         if not self.split.startswith(required_prefix):
             raise LiveConfigError(
@@ -338,6 +340,12 @@ class LiveConfig:
             if self.calibration_namespace != "calibration/v1.1":
                 raise LiveConfigError(
                     "protocol v1.1 requires calibration_namespace=calibration/v1.1"
+                )
+        elif self.protocol_version == "v1.2":
+            if self.calibration_namespace != "fallback-two-round/v1.2/calibration":
+                raise LiveConfigError(
+                    "protocol v1.2 requires calibration_namespace="
+                    "fallback-two-round/v1.2/calibration"
                 )
         elif not self.calibration_namespace.startswith("calibration/"):
             raise LiveConfigError("calibration_namespace must use a calibration/ namespace")

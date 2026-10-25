@@ -1,0 +1,45 @@
+run_id = "fake-live-fallback-two-round-v1-2"
+protocol_version = "v1.2"
+source = "fake-live"
+provider = "fake"
+model = "deterministic-evidence-policy-fake-v1"
+model_context_tokens = 1048576
+run_type = "pilot"
+split = "fallback-two-round/v1.2/pilot/fake-live-v1-2"
+stage = "probes"
+seed_namespace = "fallback-two-round/v1.2/pilot/fake-live-v1-2"
+calibration_namespace = "fallback-two-round/v1.2/calibration"
+blocks = 5
+
+[model_settings]
+response_policy = "deterministic-scripted-fake"
+temperature = 0
+
+[pricing]
+source = "local-fake-provider"
+verified_at = "2026-10-24T12:00:00-07:00"
+input_usd_per_million = "0"
+cached_input_usd_per_million = "0"
+cache_write_input_usd_per_million = "0"
+output_usd_per_million = "0"
+
+[authorization]
+kind = "fake-only"
+authorization_id = "fake-only-fallback-two-round-v1-2"
+approved_at = "2026-10-24T12:00:00-07:00"
+approved_budget_usd = "0"
+allow_paid_calls = false
+
+[limits]
+max_requests = 10000
+max_total_input_tokens = 1000000000
+max_total_output_tokens = 20000000
+max_input_tokens_per_request = 900000
+max_output_tokens_per_request = 4096
+max_in_flight = 8
+
+[retry_policy]
+transport_retries = 2
+message_overlength_retries = 1
+initial_backoff_seconds = "0"
+maximum_backoff_seconds = "0"

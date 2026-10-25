@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 import json
+import math
 import re
 import time
 from urllib.parse import urlsplit
@@ -156,6 +157,134 @@ def _classify_api_error(error, *, has_usage: bool):
 def _model_metadata(body):
     keys = ("model", "service_tier", "created_at", "system_fingerprint")
     return {key: body[key] for key in keys if key in body}
+
+
+def _safe_evidence_token(value):
+    """Return an allowlisted diagnostic token, never arbitrary header text."""
+    if not isinstance(value, str):
+        return None
+    value = value.strip()
+    if (re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,254}", value) is None
+            or contains_secret_like_string(value)):
+        return None
+    return value
+
+
+def _allowlisted_header(headers, name):
+    """Read one case-insensitive header without serializing the header mapping."""
+    if headers is None:
+        return False, None
+    if isinstance(headers, Mapping):
+        for key, value in headers.items():
+            if str(key).lower() == name:
+                return True, value
+        return False, None
+    getter = getattr(headers, "get", None)
+    if not callable(getter):
+        return False, None
+    try:
+        value = getter(name)
+    except Exception:
+        return False, None
+    return value is not None, value
+
+
+def _retry_delay(value, *, milliseconds=False):
+    if isinstance(value, bool) or not isinstance(value, (str, int, float)):
+        return None
+    text = str(value).strip()
+    if re.fullmatch(r"(?:0|[1-9][0-9]{0,7})(?:\.[0-9]{1,6})?", text) is None:
+        return None
+    seconds = float(text) / (1000 if milliseconds else 1)
+    if not math.isfinite(seconds) or not 0 <= seconds <= 86_400:
+        return None
+    return seconds
+
+
+def _normalized_retry_after(headers):
+    seconds_present, seconds_raw = _allowlisted_header(headers, "retry-after")
+    millis_present, millis_raw = _allowlisted_header(headers, "retry-after-ms")
+    seconds = _retry_delay(seconds_raw) if seconds_present else None
+    millis = (_retry_delay(millis_raw, milliseconds=True)
+              if millis_present else None)
+    if seconds is not None and millis is not None:
+        return True, max(seconds, millis), "both-max"
+    if seconds is not None:
+        return True, seconds, "retry-after"
+    if millis is not None:
+        return True, millis, "retry-after-ms"
+    return seconds_present or millis_present, None, None
+
+
+def _sdk_transport_evidence(exc, *, status_code, body, request_id):
+    """Build the closed evidence record used by prospective runner policies.
+
+    This adapter does not decide whether a scientific protocol may retry.  It
+    records the narrow facts a separately versioned runner can require while
+    legacy runners continue to see the historical ``ambiguous_timeout`` status.
+    """
+    response = getattr(exc, "response", None)
+    response_received = response is not None
+    headers = getattr(response, "headers", None) if response_received else None
+    _, x_request_id_raw = _allowlisted_header(headers, "x-request-id")
+    x_request_id = _safe_evidence_token(x_request_id_raw)
+    retry_present, retry_seconds, retry_source = _normalized_retry_after(headers)
+    safe_request_id = _safe_evidence_token(request_id)
+    safe_status = (status_code if type(status_code) is int and 100 <= status_code <= 599
+                   else None)
+    response_status_raw = (
+        getattr(response, "status_code", None) if response_received else None)
+    response_status = (
+        response_status_raw
+        if type(response_status_raw) is int and 100 <= response_status_raw <= 599
+        else None
+    )
+    response_status_consistent = (
+        safe_status is not None
+        and response_status is not None
+        and response_status == safe_status
+    )
+    detail = body.get("error", body) if isinstance(body, Mapping) else None
+    error_type = (_safe_evidence_token(detail.get("type"))
+                  if isinstance(detail, Mapping) else None)
+    error_code = (_safe_evidence_token(detail.get("code"))
+                  if isinstance(detail, Mapping) else None)
+    output_absent = ("output" not in body) if response_received and isinstance(body, Mapping) else None
+    usage_absent = ("usage" not in body) if response_received and isinstance(body, Mapping) else None
+    request_id_consistent = (
+        None if safe_request_id is None or x_request_id is None
+        else safe_request_id == x_request_id
+    )
+    retry_eligible = bool(
+        safe_status in {500, 502, 503, 504}
+        and safe_request_id is not None
+        and x_request_id is not None
+        and request_id_consistent is True
+        and response_received
+        and response_status_consistent
+        and output_absent is True
+        and usage_absent is True
+    )
+    return {
+        "schema_version": "v1",
+        "failure_class": ("sdk_http_error" if safe_status is not None
+                          else "sdk_transport_error"),
+        "http_status": safe_status,
+        "response_http_status": response_status,
+        "exception_type": _safe_evidence_token(type(exc).__name__),
+        "provider_request_id": safe_request_id,
+        "x_request_id": x_request_id,
+        "request_id_consistent": request_id_consistent,
+        "error_type": error_type,
+        "error_code": error_code,
+        "response_received": response_received,
+        "output_absent": output_absent,
+        "usage_absent": usage_absent,
+        "retry_after_present": retry_present,
+        "retry_after_seconds": retry_seconds,
+        "retry_after_source": retry_source,
+        "retry_eligible": retry_eligible,
+    }
 
 
 def provider_result_matches_raw_response(
@@ -316,7 +445,7 @@ def _sdk_failure(exc):
     body = getattr(exc, "body", None)
     if not isinstance(body, Mapping):
         body = None
-    request_id = getattr(exc, "request_id", None)
+    request_id = _safe_evidence_token(getattr(exc, "request_id", None))
     marker_parts = [name]
     detail = body.get("error", body) if body else {}
     if isinstance(detail, Mapping):
@@ -345,8 +474,11 @@ def _sdk_failure(exc):
         safe += f" (HTTP {status_code})"
     if provider_message:
         safe += f": {_redact(provider_message)}"
+    transport_evidence = _sdk_transport_evidence(
+        exc, status_code=status_code, body=body, request_id=request_id)
     return TransportFailure(status, safe, request_id=request_id, raw_response=body,
-                            known_not_completed=known_not_completed)
+                            known_not_completed=known_not_completed,
+                            transport_evidence=transport_evidence)
 
 
 class OpenAISDKTransport:
@@ -487,7 +619,8 @@ class OpenAIResponsesProvider:
         }
 
     def _failure_result(self, status, message, timing, request_id=None,
-                        raw_response_json=None, known_not_completed=False):
+                        raw_response_json=None, known_not_completed=False,
+                        transport_evidence_json="{}"):
         return ProviderResult(
             status=status,
             raw_response_json=raw_response_json,
@@ -502,6 +635,7 @@ class OpenAIResponsesProvider:
             timing=timing,
             ambiguous=status is ProviderStatus.AMBIGUOUS_TIMEOUT,
             known_not_completed=known_not_completed,
+            transport_evidence_json=transport_evidence_json,
         )
 
     def complete(self, request: ProviderRequest):
@@ -517,6 +651,7 @@ class OpenAIResponsesProvider:
                 exc.status, exc.safe_message, timing, exc.request_id,
                 raw_response_json=raw,
                 known_not_completed=exc.known_not_completed,
+                transport_evidence_json=exc.transport_evidence_json,
             )
         except Exception as exc:  # transport contract violation, never guessed retryable
             timing = ProviderTiming(started_at, utc_now(), time.monotonic() - started)

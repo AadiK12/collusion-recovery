@@ -63,11 +63,21 @@ Its SHA-256 is `7e49882f5f3148c1f8cde12b30ad61b8ebe14fa3556360bb6d41d29baf0a1e09
 
 These anchors contain no authorization secret or nonce. Recompute them before relying on a copied archive; a mismatch requires integrity review.
 
-## Decision boundary
+## Subsequent decision boundary
 
-No existing approval permits another call. The next scientific choice is pending:
+No existing approval permits another call. On October 24, 2026, the project
+selected prospective **offline preparation** of the sole v1.2 two-round fallback;
+see [`V1_2_ACTIVATION_DECISION.md`](V1_2_ACTIVATION_DECISION.md) and
+[`PROTOCOL_V1_2_ADDENDUM.md`](PROTOCOL_V1_2_ADDENDUM.md). The alternative was to
+stop protocol v1.1 and report this feasibility boundary. The selection does not
+change, complete, or invalidate the v1.1 partial-run record.
 
-1. stop protocol v1.1 and report this feasibility boundary, preserving the partial run and its missingness; or
-2. prospectively prepare the protocol's sole v1.2 two-round fallback under a fresh namespace, fresh calibration, fresh smoke, fresh pilot, new proposals, and new exact authorizations.
-
-Because no completed Gate 3 trigger artifact exists, choosing v1.2 would be an explicitly documented early-futility methodological decision/deviation rather than an automatic completed-gate transition. Its calibration, smoke, and pilot releases each require separate prospective review and authorization. The partial v1.1 observations must never be pooled with v1.2. Resuming the interrupted v1.1 run, dispatching the remaining 92 Phase 1 identities, or preparing or running the 888-request Phase 2 is not authorized by the consumed Gate 3 approval.
+Because no completed Gate 3 trigger artifact exists, this is an explicitly
+documented early-futility methodological decision/deviation rather than an
+automatic completed-gate transition. The v1.2 calibration, smoke, Phase 1, and
+Phase 2 releases each require their own prerequisite evidence, prospective
+review, and exact authorization. No v1.2 authorization or empirical observation
+exists at this checkpoint. The partial v1.1 observations must never be pooled
+with v1.2. Resuming the interrupted v1.1 run, dispatching its remaining 92 Phase
+1 identities, or preparing or running its 888-request Phase 2 remains
+unauthorized by the consumed Gate 3 approval.

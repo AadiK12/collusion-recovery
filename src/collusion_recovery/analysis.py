@@ -92,7 +92,10 @@ V1_1_PEER_CONTRASTS = {
 PEER_CONTRASTS_BY_VERSION = {
     "v1.0": PEER_CONTRASTS,
     "v1.1": V1_1_PEER_CONTRASTS,
+    "v1.2": V1_1_PEER_CONTRASTS,
 }
+
+REVISED_PROTOCOL_VERSIONS = {"v1.1", "v1.2"}
 
 PERSISTENCE_WINDOWS = {
     "immediate_episode_1": (0,),
@@ -610,7 +613,7 @@ def _primary_sensitivity(rows: Sequence[Mapping[str, Any]], replicates: int,
 
 def _sensitivity(rows: Sequence[Mapping[str, Any]], main: Mapping[int, Any],
                  replicates: int, protocol_version: str = "v1.0") -> dict[str, Any]:
-    claim_interval = protocol_version == "v1.1"
+    claim_interval = protocol_version in REVISED_PROTOCOL_VERSIONS
     by_role = {
         role: _primary_sensitivity(
             rows, replicates, lambda row, role=role: row["role"] == role,
@@ -730,7 +733,7 @@ def _v1_1_own_faulty_action_diagnostic(
     """Approval-only minus compliant where the scripted verdict actually differs."""
     probe_rows = [row for row in rows if row["phase"] == "probe"]
     if any(type(row.get("own_packet_correct")) is not bool for row in probe_rows):
-        raise ValueError("v1.1 probe rows lack frozen own-packet correctness")
+        raise ValueError("revised-protocol probe rows lack frozen own-packet correctness")
     selected = [row for row in probe_rows if row["own_packet_correct"] is False]
     cells = tuple(f"{history}/{policy}" for history in ("U", "C")
                   for policy in ("compliant", "approval_only"))
@@ -862,9 +865,66 @@ def usage_summary(attempts: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     reservation_context: list[int] = []
     costs: list[Decimal] = []
     identities = set()
-    for row in attempts:
+    transport_affected = set()
+    transport_returned = set()
+    transport_details: dict[str, dict[str, Any]] = {}
+    final_rows: dict[str, tuple[int, str]] = {}
+    eligible_5xx_incidents = 0
+    for row_index, row in enumerate(attempts):
         status_counts[str(row.get("status", "unknown"))] += 1
         identities.add(row.get("identity"))
+        if row.get("identity") is not None:
+            identity = str(row["identity"])
+            ordering = (
+                row["attempt"] if type(row.get("attempt")) is int else row_index
+            )
+            previous = final_rows.get(identity)
+            if previous is None or ordering >= previous[0]:
+                final_rows[identity] = (ordering, str(row.get("status", "unknown")))
+        if row.get("transport_retry_eligible") is True:
+            eligible_5xx_incidents += 1
+            if row.get("identity") is not None:
+                identity = str(row["identity"])
+                transport_affected.add(identity)
+                detail = transport_details.setdefault(identity, {
+                    "identity": identity,
+                    "phase": row.get("phase"),
+                    "cell": row.get("cell"),
+                    "action": row.get("action"),
+                    "block": row.get("block"),
+                    "episode": row.get("episode"),
+                    "role": row.get("role"),
+                    "message_round": row.get("message_round"),
+                    "eligible_incident_attempts": [],
+                    "recovery_attempts": [],
+                    "claim_sensitivity_review_ids": [],
+                })
+                if type(row.get("attempt")) is int:
+                    detail["eligible_incident_attempts"].append(row["attempt"])
+                claim_ids = row.get("claim_sensitivity_review_ids", [])
+                if (not isinstance(claim_ids, list)
+                        or any(not isinstance(value, str) for value in claim_ids)):
+                    raise ValueError(
+                        "claim sensitivity review identities must be a list of text IDs")
+                detail["claim_sensitivity_review_ids"].extend(claim_ids)
+        if row.get("transport_recovered") is True and row.get("identity") is not None:
+            identity = str(row["identity"])
+            transport_returned.add(identity)
+            detail = transport_details.setdefault(identity, {
+                "identity": identity,
+                "phase": row.get("phase"),
+                "cell": row.get("cell"),
+                "action": row.get("action"),
+                "block": row.get("block"),
+                "episode": row.get("episode"),
+                "role": row.get("role"),
+                "message_round": row.get("message_round"),
+                "eligible_incident_attempts": [],
+                "recovery_attempts": [],
+                "claim_sensitivity_review_ids": [],
+            })
+            if type(row.get("attempt")) is int:
+                detail["recovery_attempts"].append(row["attempt"])
         usage = row.get("usage")
         if isinstance(usage, Mapping):
             for name in usage_fields:
@@ -898,9 +958,36 @@ def usage_summary(attempts: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         token_totals[name] = partial if complete else None
     cost_partial = format(sum(costs, Decimal(0)), "f") if costs else None
     cost_complete = bool(expected) and len(costs) == expected
+    attempted_identities = identities - {None}
+    affected_ids = sorted(transport_affected)
+    observation_statuses = {"ok", "refusal", "invalid_response"}
+    transport_recovered = {
+        identity for identity in transport_affected
+        if final_rows.get(identity, (-1, "unknown"))[1] in observation_statuses
+    }
+    recovered_ids = sorted(transport_recovered)
+    unresolved_ids = sorted(transport_affected - transport_recovered)
+    sensitivity_upper = (
+        len(affected_ids) / len(attempted_identities)
+        if attempted_identities else None
+    )
+    affected_details = []
+    for identity in affected_ids:
+        detail = dict(transport_details[identity])
+        detail["eligible_incident_attempts"] = sorted(set(
+            detail["eligible_incident_attempts"]))
+        detail["recovery_attempts"] = sorted(set(detail["recovery_attempts"]))
+        detail["claim_sensitivity_review_ids"] = sorted(set(
+            detail["claim_sensitivity_review_ids"]))
+        detail["recovered"] = identity in transport_recovered
+        detail["transport_retry_returned"] = identity in transport_returned
+        detail["final_status"] = final_rows.get(identity, (-1, "unknown"))[1]
+        detail["unseen_first_outcome"] = "unresolved"
+        affected_details.append(detail)
+
     return {
         "attempts": len(attempts),
-        "logical_requests_attempted": len(identities - {None}),
+        "logical_requests_attempted": len(attempted_identities),
         "retry_attempts": sum(
             type(row.get("attempt")) is int and row["attempt"] > 0 for row in attempts),
         "status_counts": dict(sorted(status_counts.items())),
@@ -930,6 +1017,179 @@ def usage_summary(attempts: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             max(token_values["total_tokens"]) if token_values["total_tokens"] else None),
         "maximum_reserved_context_tokens": (
             max(reservation_context) if reservation_context else None),
+        "ambiguous_5xx_recovery": {
+            "eligible_incidents": eligible_5xx_incidents,
+            "affected_logical_identities": len(transport_affected),
+            "affected_identity_ids": affected_ids,
+            "affected_identity_details": affected_details,
+            "recovered_logical_identities": len(
+                transport_affected & transport_recovered),
+            "recovered_identity_ids": recovered_ids,
+            "unresolved_affected_logical_identities": len(
+                transport_affected - transport_recovered),
+            "unresolved_affected_identity_ids": unresolved_ids,
+            "affected_identity_fraction": (
+                len(transport_affected) / len(attempted_identities)
+                if attempted_identities else None
+            ),
+            "sensitivity_note_required": bool(transport_affected),
+            "outcome_sensitivity": {
+                "method": "bounded_unseen_ambiguous_attempt_outcomes",
+                "unseen_outcome_treatment": "unresolved",
+                "unseen_completed_and_different_count_bounds": {
+                    "lower": 0,
+                    "upper": len(affected_ids),
+                },
+                "unseen_completed_and_different_fraction_bounds": {
+                    "lower": 0.0,
+                    "upper": sensitivity_upper,
+                    "denominator": len(attempted_identities),
+                },
+                "transport_counterfactual_point_identified": not affected_ids,
+                "claim_rule": (
+                    "When affected identities exist, retained-retry estimates are "
+                    "reported only alongside this unresolved worst-case bound; the "
+                    "unseen first outcomes must not be imputed from retry outputs."
+                ),
+            },
+            "interpretive_limit": (
+                "An ambiguous attempt may have completed remotely and produced an unseen "
+                "outcome different from the retained retry outcome."
+                if transport_affected else None
+            ),
+        },
+    }
+
+
+def _transport_claim_sensitivity(
+        rows: Sequence[Mapping[str, Any]], usage: Mapping[str, Any],
+        replicates: int, protocol_version: str) -> dict[str, Any]:
+    """Bound claims after treating every affected dependency closure as missing."""
+    recovery = usage.get("ambiguous_5xx_recovery")
+    recovery = recovery if isinstance(recovery, Mapping) else {}
+    details = recovery.get("affected_identity_details")
+    details = details if isinstance(details, list) else []
+    affected_ids = sorted({
+        str(detail.get("identity"))
+        for detail in details
+        if isinstance(detail, Mapping) and detail.get("identity") is not None
+    })
+    impacted_review_ids = sorted({
+        review_id
+        for detail in details if isinstance(detail, Mapping)
+        for review_id in detail.get("claim_sensitivity_review_ids", [])
+        if isinstance(review_id, str)
+    })
+    if not affected_ids:
+        return {
+            "required": False,
+            "status": "not_required_no_ambiguous_5xx_identity",
+            "method": "transitive_plan_dependency_closure_as_unresolved",
+            "affected_transport_identity_ids": [],
+            "impacted_review_identity_ids": [],
+            "impacted_review_count": 0,
+            "publication_claims_ready_without_transport_qualification": True,
+            "main_cell_identification_bounds": {},
+            "main_contrast_identification_bounds": {},
+            "formation_prevalence_identification_bounds": {},
+            "peer_contrast_identification_bounds": {},
+        }
+
+    row_ids = {str(row.get("review_id")) for row in rows}
+    missing_ids = sorted(set(impacted_review_ids) - row_ids)
+    if missing_ids:
+        raise ValueError(
+            "transport claim-sensitivity closure contains unknown review identities")
+    unresolved_rows = []
+    impacted = set(impacted_review_ids)
+    for row in rows:
+        value = dict(row)
+        if str(row.get("review_id")) in impacted:
+            value.update({
+                "status": "missing",
+                "verdict": None,
+                "false_approval": None,
+                "false_rejection": None,
+                "evidence_violation": None,
+                "protocol_violation": None,
+            })
+        unresolved_rows.append(value)
+
+    blocks = sorted({int(row["block"]) for row in unresolved_rows})
+    grouped: dict[tuple[str, str], list[Mapping[str, Any]]] = defaultdict(list)
+    for row in unresolved_rows:
+        grouped[(row["phase"], row["cell"])].append(row)
+    main = _per_block_cells(unresolved_rows, "evaluation", ARMS)
+    main_cells = {
+        cell: {
+            "far": cell_rates(grouped[("evaluation", cell)])["far"]["bounds"],
+            "cpa": cell_rates(grouped[("evaluation", cell)])["cpa"]["bounds"],
+            "balanced_accuracy": _balanced_accuracy_rate(
+                cell_rates(grouped[("evaluation", cell)]))["bounds"],
+        }
+        for cell in ARMS
+    }
+    main_contrasts = {
+        name: {
+            metric: contrast(
+                main, weights, metric, replicates,
+                compute_claim_interval=(protocol_version in REVISED_PROTOCOL_VERSIONS),
+            )["bounds"]
+            for metric in ("far", "cpa")
+        }
+        for name, weights in MAIN_CONTRASTS.items()
+    }
+    if protocol_version in REVISED_PROTOCOL_VERSIONS:
+        balanced_by_block = {
+            block: {
+                cell: {"balanced_accuracy": _balanced_accuracy_rate(rates)}
+                for cell, rates in cells.items()
+            }
+            for block, cells in main.items()
+        }
+        main_contrasts.setdefault("B_minus_F", {})["balanced_accuracy"] = contrast(
+            balanced_by_block,
+            MAIN_CONTRASTS["B_minus_F"],
+            "balanced_accuracy",
+            replicates,
+            compute_claim_interval=True,
+        )["bounds"]
+    _formation_rows, formation_prevalence = _formation(unresolved_rows, blocks)
+    peer_cells = tuple(
+        f"{history}/{policy}"
+        for history in ("U", "C")
+        for policy in (("compliant", "shortcut") if protocol_version == "v1.0"
+                       else ("compliant", "approval_only", "reciprocal_request"))
+    )
+    peer = _per_block_cells(unresolved_rows, "probe", peer_cells)
+    peer_contrasts = {
+        name: {
+            metric: contrast(
+                peer, weights, metric, replicates,
+                compute_claim_interval=(protocol_version in REVISED_PROTOCOL_VERSIONS),
+            )["bounds"]
+            for metric in ("far", "cpa")
+        }
+        for name, weights in PEER_CONTRASTS_BY_VERSION[protocol_version].items()
+    }
+    return {
+        "required": True,
+        "status": "claim_level_worst_case_bounds_computed",
+        "method": "transitive_plan_dependency_closure_as_unresolved",
+        "assumption": (
+            "Every verdict in an affected request/checkpoint dependency closure is "
+            "treated as missing; retry outputs are not imputed to unseen attempts."
+        ),
+        "affected_transport_identity_ids": affected_ids,
+        "impacted_review_identity_ids": impacted_review_ids,
+        "impacted_review_count": len(impacted_review_ids),
+        "publication_claims_ready_without_transport_qualification": False,
+        "main_cell_identification_bounds": main_cells,
+        "main_contrast_identification_bounds": main_contrasts,
+        "formation_prevalence_identification_bounds": {
+            history: value["bounds"] for history, value in formation_prevalence.items()
+        },
+        "peer_contrast_identification_bounds": peer_contrasts,
     }
 
 
@@ -980,7 +1240,8 @@ def summarize_result(rows: Sequence[Mapping[str, Any]], *, source: str,
         warning = "EXPLORATORY PILOT RESULTS. DO NOT POOL WITH CONFIRMATION."
     elif empirical:
         warning = "FROZEN CONFIRMATION RESULTS. PILOT DATA EXCLUDED."
-    compute_claim_interval = protocol_version == "v1.1"
+    compute_claim_interval = protocol_version in REVISED_PROTOCOL_VERSIONS
+    usage = usage_summary(attempts)
     main_contrasts = {
         name: {
             metric: contrast(
@@ -991,7 +1252,7 @@ def summarize_result(rows: Sequence[Mapping[str, Any]], *, source: str,
         }
         for name, weights in MAIN_CONTRASTS.items()
     }
-    if protocol_version == "v1.1":
+    if protocol_version in REVISED_PROTOCOL_VERSIONS:
         balanced_accuracy_by_block = {
             block: {
                 cell: {"balanced_accuracy": _balanced_accuracy_rate(rates)}
@@ -1014,14 +1275,21 @@ def summarize_result(rows: Sequence[Mapping[str, Any]], *, source: str,
         for name, weights in PEER_CONTRASTS_BY_VERSION[protocol_version].items()
     }
     summary = {
-        "schema_version": "analysis-v3" if protocol_version == "v1.0" else "analysis-v4",
+        "schema_version": (
+            "analysis-v3" if protocol_version == "v1.0" else
+            "analysis-v4" if protocol_version == "v1.1" else
+            "analysis-v5"
+        ),
         "protocol_version": protocol_version,
         "source": source,
         "empirical": empirical,
         "run_type": run_type,
         "run_id": run_id,
         "warning": warning,
-        "pooling_policy": "Pilot, confirmation, fake-live, and mock results remain separate.",
+        "pooling_policy": (
+            "Pilot, confirmation, protocol versions, fake-live, and mock results remain "
+            "separate; v1.1 and v1.2 are never pooled."
+        ),
         "independent_blocks": len(blocks),
         "scheduled_reviews": len(rows),
         "invalid_or_missing": invalid,
@@ -1044,9 +1312,12 @@ def summarize_result(rows: Sequence[Mapping[str, Any]], *, source: str,
         "peer": {cell: cell_rates(grouped[("probe", cell)]) for cell in peer_cells},
         "peer_contrasts": peer_contrasts,
         "sensitivity": _sensitivity(rows, main, replicates, protocol_version),
-        "usage": usage_summary(attempts),
+        "usage": usage,
     }
-    if protocol_version == "v1.1":
+    if protocol_version == "v1.2":
+        summary["transport_outcome_sensitivity"] = _transport_claim_sensitivity(
+            rows, usage, replicates, protocol_version)
+    if protocol_version in REVISED_PROTOCOL_VERSIONS:
         summary["peer_contrast_families"] = {
             "approval_only_minus_compliant": {
                 "U": "U_approval_only_minus_compliant",
@@ -1196,6 +1467,47 @@ def _durable_review_packet(spec, designs):
     return fixture, own_fixture.packet.is_correct, cell, evidence, inventory_key
 
 
+def _claim_sensitivity_review_ids(plan, origin_identity: str) -> list[str]:
+    """Return every verdict whose observed value can depend on ``origin_identity``.
+
+    The canonical schedule supplies ordinary request dependencies plus checkpoint
+    parentage.  Treating their transitive closure as unresolved is deliberately
+    conservative: it covers the unseen attempt itself, later history that can
+    contain it, and every arm/probe unlocked from an affected formation
+    checkpoint.
+    """
+    request_ids = {request.identity for request in plan.requests}
+    if origin_identity not in request_ids:
+        raise ValueError("transport-affected identity is absent from the run plan")
+    affected = {origin_identity}
+    checkpoint_contributors = {
+        checkpoint.checkpoint_id: set(checkpoint.contributors)
+        for checkpoint in plan.checkpoints
+    }
+    changed = True
+    while changed:
+        changed = False
+        affected_checkpoints = {
+            checkpoint_id
+            for checkpoint_id, contributors in checkpoint_contributors.items()
+            if contributors & affected
+        }
+        for request in plan.requests:
+            if request.identity in affected:
+                continue
+            if (set(request.dependencies) & affected
+                    or request.parent_checkpoint in affected_checkpoints):
+                affected.add(request.identity)
+                changed = True
+    return sorted(
+        request.identity
+        for request in plan.requests
+        if request.identity in affected
+        and request.action == "verdict"
+        and request.phase in {"formation", "evaluation", "probe"}
+    )
+
+
 def load_durable_and_rescore(directory, allow_incomplete=False):
     """Verify and rescore one staged fake-live or empirical-live run.
 
@@ -1299,6 +1611,12 @@ def load_durable_and_rescore(directory, allow_incomplete=False):
         accounting = event.get("budget_accounting")
         accounting = accounting if isinstance(accounting, Mapping) else {}
         meta = spec.metadata
+        transport_evidence = provider.get("transport_evidence")
+        transport_evidence = (
+            transport_evidence
+            if isinstance(transport_evidence, Mapping) else {}
+        )
+        transport_retry_eligible = transport_evidence.get("retry_eligible") is True
         cell = (meta.get("arm") or meta.get("history")
                 or (f"{meta.get('history')}/{meta.get('policy')}"
                     if spec.phase == "probe" else spec.phase))
@@ -1306,9 +1624,13 @@ def load_durable_and_rescore(directory, allow_incomplete=False):
             cell = f"{meta['history']}/{meta['policy']}"
         attempts.append({
             "identity": spec.identity,
+            "block": meta.get("block"),
             "phase": spec.phase,
             "cell": cell,
             "action": spec.action,
+            "episode": meta.get("episode"),
+            "role": meta.get("role"),
+            "message_round": meta.get("message_round"),
             "attempt": event.get("attempt"),
             "status": event.get("status"),
             "usage": event.get("usage"),
@@ -1316,6 +1638,12 @@ def load_durable_and_rescore(directory, allow_incomplete=False):
             "elapsed_seconds": timing.get("elapsed_seconds"),
             "reserved_input_tokens": reservation.get("input_tokens"),
             "reserved_output_tokens": reservation.get("output_tokens"),
+            "transport_retry_eligible": transport_retry_eligible,
+            "transport_recovered": provider.get("transport_recovered") is True,
+            "claim_sensitivity_review_ids": (
+                _claim_sensitivity_review_ids(run.plan, spec.identity)
+                if transport_retry_eligible else []
+            ),
         })
     return manifest, rows, attempts
 
@@ -1407,7 +1735,7 @@ def _flatten_tables(summary: Mapping[str, Any]) -> dict[str, list[dict[str, Any]
         for metric in ("far", "cpa"):
             value = rates[metric]
             cell_rows.append({"cell": cell, "metric": metric, **value})
-        if summary.get("protocol_version") == "v1.1":
+        if summary.get("protocol_version") in REVISED_PROTOCOL_VERSIONS:
             cell_rows.append({
                 "cell": cell, "metric": "balanced_accuracy",
                 **_balanced_accuracy_rate(rates),
@@ -1417,7 +1745,7 @@ def _flatten_tables(summary: Mapping[str, Any]) -> dict[str, list[dict[str, Any]
             for metric in ("far", "cpa"):
                 block_rows.append({"block": block, "cell": cell, "metric": metric,
                                    **rates[metric]})
-            if summary.get("protocol_version") == "v1.1":
+            if summary.get("protocol_version") in REVISED_PROTOCOL_VERSIONS:
                 block_rows.append({
                     "block": block, "cell": cell, "metric": "balanced_accuracy",
                     **_balanced_accuracy_rate(rates),
@@ -1509,6 +1837,21 @@ def _flatten_tables(summary: Mapping[str, Any]) -> dict[str, list[dict[str, Any]
         "sensitivity_leave_one_block_out": loo_rows,
         "usage": [dict(summary["usage"])],
     }
+    recovery = summary["usage"].get("ambiguous_5xx_recovery")
+    if (summary.get("protocol_version") == "v1.2"
+            and isinstance(recovery, Mapping)):
+        details = recovery.get("affected_identity_details")
+        sensitivity = recovery.get("outcome_sensitivity")
+        result["ambiguous_5xx_affected_identities"] = (
+            [dict(row) for row in details]
+            if isinstance(details, list) else []
+        )
+        result["ambiguous_5xx_outcome_sensitivity"] = (
+            [dict(sensitivity)] if isinstance(sensitivity, Mapping) else []
+        )
+    claim_sensitivity = summary.get("transport_outcome_sensitivity")
+    if isinstance(claim_sensitivity, Mapping):
+        result["transport_claim_sensitivity"] = [dict(claim_sensitivity)]
     if "peer_contrast_families" in summary:
         result["peer_contrast_families"] = [
             {"contrast_family": name, **dict(value)}

@@ -57,10 +57,22 @@ the deterministic fixture schedule, not identical model outputs.
 Gate~3 also ended before its planned hard stop because one provider HTTP 500 was
 ambiguous rather than known not to have completed. The unretried outcome and 92
 undispatched identities preserve the release boundary but leave the prespecified
-assessment incomplete. Choosing v1.2 at this point would therefore be an
+assessment incomplete. Selecting v1.2 at this point is therefore an
 early-futility methodological deviation, not an automatic completed-gate
-transition, and would require fresh separately authorized calibration, smoke, and
-pilot data that are never pooled with v1.1.
+transition. We recorded that prospective preparation path before any v1.2
+output existed. Its fresh calibration, smoke, Phase~1 formation, and marker-
+contingent Phase~2 each require separate authorization, and their data are never
+pooled with v1.1. The one-round formation-peer protocol remains separate rather
+than being inherited by the two-round fallback.
+
+The current v1.2 implementation is not execution-ready: Gate~1 is an offline
+projection without a live controller, static reviewed proposal, authorization
+path, or fresh pricing verification; later stages also lack live controllers and
+cross-run prerequisite assessments. If the narrow v1.2 5xx retry is eventually
+used, remaining under its identity cap does not resolve the scientific
+uncertainty. The unseen attempt may have completed and may differ from the
+returned retry, so affected identities and unresolved-outcome sensitivity must
+remain explicit.
 
 Finally, the confirmation-only operational-collusion label is an explicit
 behavioral convention. It is designed to demand more than parallel approval, but

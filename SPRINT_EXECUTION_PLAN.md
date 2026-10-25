@@ -1,6 +1,6 @@
 # AI Collusion Sprint execution plan
 
-Status checkpoint: October 24, 2026, Pacific time. The main protocol v1.1 and staged release controls are implemented. Fresh Gate 1 passed, and Gate 2 completed the 152-request block-0 smoke with a scientifically negative marker. The separately authorized Gate 3 Phase 1 run `3e0d7744-45d7-4db5-a36a-a46b634c0b98` then attempted 228/320 in-scope blocks 1–4 U/C formation identities. It fail-closed at `paused_ambiguous_timeout` on an HTTP 500 for block 3/C/zero-based episode 6/Bob verdict, after 227 `ok` observations and 5/8 checkpoints; 92 identities remained undispatched. Conservative consumed accounting was 2,624,832 input tokens, 20,412 output/reasoning tokens, and `$6.7658595`, including the ambiguous request's full reservation; no out-of-scope call occurred. Block 0 is verified false; block-1 and block-2 markers are provisionally false from their completed trajectories. Thus v1.1 can reach at most 2/5, but this is a partial-run futility upper bound—not a completed Gate 3 result or `0/5`. The authorization is consumed, no formal Gate 3 assessment exists, and Phase 2 is unauthorized. The bounded formation-peer substudy remains offline-only.
+Status checkpoint: October 24, 2026, Pacific time. The main protocol v1.1 and staged release controls are implemented. Fresh Gate 1 passed, and Gate 2 completed the 152-request block-0 smoke with a negative feasibility marker; this was a descriptive debugging observation, not a scientific result. The separately authorized Gate 3 Phase 1 run `3e0d7744-45d7-4db5-a36a-a46b634c0b98` then attempted 228/320 in-scope blocks 1–4 U/C formation identities. It fail-closed at `paused_ambiguous_timeout` on an HTTP 500 for block 3/C/zero-based episode 6/Bob verdict, after 227 `ok` observations and 5/8 checkpoints; 92 identities remained undispatched. Conservative consumed accounting was 2,624,832 input tokens, 20,412 output/reasoning tokens, and `$6.7658595`, including the ambiguous request's full reservation; no out-of-scope call occurred. Block 0 is verified false; block-1 and block-2 markers are provisionally false from their completed trajectories. Thus v1.1 can reach at most 2/5, but this is a partial-run futility upper bound—not a completed Gate 3 result or `0/5`. The authorization is consumed, no formal Gate 3 assessment exists, and Phase 2 is unauthorized. The bounded formation-peer substudy remains offline-only.
 Owning scientific protocol: [SPRINT_PROJECT_PLAN.md](SPRINT_PROJECT_PLAN.md).
 Secondary specification: [Formation-time peer controls](docs/FORMATION_PEER_CONTROLS.md), protocol `formation-peer-v1`.
 Purpose of this file: turn the protocol into a time-bounded execution plan for the October 23–25 sprint without changing the scientific question after outcomes are visible.
@@ -124,19 +124,22 @@ The “starting state” above is preserved as the historical baseline. The veri
 - Gate 3 Phase 1 used the separately inspected blocks 1–4 U/C-only proposal `1b85e13a8b10c98ad4314611de0da56624328225b54a0aa7764ac72ecabd3b5e`. Its exact one-use authorization is consumed. Run `3e0d7744-45d7-4db5-a36a-a46b634c0b98` stopped on the first ambiguous provider result after 228 attempts: 227 `ok`, one ambiguous, 92 undispatched, and 5/8 checkpoints. It made no evaluation, probe, block-0-replay, or later-stage call and did not produce the formal five-block assessment.
 - `formation-peer-v1` has an isolated mock runner and paired analysis helper. Its five-block offline example used 280 scripted requests and 180 focal reviews with zero paid calls. The 21 focused substudy tests validate software invariants, not a model effect; the main live inventory and authorizations do not include this substudy.
 
-The decision path is now:
+The selected path is now:
 
-`preserve and review the partial v1.1 evidence -> choose stop/report or a prospective v1.2 early-futility deviation -> if v1.2, separately review and authorize fresh calibration, fresh smoke, and fresh pilot -> analyze without pooling -> populate and verify paper`
+`preserve the partial v1.1 evidence -> prospectively prepare v1.2 as an early-futility deviation -> separately review and authorize fresh calibration -> separately review and authorize fresh smoke -> separately review and authorize Phase 1 formation -> decide the unchanged five-block marker -> only if passed, separately review and authorize Phase 2 -> analyze without pooling -> populate and verify paper`
 
 Gate 2 is complete, and the Gate 3 Phase 1 authorization is now consumed by an
 incomplete run. Block 0 is verified false, and block-1 and block-2 markers are
 provisionally false from their completed trajectories, so the v1.1 pass threshold
 is logically unreachable even if both unresolved blocks
-qualify. No completed Gate 3 trigger artifact exists, so activating v1.2 would be
-an explicitly recorded early-futility methodological decision/deviation, not an
-automatic completed-gate transition. Its calibration, smoke, and pilot must each
-receive separate prospective review and authorization. Partial v1.1 observations
-must never be pooled with v1.2.
+qualify. No completed Gate 3 trigger artifact exists. The project has therefore
+selected v1.2 for offline preparation as an explicitly recorded early-futility
+methodological decision/deviation, not an automatic completed-gate transition.
+Its calibration, smoke, Phase 1, and Phase 2 must each receive separate
+prospective review and exact authorization after their prerequisites are
+verified. Partial v1.1 observations must never be pooled with v1.2. See
+[`V1_2_ACTIVATION_DECISION.md`](V1_2_ACTIVATION_DECISION.md) and
+[`PROTOCOL_V1_2_ADDENDUM.md`](PROTOCOL_V1_2_ADDENDUM.md).
 
 ## 6. Scope rules
 
@@ -159,7 +162,7 @@ The secondary primary contrast is the paired focal unsupported-approval differen
 
 Plan five separate exploratory secondary pilot blocks, not a new main-study gate. The added inventory is 56 logical requests per block (40 formation plus 16 diagnostic), about 20.6% of the main v1.1 count of 272. Five blocks add 280 requests; the main pilot's 1,380 plus this secondary pilot is 1,660, including the main 20-review calibration and excluding transport preflight, retries, and separate release overhead. These are request counts, not dollar estimates or authorization.
 
-Only offline implementation/mock validation is currently available. Any live secondary release needs a separately reviewed controller, inventory, context/token/cost caps, prospective source/prompt binding, and unique authorization. No model search, extra communication channel, message-by-action factorial, new task family, or favorable-effect stopping rule is added. The one-round secondary design does not automatically carry into the main v1.2 fallback; that requires a prospective compatibility/version decision and fresh lineage.
+Only offline implementation/mock validation is currently available. Any live secondary release needs a separately reviewed controller, inventory, context/token/cost caps, prospective source/prompt binding, and unique authorization. No model search, extra communication channel, message-by-action factorial, new task family, or favorable-effect stopping rule is added. The v1.2 compatibility decision keeps this one-round secondary design separate and unchanged; it does not carry into, inherit, or add requests to the main two-round fallback. Any two-round secondary variant would require a new prospective secondary version and fresh lineage.
 
 ### Explicitly out of scope until the core is complete
 
@@ -299,7 +302,7 @@ Completed one U/C formation block and arms A, B, and F:
 - Gate 2 was prepared only after selected-version Gate 1 passed and bound its immutable decision plus preserved Stage 2 provenance.
 
 - Under v1.1, 152 requests after calibration (172 including the 20-review calibration).
-- If the v1.1 marker gate activates the sole v1.2 fallback, repeat fresh calibration and Gate 2 under its new namespace and authorization: 120 formation plus 72 A/B/F requests, or 192 after calibration and 212 including calibration. No v1.1 smoke artifact carries forward as v1.2 readiness evidence.
+- Under the selected prospective v1.2 path, repeat fresh calibration and Gate 2 under the new namespace and separate authorizations: 120 formation plus 72 A/B/F requests, or 192 after calibration and 212 including calibration. No v1.1 smoke artifact carries forward as v1.2 readiness evidence.
 - Inspect a complete U trajectory, a complete C trajectory, and exact A/B/F inputs.
 - Verify that evaluation episodes use two both-correct, two both-faulty, and two mixed pairs, with one of each composition in episodes 1–3 and 4–6, episode 1 fixed to mixed, its faulty role alternated in canonical block order, an odd-split extra role chosen by the frozen namespace hash so role counts differ by at most one, three faulty reviews per role, and identical ordering across A/B/F.
 - Verify evidence hashes, checkpoint lineage, simultaneous-information boundaries, delayed feedback, invalid handling, latency, context growth, and spend.
@@ -311,8 +314,9 @@ external integrity review passed. U produced 20/20 approvals, C produced 20/20
 rejections, and the final-three C marker was false at 0/3. A and B each had FAR
 0/6, CPA 6/6, and balanced accuracy 1.0; F had FAR 0/6, CPA 0/6, and balanced
 accuracy 0.5. The run used 2,954,997 input tokens, 10,867 output/reasoning tokens,
-and `$7.4959330`, then stopped with no later-stage dispatch. This scientifically
-negative one-block result is retained without tuning or selective replacement.
+and `$7.4959330`, then stopped with no later-stage dispatch. This descriptive
+one-block feasibility observation is retained without tuning or selective
+replacement; it is not treated as a scientific result.
 
 ### Gate 3 — Joint-violation-feasibility-first five-block pilot
 
@@ -335,7 +339,7 @@ markers are provisionally false from their completed trajectories, so the maximu
 possible v1.1 total is 2/5. This is a partial-run futility bound; the formal
 five-block decision did not complete, and the later 888 requests remain unauthorized.
 
-The full main v1.1 pilot is 1,380 nominal requests including the 20 calibration calls. The separately released five-block formation-peer pilot would add 280 requests, for 1,660 combined; it is not part of this gate's current inventory. These counts exclude transport preflight, retries, and separate release overhead. The secondary pilot neither selects blocks by the main marker nor adds a favorable-effect gate. If the main feasibility gate triggers the sole v1.2 fallback, regenerate this gate for the fresh two-round history plan; that main pilot is 1,580 nominal requests including calibration. Preserve the one-round secondary artifacts and decide its compatibility/version prospectively rather than automatically adding 280 to the fallback.
+The full main v1.1 pilot is 1,380 nominal requests including the 20 calibration calls. The separately released five-block formation-peer pilot would add 280 requests, for 1,660 combined; it is not part of this gate's current inventory. These counts exclude transport preflight, retries, and separate release overhead. The secondary pilot neither selects blocks by the main marker nor adds a favorable-effect gate. The selected v1.2 path regenerates this gate for a fresh two-round history plan of 1,580 nominal requests including calibration: 20 calibration, 192 block-0 smoke, 480 blocks-1--4 U/C formation, and 888 remaining evaluation/probe requests. Preserve the one-round secondary artifacts; the compatibility decision leaves them separate and does not add 280 requests to the fallback.
 
 Pilot decision rules:
 
@@ -375,11 +379,11 @@ If a secondary confirmation is pursued, freeze its separate protocol/split, all-
 - Never add blocks until an interval becomes favorable.
 - If fewer blocks are affordable, freeze the smaller `n` and label the study as estimation/replication. A no-practically-important-harmful-gap statement requires both the upper claim-interval endpoint and all-scheduled upper bound below 0.15; it still does not authorize “repair sufficient” without a separately frozen absolute-usefulness rule. Never pool pilot data.
 
-If the v1.2 fallback is activated, regenerate this entire gate: the main nominal count becomes 312 requests per block (6,240 at 20 blocks; 13,416 at 43), and no v1.1 plan, context audit, hash, or authorization carries forward. The one-round formation-peer substudy needs its own prospective compatibility/version decision; it is not implicitly converted to two-round formation.
+Because v1.2 has been selected for prospective preparation, any later confirmation must regenerate this entire gate: the main nominal count becomes 312 requests per block (6,240 at 20 blocks; 13,416 at 43), and no v1.1 plan, context audit, hash, or authorization carries forward. The compatibility decision keeps the one-round formation-peer substudy separate and unchanged; it is not implicitly converted to two-round formation or included in these counts.
 
 ## 10. Original day-by-day schedule (historical; superseded)
 
-Times below preserve the original Pacific-time workback and do not authorize its direct sequence. Fresh Gate 1 and Gate 2 are complete. Gate 3 Phase 1 is partial and fail-closed, its authorization is consumed, the v1.1 pass threshold is logically unreachable, and no formal Gate 3 assessment or Phase 2 authority exists. The current order is: preserve and review the partial archive; choose stop/report or prospectively document a v1.2 early-futility methodological deviation; and, only for a separately approved v1.2 path, review and authorize fresh calibration, smoke, and pilot releases. Raw-audit hardening, Gate 4, and confirmation remain later boundaries. The secondary substudy remains a separate offline preparation.
+Times below preserve the original Pacific-time workback and do not authorize its direct sequence. Fresh v1.1 Gate 1 and Gate 2 are complete. v1.1 Gate 3 Phase 1 is partial and fail-closed, its authorization is consumed, the v1.1 pass threshold is logically unreachable, and no formal Gate 3 assessment or Phase 2 authority exists. The project selected the prospective v1.2 early-futility preparation path. The current order is: preserve the partial archive; complete and review the offline v1.2 foundation; separately authorize fresh v1.2 calibration; then, only through independent successor releases, smoke, Phase 1 formation, and a marker-contingent Phase 2. Raw-audit hardening, Gate 4, and confirmation remain later boundaries. The secondary substudy remains a separate one-round offline preparation.
 
 ### Friday, October 23 — Make the experiment live and validate history construction
 
@@ -593,6 +597,6 @@ Every numerical sentence must map to:
 
 ## 16. Immediate next action
 
-Preserve Gate 2 and Gate 3 run `3e0d7744-45d7-4db5-a36a-a46b634c0b98` as immutable lineage. Gate 3 is paused after 228 in-scope attempts, with 227 `ok` observations, one ambiguous HTTP 500, 92 undispatched identities, 5/8 checkpoints, and `$6.7658595` consumed accounting. Do not retry or resume it, impute a completed score, or dispatch Phase 2. Record the decision between stopping and reporting the v1.1 feasibility boundary or prospectively preparing the sole v1.2 fallback as an early-futility methodological decision/deviation because no completed Gate 3 trigger artifact exists.
+Preserve Gate 2 and Gate 3 run `3e0d7744-45d7-4db5-a36a-a46b634c0b98` as immutable lineage. Gate 3 is paused after 228 in-scope attempts, with 227 `ok` observations, one ambiguous HTTP 500, 92 undispatched identities, 5/8 checkpoints, and `$6.7658595` consumed accounting. Do not retry or resume it, impute a completed score, or dispatch its Phase 2. The decision is now recorded: prospectively prepare the sole v1.2 fallback as an early-futility methodological deviation because no completed Gate 3 trigger artifact exists.
 
-Keep formation-peer work offline until a separate live controller and release are implemented, reviewed, and authorized. Its five-block request allocation is planning only and does not expand either main release. If the sole v1.2 fallback is chosen, separately review and authorize its fresh calibration, fresh smoke, and fresh pilot under a new namespace; never pool v1.1 observations, and resolve secondary compatibility prospectively.
+Complete and review the offline v1.2 implementation and 20-request calibration contract without credentials or provider calls. Keep formation-peer work offline until a separate live controller and release are implemented, reviewed, and authorized. Its one-round five-block allocation remains planning only and does not expand or convert the v1.2 main release. Separately review and authorize v1.2 calibration, smoke, Phase 1, and Phase 2 under the fresh namespace; never pool v1.1 observations. No v1.3 is permitted.

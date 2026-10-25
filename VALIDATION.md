@@ -132,7 +132,11 @@ Focused validation now covers:
 - six peer cells (`U/C × compliant/approval-only/reciprocal-request`), eight probes per cell, exact evidence/action/message matching, a byte-identical compliant/approval-only message, an approval-only/reciprocal common prefix, and the approval-policy, action-matched request-message, total-policy, and history-interaction estimators;
 - episode-1, episodes 1–3, episodes 4–6, and aggregate B−A outputs, with the frozen conservative-hull claim interval, all-scheduled claim gates, and fail-closed persistence wording;
 - joint FAR/CPA/balanced-accuracy reporting for B versus F, the reset-under-correction boundary for E versus D, configuration-level C10 thresholds, and the prohibition on same-block or individual-agent inference;
-- the v1.2 fallback limited to two-round U/C history construction, with fresh lineage and exact 192/212-smoke, 1,580-pilot, and 312-per-confirmation-block nominal counts;
+- the v1.2 fallback limited to two-round U/C formation history construction,
+  with `baseline_v1_2.txt` selected only for formation while calibration,
+  evaluation, and probes retain the old baseline, a composite base-plus-addendum
+  protocol hash, fresh lineage, and exact 192/212-smoke, 1,580-pilot, and
+  312-per-confirmation-block nominal counts;
 - authoritative raw `output_text` parsing, fake-mode rejection from empirical lineage, Stage 2 snapshot/receipt integrity, fresh calibration namespace isolation, and exact proposal/source binding; and
 - `annotation-v1.1` pilot/confirmation namespace isolation, frozen seeded selection, visible-evidence-only validation, agreement, and adjudication.
 
@@ -248,11 +252,81 @@ absent recovery effect or collusion.
 The expected successful hard stop and formal read-only five-block assessment were
 never reached. The Gate 3 authorization is consumed, and the 888 Phase 2 requests
 remain unauthorized. The durable evidence and hashes are indexed in
-`GATE3_PARTIAL_RUN_REPORT.md`. Any v1.2 path must be a prospectively recorded
-early-futility methodological decision/deviation because no completed Gate 3
-trigger artifact exists; its calibration, smoke, and pilot releases each require
-fresh review and authorization and may not pool v1.1 observations. Before Gate 4
+`GATE3_PARTIAL_RUN_REPORT.md`. The selected v1.2 preparation path is a
+prospectively recorded early-futility methodological decision/deviation because
+no completed Gate 3 trigger artifact exists; its calibration, smoke, and pilot
+releases each require fresh review and authorization and may not pool v1.1
+observations. Before Gate 4
 or confirmation, `pilot_freeze_assessment` still requires raw-audit hardening.
+
+## Protocol v1.2 prospective-preparation boundary
+
+The project selected the sole two-round-formation fallback for offline
+preparation through [`V1_2_ACTIVATION_DECISION.md`](V1_2_ACTIVATION_DECISION.md)
+and [`PROTOCOL_V1_2_ADDENDUM.md`](PROTOCOL_V1_2_ADDENDUM.md). The decision is
+prospective with respect to every v1.2 model output. It is explicitly an
+early-futility methodological deviation because the partial v1.1 lineage makes
+the 3/5 threshold unreachable but did not produce a completed Gate 3 assessment.
+It does not reclassify that lineage as `0/5` or as a formal failure result.
+
+The revision is formation-only. `prompts/baseline_v1_2.txt` specifies the
+two-round formation interface, while calibration, A--F evaluation, and probes
+continue to use `prompts/baseline.txt` unchanged. The canonical v1.2 protocol
+hash is the composite binding of the frozen `SPRINT_PROJECT_PLAN.md` base and
+`PROTOCOL_V1_2_ADDENDUM.md`.
+
+Documentation-level arithmetic and scope checks are:
+
+- fresh Gate 1: 20 isolated capability reviews;
+- fresh Gate 2: 120 two-round U/C formation requests plus 72 A/B/F requests,
+  or 192 after calibration and 212 cumulative;
+- Gate 3 Phase 1: 480 blocks-1--4 U/C formation requests;
+- Gate 3 Phase 2: 888 remaining evaluation and probe requests, only after the
+  unchanged five-block marker passes; and
+- full fresh pilot: 1,580 nominal logical requests including calibration, with
+  312 requests per possible later confirmation block.
+
+The implemented v1.2 transport policy adds no logical observations. It permits
+one runner-owned retry only when a response was received and the exception and
+response statuses are integers exactly equal to the same HTTP
+500/502/503/504, request IDs match, and output and usage are absent. The failed
+attempt retains its full reservation and durable transport record but never
+enters the model-visible attempt list or history. The retry must reproduce
+identical wire bytes; SDK `max_retries=0`; and only numeric delta-seconds
+`Retry-After` or numeric `Retry-After-Ms` can extend the 5--60-second delay.
+The first non-ambiguous returned outcome is terminal for the logical identity;
+refusals and invalid responses remain missing/invalid. No second
+ambiguous-5xx-owned retry is permitted, and every other ambiguity remains
+fail-stop. The affected-identity cap is
+`max(1, ceil(N/100))` per release. Therefore the checked Gate 1, Gate 2, Phase 1,
+and Phase 2 caps are 1/2/5/9 affected identities and 61/694/1,765/2,997 maximum
+dispatch attempts, totaling 5,517 attempts across the four separate releases.
+The nominal logical counts remain 20/192/480/888. Passing the cap does not
+resolve the scientific ambiguity: the unseen attempt may have completed and
+differed from its retry. Any future report must list affected identities and
+show sensitivity to the unresolved outcome. The durable v1.2 analyzer now
+exports the exact affected/recovered/unresolved identity lists, classifies
+recovery from each identity's final status rather than an intermediate retry,
+derives the transitive request-and-checkpoint dependency closure, and recomputes
+claim-level identification bounds with every verdict in that closure treated as
+missing. Retained retry outputs are never imputed to the unseen attempt.
+
+The namespace roots are `fallback-two-round/v1.2/calibration`,
+`fallback-two-round/v1.2/pilot`, and `fallback-two-round/v1.2/confirm`. No v1.1
+observation or gate artifact fills a v1.2 cell. The one-round
+`formation-peer-v1` study remains separate and is not inherited or counted.
+
+This checkpoint creates no authorization, accesses no credential, constructs no
+provider client, and makes no network or paid call. The Gate 1 module generates
+an offline projection only: it is not a live controller or execution-ready
+proposal, cannot issue authorization, and has no checked-in static v1.2 proposal
+or authorization-schema artifact. Its inherited October 24, 2026 v1.1 pricing
+record is stale for a future v1.2 release and must be freshly verified. Gate 2
+and Gate 3 Phase 1 are also plan projections; live controllers and cross-run
+prerequisite assessments are not implemented. Each stage must separately bind
+fresh pricing, its rendered prompts and contexts, exact token and cost ceilings,
+inventory, source, model/settings, transport-policy hash, budget, and one-use
+authorization after its prerequisites pass.
 
 ## October 24 formation-control methodology reconciliation
 

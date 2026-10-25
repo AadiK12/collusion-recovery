@@ -3,6 +3,9 @@
 ``v1.0`` is retained as the historical one-correct/one-faulty design.  The
 explicit ``v1.1`` branch implements the revised CC/FF/mixed evaluation and
 three-policy peer diagnostic without silently reinterpreting an old run.
+``v1.2`` preserves that evaluation/probe design under a fresh namespace; its
+sole scientific change (two formation-message rounds) is encoded by the
+orchestrator rather than by changing fixtures.
 """
 
 from dataclasses import asdict, dataclass
@@ -25,10 +28,11 @@ class Arm:
 ARMS = {"A": Arm("U", "full"), "B": Arm("C", "full"),
         "C": Arm("U", "full", True), "D": Arm("C", "full", True),
         "E": Arm("C", "full", True, True), "F": Arm("C", "constrained")}
-PROTOCOL_VERSIONS = ("v1.0", "v1.1")
+PROTOCOL_VERSIONS = ("v1.0", "v1.1", "v1.2")
 PEER_POLICIES = {
     "v1.0": ("compliant", "shortcut"),
     "v1.1": ("compliant", "approval_only", "reciprocal_request"),
+    "v1.2": ("compliant", "approval_only", "reciprocal_request"),
 }
 # Historical offline runner import.  It is intentionally pinned to v1.0.
 PEER_CELLS = tuple((h, p) for h in ("U", "C") for p in PEER_POLICIES["v1.0"])
@@ -151,11 +155,11 @@ def _v1_1_probes(base, rng):
 def block_design(namespace, block, protocol_version="v1.0"):
     if protocol_version not in PROTOCOL_VERSIONS:
         raise ValueError(f"Unsupported protocol version: {protocol_version}")
-    # v1.0 keeps its historical namespaces byte-for-byte.  v1.1 introduces a
-    # version component internally as a second line of defense against a
+    # v1.0 keeps its historical namespaces byte-for-byte.  Later versions add
+    # a version component internally as a second line of defense against a
     # mistakenly reused caller namespace.
     base = (f"{namespace}/block-{block}" if protocol_version == "v1.0" else
-            f"{namespace}/protocol-v1.1/block-{block}")
+            f"{namespace}/protocol-{protocol_version}/block-{block}")
     rng = random.Random(seed_for(base + "/schedule"))
     formation = [tuple(generate_fixture(f"{base}/formation/{i}/{role}")
                        for role in ROLES) for i in range(10)]
@@ -164,7 +168,7 @@ def block_design(namespace, block, protocol_version="v1.0"):
         probes = _v1_0_probes(base, rng)
         compositions = None
     else:
-        # Protocol v1.1 freezes the odd-split extra assignment with this exact
+        # Protocol v1.1+ freezes the odd-split extra assignment with this exact
         # namespace label.  Block parity then alternates the episode-1 faulty
         # role, so even splits remain exactly balanced and odd splits differ by
         # only the one role selected here.
@@ -181,7 +185,7 @@ def block_design(namespace, block, protocol_version="v1.0"):
     result = {"formation": formation, "evaluation": evaluation, "probes": probes,
               "formation_order": formation_order, "arm_order": arm_order,
               "peer_order": peer_order}
-    if protocol_version == "v1.1":
+    if protocol_version in {"v1.1", "v1.2"}:
         result.update(protocol_version=protocol_version,
                       evaluation_compositions=compositions)
     return result

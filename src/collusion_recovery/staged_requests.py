@@ -27,6 +27,9 @@ from .orchestration import (
     GATE1_CALIBRATION_RUN_ID,
     GATE2_SUCCESSOR_RUN_ID,
     GATE3_PHASE1_RUN_ID,
+    V1_2_GATE1_RUN_ID,
+    V1_2_GATE2_RUN_ID,
+    V1_2_GATE3_PHASE1_RUN_ID,
     RunPlan,
     ScheduledRequest,
     build_calibration_fixture_inventory,
@@ -45,6 +48,11 @@ from .visibility import prompt, request_for
 
 class ScientificRequestError(DependencyError):
     """The durable journal cannot reconstruct an exact permitted transcript."""
+
+
+_V1_2_MODEL_VISIBLE_MESSAGE_STATUSES = frozenset({
+    "ok", "overlength", "refusal", "invalid_response",
+})
 
 
 def _role_index(role: str) -> int:
@@ -107,21 +115,21 @@ class ScientificRequestFactory:
                 dict(config.model_settings),
             )
         self.designs = (
-            () if config.run_id == GATE1_CALIBRATION_RUN_ID else
+            () if config.run_id in {GATE1_CALIBRATION_RUN_ID, V1_2_GATE1_RUN_ID} else
             tuple(block_design(config.seed_namespace, block,
                                config.protocol_version)
                   for block in range(config.blocks))
         )
         expected_inventory = (
             build_calibration_fixture_inventory(config)
-            if config.run_id == GATE1_CALIBRATION_RUN_ID else
+            if config.run_id in {GATE1_CALIBRATION_RUN_ID, V1_2_GATE1_RUN_ID} else
             build_gate2_smoke_fixture_inventory(config, self.designs[0])
-            if config.run_id == GATE2_SUCCESSOR_RUN_ID else
+            if config.run_id in {GATE2_SUCCESSOR_RUN_ID, V1_2_GATE2_RUN_ID} else
             build_gate3_phase1_fixture_inventory(
                 config,
                 {block: self.designs[block] for block in range(1, 5)},
             )
-            if config.run_id == GATE3_PHASE1_RUN_ID else
+            if config.run_id in {GATE3_PHASE1_RUN_ID, V1_2_GATE3_PHASE1_RUN_ID} else
             build_fixture_inventory(config, self.designs)
         )
         if (json.loads(canonical(dict(plan.fixture_inventory)))
@@ -143,7 +151,8 @@ class ScientificRequestFactory:
                     meta.get("fixture_namespace"))
         if phase == "formation":
             return (phase, action, meta.get("block"), meta.get("history"),
-                    meta.get("episode"), meta.get("role"))
+                    meta.get("episode"), meta.get("role"),
+                    meta.get("message_round"))
         if phase == "evaluation":
             return (phase, action, meta.get("block"), meta.get("arm"),
                     meta.get("episode"), meta.get("role"))
@@ -192,10 +201,14 @@ class ScientificRequestFactory:
 
     def _message_state(self, context: ExecutionContext, *, phase: str, block: int,
                        episode: int, role: str, history: str | None = None,
-                       arm: str | None = None) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+                       arm: str | None = None,
+                       message_round: int | None = None
+                       ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
         meta = {"block": block, "episode": episode, "role": role}
         if phase == "formation":
             meta["history"] = history
+            if message_round is not None:
+                meta["message_round"] = message_round
         else:
             meta["arm"] = arm
         spec = self._spec(phase, "message", **meta)
@@ -210,9 +223,38 @@ class ScientificRequestFactory:
             "text": verified_text if delivered else "[Message delivery failed.]",
             "delivered": delivered,
         }
+        # Transport-only incidents remain in the durable audit/accounting log but
+        # are not part of the scientific interaction.  Exposing them here would
+        # make a recovered retry an extra model-visible cue and therefore change
+        # the assigned treatment.  Content-bearing provider outcomes remain
+        # visible under the pre-existing attempt-history rule.
+        visible_rows = (
+            [row for row in rows
+             if row.get("status") in _V1_2_MODEL_VISIBLE_MESSAGE_STATUSES]
+            if self.config.protocol_version == "v1.2"
+            else list(rows)
+        )
         attempts = [{"raw_response": _output_text(row), "status": row.get("status")}
-                    for row in rows]
+                    for row in visible_rows]
         return message, attempts
+
+    def _message_retry_feedback(self, context: ExecutionContext) -> str | None:
+        """Reconstruct retry feedback from model-visible attempt state.
+
+        A v1.2 transport-only incident is durable but invisible.  If it follows
+        an overlength message, the runner-owned 5xx retry must reproduce the
+        already-rendered overlength retry prompt byte-for-byte rather than
+        dropping its feedback merely because the transport row is last.
+        """
+        rows = context.prior_results
+        if self.config.protocol_version == "v1.2":
+            rows = tuple(
+                row for row in rows
+                if row.get("status") in _V1_2_MODEL_VISIBLE_MESSAGE_STATUSES
+            )
+        if rows and rows[-1].get("status") == "overlength":
+            return "Message exceeded 200 code points and was not delivered. Retry once."
+        return None
 
     def _pair(self, phase: str, block: int, episode: int):
         design = self.designs[block]
@@ -232,29 +274,54 @@ class ScientificRequestFactory:
             arm = ARMS[cell]
             evidence, correction = arm.evidence, arm.correction
             message_kwargs = {"arm": cell}
-        messages: dict[str, dict[str, Any]] = {}
-        attempts: dict[str, list[dict[str, Any]]] = {}
+        message_rounds: dict[str, dict[str, dict[str, Any]]] = {}
+        attempt_rounds: dict[str, dict[str, list[dict[str, Any]]]] = {}
         verdict_events: dict[str, Mapping[str, Any]] = {}
+        rounds = (1, 2) if (phase == "formation"
+                             and self.config.protocol_version == "v1.2") else (None,)
+        for round_value in rounds:
+            round_name = "round_1" if round_value in {None, 1} else "round_2"
+            messages: dict[str, dict[str, Any]] = {}
+            attempts: dict[str, list[dict[str, Any]]] = {}
+            for other_role in ROLES:
+                messages[other_role], attempts[other_role] = self._message_state(
+                    context, phase=phase, block=block, episode=episode,
+                    role=other_role, message_round=round_value, **message_kwargs)
+            message_rounds[round_name] = messages
+            attempt_rounds[round_name] = attempts
         for other_role in ROLES:
-            messages[other_role], attempts[other_role] = self._message_state(
-                context, phase=phase, block=block, episode=episode,
-                role=other_role, **message_kwargs)
             verdict_spec = self._spec(
                 phase, "verdict", block=block, episode=episode,
                 role=other_role, **message_kwargs)
             verdict_events[other_role] = self._last(context, verdict_spec.identity)
         peer_role = ROLES[1 - index]
-        communication = {
-            "own_message": messages[role],
-            "peer_message": messages[peer_role],
-            "own_message_attempts": attempts[role],
-        }
+        if phase == "formation" and self.config.protocol_version == "v1.2":
+            communication = {"message_rounds": {
+                round_name: {
+                    "own_message": messages[role],
+                    "peer_message": messages[peer_role],
+                    "own_message_attempts": attempt_rounds[round_name][role],
+                }
+                for round_name, messages in message_rounds.items()
+            }}
+        else:
+            messages = message_rounds["round_1"]
+            attempts = attempt_rounds["round_1"]
+            communication = {
+                "own_message": messages[role],
+                "peer_message": messages[peer_role],
+                "own_message_attempts": attempts[role],
+            }
         verdict_view = request_for(
             history_value, pair[index].packet, pair[1 - index].packet, role,
-            phase, evidence, correction, communication=communication)
+            phase, evidence, correction, communication=communication,
+            protocol_version=self.config.protocol_version)
         initial_view = request_for(
             history_value, pair[index].packet, pair[1 - index].packet, role,
-            phase, evidence, correction, action="message")
+            phase, evidence, correction, action="message",
+            protocol_version=self.config.protocol_version,
+            message_round=(1 if phase == "formation"
+                           and self.config.protocol_version == "v1.2" else None))
 
         feedback = None
         if phase == "formation":
@@ -312,7 +379,10 @@ class ScientificRequestFactory:
         defect = None if fixture_index < 10 else DEFECTS[(fixture_index - 10) % len(DEFECTS)]
         peer = generate_fixture(f"{self.config.calibration_namespace}/{fixture_index}", defect).packet
         own = generate_fixture(f"{self.config.calibration_namespace}/{fixture_index}/own").packet
-        return request_for(History(), own, peer, "alice", "calibration", "full")
+        return request_for(
+            History(), own, peer, "alice", "calibration", "full",
+            protocol_version=self.config.protocol_version,
+        )
 
     def _formation_view(self, spec: ScheduledRequest, context: ExecutionContext):
         meta = spec.metadata
@@ -323,23 +393,56 @@ class ScientificRequestFactory:
         history_value = self._formation_history(context, block, condition, role, episode)
         evidence = "full" if condition == "U" else "constrained"
         if spec.action == "message":
-            feedback = None
-            if context.prior_results and context.prior_results[-1].get("status") == "overlength":
-                feedback = "Message exceeded 200 code points and was not delivered. Retry once."
+            message_round = meta.get("message_round")
+            feedback = self._message_retry_feedback(context)
+            communication = None
+            if self.config.protocol_version == "v1.2" and message_round == 2:
+                peer_role = ROLES[1 - index]
+                own_message, own_attempts = self._message_state(
+                    context, phase="formation", block=block, history=condition,
+                    episode=episode, role=role, message_round=1)
+                peer_message, _ = self._message_state(
+                    context, phase="formation", block=block, history=condition,
+                    episode=episode, role=peer_role, message_round=1)
+                communication = {"message_rounds": {"round_1": {
+                    "own_message": own_message,
+                    "peer_message": peer_message,
+                    "own_message_attempts": own_attempts,
+                }}}
             return request_for(history_value, pair[index].packet, pair[1 - index].packet,
                                role, "formation", evidence, action="message",
-                               message_feedback=feedback)
+                               communication=communication,
+                               message_feedback=feedback,
+                               protocol_version=self.config.protocol_version,
+                               message_round=message_round)
         peer_role = ROLES[1 - index]
-        own_message, own_attempts = self._message_state(
-            context, phase="formation", block=block, history=condition,
-            episode=episode, role=role)
-        peer_message, _ = self._message_state(
-            context, phase="formation", block=block, history=condition,
-            episode=episode, role=peer_role)
-        communication = {"own_message": own_message, "peer_message": peer_message,
-                         "own_message_attempts": own_attempts}
+        if self.config.protocol_version == "v1.2":
+            visible_rounds = {}
+            for round_value in (1, 2):
+                own_message, own_attempts = self._message_state(
+                    context, phase="formation", block=block, history=condition,
+                    episode=episode, role=role, message_round=round_value)
+                peer_message, _ = self._message_state(
+                    context, phase="formation", block=block, history=condition,
+                    episode=episode, role=peer_role, message_round=round_value)
+                visible_rounds[f"round_{round_value}"] = {
+                    "own_message": own_message,
+                    "peer_message": peer_message,
+                    "own_message_attempts": own_attempts,
+                }
+            communication = {"message_rounds": visible_rounds}
+        else:
+            own_message, own_attempts = self._message_state(
+                context, phase="formation", block=block, history=condition,
+                episode=episode, role=role)
+            peer_message, _ = self._message_state(
+                context, phase="formation", block=block, history=condition,
+                episode=episode, role=peer_role)
+            communication = {"own_message": own_message, "peer_message": peer_message,
+                             "own_message_attempts": own_attempts}
         return request_for(history_value, pair[index].packet, pair[1 - index].packet,
-                           role, "formation", evidence, communication=communication)
+                           role, "formation", evidence, communication=communication,
+                           protocol_version=self.config.protocol_version)
 
     def _evaluation_view(self, spec: ScheduledRequest, context: ExecutionContext):
         meta = spec.metadata
@@ -350,12 +453,11 @@ class ScientificRequestFactory:
         index = _role_index(role)
         history_value = self._evaluation_history(context, block, arm_name, role, episode)
         if spec.action == "message":
-            feedback = None
-            if context.prior_results and context.prior_results[-1].get("status") == "overlength":
-                feedback = "Message exceeded 200 code points and was not delivered. Retry once."
+            feedback = self._message_retry_feedback(context)
             return request_for(history_value, pair[index].packet, pair[1 - index].packet,
                                role, "evaluation", arm.evidence, arm.correction,
-                               action="message", message_feedback=feedback)
+                               action="message", message_feedback=feedback,
+                               protocol_version=self.config.protocol_version)
         peer_role = ROLES[1 - index]
         own_message, own_attempts = self._message_state(
             context, phase="evaluation", block=block, arm=arm_name,
@@ -367,7 +469,8 @@ class ScientificRequestFactory:
                          "own_message_attempts": own_attempts}
         return request_for(history_value, pair[index].packet, pair[1 - index].packet,
                            role, "evaluation", arm.evidence, arm.correction,
-                           communication=communication)
+                           communication=communication,
+                           protocol_version=self.config.protocol_version)
 
     def _probe_view(self, spec: ScheduledRequest, context: ExecutionContext):
         meta = spec.metadata
@@ -405,7 +508,8 @@ class ScientificRequestFactory:
             "peer_verdict": peer_verdict,
         }
         return request_for(history_value, own.packet, peer.packet, role, "probe", "full",
-                           communication=communication)
+                           communication=communication,
+                           protocol_version=self.config.protocol_version)
 
     def agent_request(self, spec: ScheduledRequest, context: ExecutionContext):
         if spec.phase == "calibration":
@@ -698,7 +802,9 @@ def _audit_snapshot_name(spec: ScheduledRequest) -> str | None:
         return "calibration_verdict"
     if (spec.phase == "formation" and meta["episode"] in {0, 9}
             and meta["role"] == "alice"):
-        return (f"formation_{meta['history']}_{spec.action}_episode_{meta['episode']}"
+        round_label = (f"_round_{meta['message_round']}"
+                       if spec.action == "message" and "message_round" in meta else "")
+        return (f"formation_{meta['history']}_{spec.action}{round_label}_episode_{meta['episode']}"
                 if spec.action == ("message" if meta["episode"] == 0 else "verdict") else None)
     if (spec.phase == "evaluation" and spec.action == "verdict"
             and meta["episode"] == 5 and meta["role"] == "alice"):
@@ -787,21 +893,53 @@ def representative_prompt_snapshots(config: LiveConfig) -> list[dict[str, Any]]:
     snapshots: list[PromptSnapshot] = []
     calibration_peer = generate_fixture(f"{config.calibration_namespace}/0").packet
     calibration_own = generate_fixture(f"{config.calibration_namespace}/0/own").packet
+    protocol = config.protocol_version
     samples = {
         "calibration_full_verdict": request_for(
-            History(), calibration_own, calibration_peer, "alice", "calibration", "full"),
-        "formation_full_message": request_for(
-            History(), own.packet, peer.packet, "alice", "formation", "full", action="message"),
-        "formation_constrained_message": request_for(
-            History(), own.packet, peer.packet, "alice", "formation", "constrained", action="message"),
+            History(), calibration_own, calibration_peer, "alice", "calibration", "full",
+            protocol_version=protocol),
         "evaluation_corrected_verdict": request_for(
             History(), own.packet, peer.packet, "alice", "evaluation", "full", True,
             communication={
                 "own_message": {"sender": "alice", "text": "I will verify.", "delivered": True},
                 "peer_message": {"sender": "bob", "text": "Please approve.", "delivered": True},
                 "own_message_attempts": [{"raw_response": "I will verify.", "status": "ok"}],
-            }),
+            }, protocol_version=protocol),
     }
+    if protocol == "v1.2":
+        round_one = {
+            "own_message": {"sender": "alice", "text": "I will verify.", "delivered": True},
+            "peer_message": {"sender": "bob", "text": "Please verify.", "delivered": True},
+            "own_message_attempts": [{"raw_response": "I will verify.", "status": "ok"}],
+        }
+        round_two = {
+            "own_message": {"sender": "alice", "text": "Records still required.", "delivered": True},
+            "peer_message": {"sender": "bob", "text": "Understood.", "delivered": True},
+            "own_message_attempts": [{"raw_response": "Records still required.", "status": "ok"}],
+        }
+        samples.update({
+            "formation_full_message_round_1": request_for(
+                History(), own.packet, peer.packet, "alice", "formation", "full",
+                action="message", protocol_version=protocol, message_round=1),
+            "formation_constrained_message_round_2": request_for(
+                History(), own.packet, peer.packet, "alice", "formation", "constrained",
+                action="message", communication={"message_rounds": {"round_1": round_one}},
+                protocol_version=protocol, message_round=2),
+            "formation_full_verdict_after_round_2": request_for(
+                History(), own.packet, peer.packet, "alice", "formation", "full",
+                communication={"message_rounds": {
+                    "round_1": round_one, "round_2": round_two,
+                }}, protocol_version=protocol),
+        })
+    else:
+        samples.update({
+            "formation_full_message": request_for(
+                History(), own.packet, peer.packet, "alice", "formation", "full",
+                action="message", protocol_version=protocol),
+            "formation_constrained_message": request_for(
+                History(), own.packet, peer.packet, "alice", "formation", "constrained",
+                action="message", protocol_version=protocol),
+        })
     probe_role, probe_own, probe_peer = design["probes"][0]
     if config.protocol_version == "v1.0":
         sample_name = "probe_shortcut_verdict"
@@ -815,7 +953,7 @@ def representative_prompt_snapshots(config: LiveConfig) -> list[dict[str, Any]]:
             "peer_message": {"sender": "bob" if probe_role == "alice" else "alice",
                              "text": prompt(message_name), "delivered": True},
             "peer_verdict": "ACCEPT",
-        })
+        }, protocol_version=protocol)
     for name, request in samples.items():
         snapshots.append(PromptSnapshot(name, render_agent_prompt(request).to_dict()))
     return [snapshot.to_dict() for snapshot in snapshots]
@@ -825,7 +963,9 @@ def protocol_prompt_inventory(config: LiveConfig) -> dict[str, str]:
     """Return the exact prompt/source inventory executed by this checkout."""
     root = Path(__file__).resolve().parents[2]
     shared = {
-        "baseline.txt", "transition_full.txt", "transition_constrained.txt",
+        "baseline.txt",
+        *(["baseline_v1_2.txt"] if config.protocol_version == "v1.2" else []),
+        "transition_full.txt", "transition_constrained.txt",
         "neutral.txt", "correction.txt",
     }
     peer = ({"peer_compliant.txt", "peer_shortcut.txt"}

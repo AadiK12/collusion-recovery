@@ -176,6 +176,12 @@ _REQUIRED_NEW_SOURCE_PATHS = {
     "src/collusion_recovery/gate2_passed_lineage.py",
     "src/collusion_recovery/gate3_phase1.py",
 }
+GATE3_PHASE1_FROZEN_IMPLEMENTATION_COMMIT = (
+    "54da46735396a0b312b16b1f1e64decbfe1250b9"
+)
+GATE3_PHASE1_FROZEN_IMPLEMENTATION_TREE = (
+    "6141d45d886c857fb533a6c826043094efbfcba9"
+)
 
 
 def _parse_timestamp(value: Any, label: str) -> datetime:
@@ -720,8 +726,23 @@ def _current_source_continuity(
             )
         historical_blobs[path] = blob
 
-    current = _implementation_inventory()
     historical_paths = set(historical)
+    frozen_paths = historical_paths | _REQUIRED_NEW_SOURCE_PATHS
+    if implementation_commit is not None:
+        # Gate 3 v1.1 is historical evidence now.  Reconstruct the exact reviewed
+        # implementation from its immutable Git binding instead of relabeling a
+        # later protocol checkout as the source that was authorized.
+        current_blobs = {
+            path: _git_bytes(implementation_commit, path)
+            for path in sorted(frozen_paths)
+        }
+        current = {
+            path: hashlib.sha256(blob).hexdigest()
+            for path, blob in current_blobs.items()
+        }
+    else:
+        current_blobs = {}
+        current = _implementation_inventory()
     current_paths = set(current)
     deleted = historical_paths - current_paths
     added = current_paths - historical_paths
@@ -745,7 +766,8 @@ def _current_source_continuity(
 
     changed_files: dict[str, Any] = {}
     for path in sorted(changed):
-        new_bytes = (ROOT / path).read_bytes()
+        new_bytes = (current_blobs[path] if current_blobs
+                     else (ROOT / path).read_bytes())
         if hashlib.sha256(new_bytes).hexdigest() != current[path]:
             raise Gate3Phase1Error(f"current implementation hash raced: {path}")
         changed_files[path] = {
@@ -757,7 +779,8 @@ def _current_source_continuity(
         }
     new_files: dict[str, Any] = {}
     for path in sorted(added):
-        new_bytes = (ROOT / path).read_bytes()
+        new_bytes = (current_blobs[path] if current_blobs
+                     else (ROOT / path).read_bytes())
         if hashlib.sha256(new_bytes).hexdigest() != current[path]:
             raise Gate3Phase1Error(f"new implementation hash raced: {path}")
         new_files[path] = {
@@ -801,9 +824,10 @@ def build_gate3_phase1_proposal(
         archive_path: Path = GATE2_ARCHIVE_PATH,
         gate2_proposal_path: Path = GATE2_PROPOSAL_PATH,
         require_committed_current_source: bool = True,
-        implementation_commit: str | None = None,
-        implementation_tree: str | None = None) -> dict[str, Any]:
-    """Build the exact no-dispatch Gate 3 phase-1 proposal."""
+        implementation_commit: str | None = GATE3_PHASE1_FROZEN_IMPLEMENTATION_COMMIT,
+        implementation_tree: str | None = GATE3_PHASE1_FROZEN_IMPLEMENTATION_TREE,
+        ) -> dict[str, Any]:
+    """Reconstruct the exact historical no-dispatch Gate 3 phase-1 proposal."""
     lineage = verify_gate2_passed_lineage(
         snapshot_path=Path(snapshot_path),
         run_dir=Path(gate2_run_dir),

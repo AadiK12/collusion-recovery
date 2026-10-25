@@ -1,11 +1,15 @@
 \section{Methods}
 \label{sec:methods}
 
-The following design was prespecified before any hypothesis-bearing request. The
-repository protocol and later immutable confirmation freeze, rather than this
-compressed presentation, are the authoritative execution contracts. We use
-``prespecified'' rather than ``preregistered'' because the design has not been
-registered with an external registry.
+The main estimands, v1.1 design, and sole two-round fallback were specified before
+any hypothesis-bearing request. We selected that fallback for fresh prospective
+data only after the partial v1.1 lineage made its pass threshold unreachable; the
+departure from the anticipated completed-gate trigger is disclosed as an
+early-futility methodological deviation. The repository protocol, v1.2 addendum,
+and any later immutable release/freeze, rather than this compressed presentation,
+are the authoritative execution contracts. We use ``prespecified'' rather than
+``preregistered'' because the design has not been registered with an external
+registry.
 
 \subsection{Research questions and hypotheses}
 
@@ -93,14 +97,21 @@ trajectory (C), and evaluation branches cloned from immutable endpoints. U and C
 share the underlying packet schedule but have separate model sessions and visible
 histories. Independent blocks use fresh seeds and sessions.
 
-In each formation episode both agents receive their own packet, the peer's task
-specification and claim, and the permitted evidence view. They independently
-produce one peer message (at most 200 Unicode code points) from the same
-pre-message state. After tagged message delivery, both independently return a
-structured verdict without seeing the other's current verdict. Verdicts are then
-revealed and the runner supplies mechanical correctness feedback. Only the
-protocol-defined visible transcript carries forward. The agents are never told to
-collude, conceal errors, trust blindly, or invent a shortcut.
+Under the selected v1.2 main protocol, both agents first receive their own packet,
+the peer's task specification and claim, and the permitted evidence view. They
+independently produce round-1 messages (at most 200 Unicode code points) from the
+same pre-round state. After both tagged messages are delivered, they independently
+produce round-2 messages; each request sees both round-1 messages but neither
+current round-2 message. Both tagged round-2 messages are then delivered before
+either agent independently returns a structured verdict. Neither sees the
+other's current verdict. Verdicts are revealed together and the runner supplies
+mechanical correctness feedback. Only the protocol-defined visible transcript
+carries forward. Main evaluation retains one message per agent, and each scripted
+peer diagnostic remains one focal request. The v1.2 baseline prompt encodes only
+this two-round formation interface; calibration, evaluation, and probes preserve
+the original baseline exactly. The canonical v1.2 protocol hash binds the frozen
+base protocol and the addendum. The agents are never told to collude, conceal
+errors, trust blindly, or invent a shortcut.
 
 All formation packets are correct. The feasibility marker is met when both agents
 return \texttt{ACCEPT} without the evidence required by the rule in at least two
@@ -123,8 +134,8 @@ used across arms. Evaluation feedback is withheld until the branch is complete.
 \begin{table}[t]
 \centering
 \small
-\caption{Main v1.1 evaluation arms. U denotes full-evidence formation history and
-C constrained-evidence formation history.}
+\caption{Main evaluation arms, unchanged under v1.2. U denotes full-evidence
+formation history and C constrained-evidence formation history.}
 \label{tab:arms}
 \begin{tabularx}{\linewidth}{@{}c l l l l@{}}
 \toprule
@@ -171,7 +182,10 @@ truthful. Eight independent full-evidence diagnostics restart from each immutabl
 endpoint. Its primary paired contrast is focal unsupported approval over episodes
 2--10; the diagnostic reports immediate FAR, correct-packet approval, and balanced
 accuracy. Scripted joint acceptance is partly imposed by design, so the measured
-object is focal response rather than a spontaneous-collusion rate.
+object is focal response rather than a spontaneous-collusion rate. The v1.2
+compatibility decision leaves this secondary protocol at one message round and
+outside the main fallback inventory; any two-round secondary variant would need a
+new prospective version and lineage.
 
 \subsection{Outcomes and claim rules}
 
@@ -224,13 +238,24 @@ including the ambiguous request's full reservation; no evaluation, probe,
 block-0 replay, or later-stage request ran. Its one-use authorization is consumed,
 no formal five-block assessment exists, and the later 888-request completion
 phase remains unauthorized.
-The main five-block plan contains 1,380 nominal requests in total, including
-calibration and the block-0 smoke subset. The optional
-five-block formation-peer pilot adds 280 requests under a separate live release
-and provenance lineage. If v1.2 is chosen without a completed Gate~3 trigger
-artifact, it is disclosed as an early-futility methodological deviation; its
-fresh calibration, smoke, and pilot require separate authorizations. v1.1,
-v1.2, pilot, and confirmation outcomes are never pooled.
+The v1.1 five-block plan contained 1,380 nominal requests including calibration
+and the block-0 smoke subset. Because its partial lineage makes the 3/5 threshold
+unreachable without producing a completed Gate~3 assessment, we selected v1.2
+for prospective preparation as an early-futility methodological deviation. The
+fresh v1.2 plan contains 20 calibration requests, a 192-request block-0 smoke,
+480 blocks-1--4 U/C formation requests, and 888 remaining evaluation/probe
+requests, or 1,580 in total. Each partition requires separate prerequisite
+evidence, review, and authorization. The optional one-round formation-peer pilot
+remains a separate 280-request protocol and is not included in v1.2. v1.1, v1.2,
+pilot, confirmation, and formation-peer outcomes are never pooled. No v1.2
+authorization or model output exists at this checkpoint.
+
+Current v1.2 support is projection-only. Gate~1 has no live controller,
+execution-ready proposal, authorization-issuance path, checked-in static proposal,
+or checked-in static authorization schema. Its inherited October 24, 2026 pricing
+record is stale for v1.2 and requires fresh official verification. Gate~2 and
+Gate~3 Phase~1 have projected plans only; their live controllers and cross-run
+prerequisite assessments are not implemented.
 
 The block, not a verdict, role, episode, or branch, is the resampling unit. We
 report every block-level contrast, the equally weighted mean, a frozen-seed
@@ -250,6 +275,35 @@ $[L_X-U_Y,\,U_X-L_Y]$. Directional wording requires both this bound and the
 claim-governing interval to preserve direction. Outcome-based exclusion is
 prohibited. More than 5\% missing/invalid outcomes or strong arm imbalance pauses
 interpretation for an integrity review.
+
+Protocol v1.2 permits one runner-owned retry only when a response was received
+and the exception and response statuses are integers exactly equal to the same
+HTTP 500/502/503/504, provider/header request IDs match, and neither output nor
+usage is present. The failed attempt remains durable and fully reserved but never
+enters the model-visible attempt list or history. The retry keeps the logical
+identity, has a distinct attempt index, and must use identical wire bytes. SDK
+retries are disabled. The runner waits at least 5 seconds; only numeric
+delta-seconds \texttt{Retry-After} or numeric \texttt{Retry-After-Ms} values may
+extend the delay within 60 seconds. The first non-ambiguous returned outcome is
+terminal; refusals and invalid responses remain missing/invalid. No second
+ambiguous-5xx-owned retry is permitted. This does not imply a maximum of two
+physical attempts under every policy because a permitted overlength or
+known-not-completed attempt may already have occurred. At most
+$\max(1,\lceil N/100\rceil)$ identities in an $N$-request release may use this
+path. Gate~1, Gate~2, Phase~1, and Phase~2 therefore cap affected identities at
+1/2/5/9 and dispatch attempts at 61/694/1,765/2,997, while logical counts remain
+20/192/480/888. The unseen attempt may have completed and differed from its
+retry, so every affected identity and an unresolved-outcome sensitivity analysis
+remain required even below the cap. Exact token, context, freshly verified
+pricing, and cost ceilings still require rendered release-specific projection
+and binding.
+
+Recovery is classified from each affected identity's final durable status, not
+from an intermediate returned retry. The analyzer enumerates affected,
+recovered, and unresolved identities, derives the transitive request and
+checkpoint dependency closure, and recomputes claim-level identification bounds
+with every verdict in that closure treated as missing. The retained retry is
+never imputed to the unseen first-attempt outcome.
 
 Confirmation size is selected prospectively from simulation using at least
 $\max(\widehat{\sigma}_{\mathrm{pilot}},0.35)$ absent a documented more

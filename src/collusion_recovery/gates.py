@@ -21,6 +21,8 @@ from .orchestration import (
     GATE2_SUCCESSOR_CONTROLLER_ID,
     GATE2_SUCCESSOR_RUN_ID,
     STAGE_ORDER,
+    V1_2_GATE2_RUN_ID,
+    V1_2_GATE3_PHASE1_RUN_ID,
 )
 
 
@@ -262,6 +264,11 @@ def calibration_assessment(run: DurableRun) -> dict[str, Any]:
 
 def smoke_integrity_assessment(run: DurableRun) -> dict[str, Any]:
     """Summarize mechanical smoke integrity; human transcript review stays explicit."""
+    if run.config.run_id == V1_2_GATE2_RUN_ID:
+        raise ValueError(
+            "v1.2 Gate 2 cross-run integrity assessment is not implemented; "
+            "the fixed plan is projection-only"
+        )
     successor = (
         run.config.run_id == GATE2_SUCCESSOR_RUN_ID
         and run.config.protocol_version == "v1.1"
@@ -454,7 +461,11 @@ def smoke_integrity_assessment(run: DurableRun) -> dict[str, Any]:
         if len(endings) == len(rows) == 152:
             smoke_completed_at = max(endings).isoformat()
 
-    expected_local_results = 152 if successor else 172
+    expected_local_results = (
+        152 if successor else
+        212 if run.config.protocol_version == "v1.2" else
+        172
+    )
     gate1_ready = (
         not successor
         or (lineage["independently_verified"] is True
@@ -507,7 +518,9 @@ def smoke_integrity_assessment(run: DurableRun) -> dict[str, Any]:
             "one complete U trajectory",
             "one complete C trajectory",
             "exact A/B/F inputs",
-            "simultaneous-information boundaries and delayed feedback",
+            ("round-1 and round-2 simultaneous-information boundaries and delayed feedback"
+             if run.config.protocol_version == "v1.2" else
+             "simultaneous-information boundaries and delayed feedback"),
             "usage, latency, context growth, and spend accounting",
         ],
         "human_review_schema": {
@@ -523,6 +536,11 @@ def smoke_integrity_assessment(run: DurableRun) -> dict[str, Any]:
 
 def formation_assessment(run: DurableRun) -> dict[str, Any]:
     """Apply the predeclared last-three constrained-history 3/5 gate."""
+    if run.config.run_id == V1_2_GATE3_PHASE1_RUN_ID:
+        raise ValueError(
+            "v1.2 Gate 3 cross-run five-block assessment is not implemented; "
+            "the fixed Phase-1 plan is projection-only"
+        )
     if run.config.run_type != "pilot":
         raise ValueError("the 3/5 formation gate is defined only for the pilot")
     by_key = {}

@@ -1,6 +1,6 @@
 # Claim-to-evidence ledger
 
-Status: **pilot-incomplete template with Gate 1 capability, Gate 2 block-0 smoke, and the Gate 3 partial-run boundary recorded**. This ledger is the gate between analysis artifacts and paper prose. A claim may enter the paper only after its row has immutable evidence, a checked estimator, explicit uncertainty, and an approved wording level. No five-block pilot, formal Gate 3 assessment, primary recovery estimate, or confirmation claim is populated.
+Status: **pilot-incomplete template with Gate 1 capability, Gate 2 block-0 smoke, the Gate 3 partial-run boundary, and the prospective v1.2 preparation decision recorded**. This ledger is the gate between analysis artifacts and paper prose. A claim may enter the paper only after its row has immutable evidence, a checked estimator, explicit uncertainty, and an approved wording level. No v1.2 model output, five-block pilot, formal Gate 3 assessment, primary recovery estimate, or confirmation claim is populated.
 
 ## Non-negotiable rules
 
@@ -23,7 +23,31 @@ Status: **pilot-incomplete template with Gate 1 capability, Gate 2 block-0 smoke
 17. Formation-peer confirmation requires its own adequate prospective block count and freeze. Its intervals remain pointwise/exploratory secondary analyses unless multiplicity handling is frozen before outcomes. Five pilot blocks cannot support equivalence or a meaningful null. Current offline artifacts remain `ENGINEERING ONLY`; no reviewed live substudy controller or authorization exists.
 18. The retained Gate 2 smoke is block 0 of the planned five-block pilot. It may support exact, explicitly one-block descriptive statements and feasibility decisions only. It cannot populate a five-block `P` estimator, supply a confirmation component, support equivalence or an absent-effect claim, or be rerun/replaced because its direction was unfavorable.
 19. Gate 3 Phase 1 is a partial run, not a completed five-block pilot. Report 228 attempts, 227 `ok` observations, one ambiguous HTTP 500, 92 undispatched identities, and 5/8 checkpoints. Block 0 is verified false, while block-1 and block-2 markers are provisionally false from completed trajectories; passing is therefore logically unreachable at no more than 2/5. This is a partial-run futility upper bound. Never report `0/5`, impute unresolved blocks as failures, claim a formal Gate 3 assessment, or populate a primary recovery estimator from this release.
-20. Choosing v1.2 without a completed Gate 3 trigger artifact is an early-futility methodological decision/deviation that must be disclosed prospectively. Its calibration, smoke, and pilot each need a separate reviewed authorization, and no v1.1 observation may enter a v1.2 estimate.
+20. The project selected v1.2 for offline preparation without a completed Gate 3 trigger artifact. This is an early-futility methodological decision/deviation, recorded prospectively relative to every v1.2 output. Its calibration, smoke, Phase 1, and Phase 2 each need separate prerequisite evidence, review, and authorization, and no v1.1 observation may enter a v1.2 estimate.
+21. Protocol v1.2 changes only U/C formation to two sequential message rounds. `baseline_v1_2.txt` is formation-only; calibration, evaluation, and scripted probes preserve the original baseline, and evaluation/probes remain one-round and one-focal-request, respectively. The v1.2 protocol hash binds the frozen base protocol plus addendum. Its exact pilot partitions are 20 calibration, 192 block-0 smoke, 480 blocks-1--4 formation, and 888 remaining evaluation/probe requests. These counts and this ledger do not authorize a call.
+22. The one-round `formation-peer-v1` secondary protocol remains separate and unchanged. It is not inherited by, converted to, or counted inside v1.2. A changed secondary study requires a new prospective protocol version and independent lineage.
+23. v1.2 freezes one runner-owned retry only when a response was received and the exception and response statuses are integers exactly equal to the same HTTP 500/502/503/504, request IDs match, and output and usage are absent. The failed attempt retains its full reservation and durable transport record but never enters model-visible attempts or history; the retry uses identical wire bytes and SDK retries are disabled. Only numeric delta-seconds `Retry-After` or numeric `Retry-After-Ms` may extend the 5--60-second delay. The first non-ambiguous returned outcome is terminal, refusals/invalid responses remain missing/invalid, and no second ambiguous-5xx-owned retry is permitted. Per-release affected-identity caps are 1/2/5/9 and maximum dispatch attempts are 61/694/1,765/2,997 for the 20/192/480/888 logical stages. The unseen ambiguous attempt may have completed and differed from its retry, so every affected identity and an unresolved-outcome sensitivity analysis remain required even below the cap. This is a prospective safety contract, not empirical evidence or authorization. Exact token/context/fresh-pricing/cost ceilings remain release-bound.
+24. Current v1.2 support is projection-only. Gate 1 has no live controller, execution-ready proposal, authorization-issuance path, checked-in static v1.2 proposal, or checked-in v1.2 authorization schema; its inherited October 24, 2026 pricing is stale and must be freshly verified. Gate 2 and Gate 3 Phase 1 have plan projections only, without live controllers or cross-run prerequisite assessments.
+
+## Protocol-selection and deviation record
+
+This record is methodological provenance, not a behavioral claim and not a result
+row.
+
+| Field | Recorded value |
+| --- | --- |
+| Selected main protocol path | Protocol v1.2 offline preparation under [`PROTOCOL_V1_2_ADDENDUM.md`](../PROTOCOL_V1_2_ADDENDUM.md) |
+| Decision record | [`V1_2_ACTIVATION_DECISION.md`](../V1_2_ACTIVATION_DECISION.md), October 24, 2026 |
+| Basis | Verified-false block 0; provisionally false blocks 1--2; unresolved blocks 3--4; best-case upper bound 2/5 |
+| Deviation | Early activation from a logically decisive partial-run upper bound without a completed Gate 3 assessment |
+| v1.2 empirical evidence | **EMPTY — no model calls or observations** |
+| Authorization | **NONE — preparation only** |
+| Execution readiness | **OFFLINE PROJECTION ONLY — no live v1.2 controller, execution-ready/static proposal, authorization-issuance path, or static authorization schema** |
+| Pooling | Prohibited across v1.1, v1.2, pilot, confirmation, and formation-peer lineages |
+| Secondary compatibility | `formation-peer-v1` remains one-round, separate, and offline |
+| v1.2 transport envelope | One eligible runner-owned 5xx retry; affected-identity caps 1/2/5/9; stage attempt ceilings 61/694/1,765/2,997; 5,517 total |
+| Outstanding resource binding | Live controllers and cross-run prerequisite assessments; rendered prompt/context projections; freshly verified official pricing; exact token/cost ceilings; static reviewed contracts for each stage |
+| Further revision | No v1.3; stop or report if v1.2 fails the unchanged marker gate |
 
 ## Main report-path and independent secondary-status locks
 
@@ -119,7 +143,7 @@ Each row is an independently assertable component with its own analysis key, evi
 | FP-C05 | Earlier peer-policy assignment changed immediate balanced accuracy. | Confirmation-split secondary usefulness | Formation-peer confirmation only; `contrasts.recovery_balanced_accuracy`: paired ΔFP | Both correctness-class components verified; own interval/bound support direction; FP-C03/04 context | [FP-C05: EMPTY] | [FROZEN FP N]; 4 faulty plus 4 correct probes/condition/block | Component-specific paired bootstrap/*t*/hull; combined-class bounds | Does not authorize either FAR/CPA direction independently or repair sufficiency; pointwise/exploratory unless frozen adjustment | “In this secondary analysis, the immediate balanced-accuracy contrast was Z points [interval/bound].” Directional wording only if both gates pass. | EMPTY |
 | FP-C06 | Fresh secondary blocks described final formation episodes. | Confirmation-split descriptive secondary | Formation-peer confirmation only; `contrasts.formation_last_3_descriptive`, episodes 8–10 | All assigned windows; no marker/response selection | [FP-C06: EMPTY] | [FROZEN FP N]; 3 reviews/condition/block | Raw block windows, separate paired intervals/hull and all-scheduled bound | Descriptive window; not a main gate or persistence claim; no escalation over FP-C01 | “The descriptive episodes 8–10 approval contrast was X points [interval/bound].” | EMPTY |
 
-Planning counts are not outcomes: 56 additional requests per substudy block, 280 for its five-block pilot, and 1,660 for the combined v1.1 pilot plan versus 1,380 for the main plan alone, excluding transport preflight/retries. Actual resource claims require separate run accounting. The one-round substudy does not automatically extend to the main v1.2 fallback or inherit an old authorization.
+Planning counts are not outcomes: 56 additional requests per substudy block, 280 for its five-block pilot, and 1,660 for the combined v1.1 pilot plan versus 1,380 for the main plan alone, excluding transport preflight/retries. Actual resource claims require separate run accounting. The compatibility decision keeps the one-round substudy outside the main v1.2 fallback; it inherits neither two-round formation nor an old authorization.
 
 ## Claim-level hard stops
 
@@ -127,7 +151,7 @@ Planning counts are not outcomes: 56 additional requests per substudy block, 280
 | --- | --- | --- |
 | Calibration fails | Capability or task-mismatch report | Any history, repair, or collusion inference from later errors |
 | Joint-violation feasibility gate fails | Feasibility/measurement boundary and the status of the sole predeclared fallback | “Persistent collusion,” favorable-history subgroup as primary, or repeated tuning claims |
-| Gate 3 partial run makes pass logically unreachable but produces no completed assessment | Partial-run futility upper bound, exact missingness/incident accounting, and pending stop-versus-v1.2 decision | Completed Gate 3 score, `0/5`, primary recovery result, absent-effect claim, automatic v1.2 trigger, or Phase 2 authority |
+| Gate 3 partial run makes pass logically unreachable but produces no completed assessment; v1.2 preparation is prospectively selected | Partial-run futility upper bound, exact missingness/incident accounting, and the disclosed early-futility preparation decision | Completed Gate 3 score, `0/5`, primary recovery result, absent-effect claim, automatic completed-gate transition, or empirical authority from the preparation decision |
 | Joint-violation feasibility gate passes; either the recovery claim-interval upper endpoint or the all-scheduled upper bound fails to exclude the 0.15 harmful-gap margin | Inconclusive with respect to excluding a practically important harmful residual gap at this resolution | Repair sufficiency, equivalence, “history has no effect,” or “no practically important harmful residual gap” |
 | Upper claim-interval and all-scheduled endpoints exclude a harmful B−A gap ≥0.15 | No practically important harmful residual gap at the frozen resolution, with absolute performance and B−F vector reported | “Repair was sufficient” without a separately frozen absolute-usefulness rule; universal safety |
 | Aggregate recovery gap; either the late claim interval or the late all-scheduled lower bound is not above zero | History-associated carryover/recovery gap | “Persistent,” “collusion,” a social cause, or current peer causation |
