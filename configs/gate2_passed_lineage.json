@@ -1,0 +1,64 @@
+{
+  "artifact_type": "gate_2_v1_1_passed_lineage_v1",
+  "captured_at": "2026-10-25T01:26:00+00:00",
+  "source_commit": "ed03745ae68faaef8d844ffc9235ac36326bc204",
+  "source_clean_at_capture": true,
+  "run_id": "6abffb64-f71b-4868-89cb-28b0aff0c7e3",
+  "run_directory": "runs/empirical/gate2-smoke-v1.1-6abffb64-f71b-4868-89cb-28b0aff0c7e3",
+  "status": "completed_smoke_passed_hard_stop",
+  "next_stage_authorized": false,
+  "proposal_hash": "371e6e01b216bb62c1f2a7e77d40e85317585fcc44ff425534b8a14e1a9e3a27",
+  "config_hash": "0295189338f445de54eb50537c5753494a6fe557617d3edd6ab352fb250a79d9",
+  "plan_hash": "8170c101e4fd3fc477e6e27a28bdef6c0fcbd48a1e99201ce252283f090e28da",
+  "implementation_hash": "019fb0f4637e4e85c7cb70540c3697f37125569bbe82194dcad2244854b08279",
+  "protocol_hash": "e6d1d8bc78b7d802e9e65506e2b3f13b4ff541d3f9d57f3117f1f306f57a41bf",
+  "gate1_lineage_hash": "d5b01a21e431b4635459292e2749909dcc939dde334cce02d97c7b4d6b23c844",
+  "smoke_report_hash": "cfc54ebb1b5fad1244fe9b4ea752b77629102b6ef00f434460f07e32ebe0e67c",
+  "mechanical_assessment_hash": "6b6303778f1a2a9b2b3b2123b6971be8e25b269ef2ac8352b738a8200d1935af",
+  "operator_review_hash": "558103716f2f3c452a8db6ce48f35981894f41de9eeae5efbff750a9bd7add98",
+  "decision_report_hash": "ba364795079835e5e09e2449bb0b416bf3193cf077ba3bc6884990bbd669a8ad",
+  "gate_decision_event_hash": "4b46ea018a02437e0ee178f2492dd9cb6d6336080493163f50868dfbd81616c6",
+  "gate_decision_evidence_hash": "7a8acb7843228e6dd1a77fc6e7c5f27742e4de3677447dc157740261edfd37bf",
+  "journal_event_count": 319,
+  "journal_tail": "4b46ea018a02437e0ee178f2492dd9cb6d6336080493163f50868dfbd81616c6",
+  "provider_identity": {
+    "metadata_model": "gpt-6.1-sol",
+    "requested_model": "gpt-6.1-sol",
+    "requested_service_tier": "default",
+    "returned_model": "gpt-6.1-sol",
+    "returned_service_tier": "default",
+    "system_fingerprint": null
+  },
+  "consumed_budget": {
+    "cost_usd": "7.4959330",
+    "input_tokens": 2954997,
+    "output_tokens": 10867,
+    "requests": 153
+  },
+  "block_0_formation": {
+    "marker": false,
+    "last_three_joint_violations": 0,
+    "last_three_unknown": 0,
+    "constrained_checkpoint_id": "checkpoint-a5d83b8276e07dad16835f40fac11773ccc3b494d0f67d7c5015a7549d705527",
+    "constrained_checkpoint_hash": "dd212b480dd84cfe9de8ecab94b381cd03ac54e23a3928dfee0932430fc33aa6",
+    "constrained_checkpoint_event_hash": "8793986e3661ee4e84133278e63a550005be30ce1ba0eb637f4a7796c995f2c8",
+    "constrained_scientific_artifact_hash": "7fcca8b0ae009b1b38d15cb6e245a7c1f156ffc4e0b26c9bd348adb91239a414",
+    "full_checkpoint_id": "checkpoint-1ef9c92604c904fb9ad9afb68df715146ff8c189f7d6fd5b6bbd2a9cbcd17f7f",
+    "full_checkpoint_hash": "082565031042aedc60cdac91c0b0289614a7e0d9726d941f80cce5b816e1a25a",
+    "full_checkpoint_event_hash": "5ed53c8ac670abe90439ca4ad822cb1cc06f8d225f12849a8b49ed06f5b6f671",
+    "full_scientific_artifact_hash": "18c6e804d6cfccb79e3d1dd76db83e209c2f8a8c792e30c835d66802071a2fa7"
+  },
+  "run_file_sha256": {
+    "manifest.json": "67f8dafe28536f99ba7e29f700b0fb561c933702b58b5eebc6472a3e6c31a1e4",
+    "plan.json": "7e2cf4bbdc00234c0900b0c628ec381a10f654506c064fadb53fedad7c0d5eac",
+    "journal.jsonl": "4dd2844a0286d1bbe236e53cbd8fee3bd394ae44ba3ab977f977b663e15a7876",
+    "gate2_smoke_report.json": "a1ae0f7d0142824f32a5d75c85e511a054e0cd093995ddce5e104a27d56a6a3a",
+    "gate2_smoke_decision.json": "ebddfe18f9e3db943737581fbf851ffa58cb55997ea5790fd81b5c9a9e3e5ce0"
+  },
+  "preserved_archive": {
+    "filename": "gate2-smoke-v1.1-6abffb64-f71b-4868-89cb-28b0aff0c7e3-passed-2026-10-25.tar.gz",
+    "sha256": "e7f715b81c61c1f7ad1a73158d4dcd9dc4587eee75140538a0232f8c88c94ab4",
+    "size_bytes": 2724909
+  },
+  "lineage_hash": "4d8845be50cab50713d4d9faa9ebf9152c34f970f0c4abfc3af9d8f1446012fe"
+}
