@@ -26,11 +26,13 @@ from .orchestration import (
     ExecutionContext,
     GATE1_CALIBRATION_RUN_ID,
     GATE2_SUCCESSOR_RUN_ID,
+    GATE3_PHASE1_RUN_ID,
     RunPlan,
     ScheduledRequest,
     build_calibration_fixture_inventory,
     build_fixture_inventory,
     build_gate2_smoke_fixture_inventory,
+    build_gate3_phase1_fixture_inventory,
     validate_canonical_plan,
 )
 from .prompts import provider_request_from_agent_request, render_agent_prompt
@@ -115,6 +117,11 @@ class ScientificRequestFactory:
             if config.run_id == GATE1_CALIBRATION_RUN_ID else
             build_gate2_smoke_fixture_inventory(config, self.designs[0])
             if config.run_id == GATE2_SUCCESSOR_RUN_ID else
+            build_gate3_phase1_fixture_inventory(
+                config,
+                {block: self.designs[block] for block in range(1, 5)},
+            )
+            if config.run_id == GATE3_PHASE1_RUN_ID else
             build_fixture_inventory(config, self.designs)
         )
         if (json.loads(canonical(dict(plan.fixture_inventory)))

@@ -3568,7 +3568,7 @@ def run_gate2_successor(
         except Gate2SuccessorError as exc:
             if run_path.exists():
                 raise Gate2SuccessorError(
-                    "the prepared Gate 2 release missed its first-claim window; "
+                    "the prepared Gate 2 release expired after missing its first-claim window; "
                     "this fixed run is permanently fail-closed and requires a "
                     "new versioned release/run ID, not a replacement authorization"
                 ) from exc

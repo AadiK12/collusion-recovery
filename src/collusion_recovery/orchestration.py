@@ -97,7 +97,7 @@ KNOWN_NOT_COMPLETED = {
 }
 OBSERVATION_STATUSES = {"ok", "refusal", "invalid_response"}
 PROVIDER_IDENTITY_STATUSES = OBSERVATION_STATUSES | {"overlength"}
-# Gate 1 and the Gate 2 successor use dedicated controllers with fixed run
+# Gate 1, the Gate 2 successor, and Gate 3 phase 1 use fixed controllers and run
 # identities. Keep this mapping here, rather than importing the release
 # modules, because those modules import the durable primitives in this module.
 # Release tests assert that these duplicated public constants cannot drift.
@@ -107,9 +107,23 @@ GATE1_CALIBRATION_BINDING_EVENT = "gate1_calibration_binding"
 GATE2_SUCCESSOR_CONTROLLER_ID = "gate2_smoke_successor_v1"
 GATE2_SUCCESSOR_RUN_ID = "6abffb64-f71b-4868-89cb-28b0aff0c7e3"
 GATE2_SUCCESSOR_BINDING_EVENT = "gate2_successor_binding"
+# Gate 1 and Gate 2 are completed fixed releases.  Their plans continue to
+# identify the exact source inventory that was authorized, even after a new
+# controller is added for a successor run.  Reusing either paid release is
+# independently prevented by its consumed one-use authorization receipt.
+GATE1_GATE2_FROZEN_IMPLEMENTATION_HASH = (
+    "019fb0f4637e4e85c7cb70540c3697f37125569bbe82194dcad2244854b08279"
+)
+GATE2_SUCCESSOR_NAMESPACE = (
+    "pilot/v1.1/gate2-6abffb64-f71b-4868-89cb-28b0aff0c7e3"
+)
+GATE3_PHASE1_CONTROLLER_ID = "gate3_formation_phase1_v1"
+GATE3_PHASE1_RUN_ID = "3e0d7744-45d7-4db5-a36a-a46b634c0b98"
+GATE3_PHASE1_BINDING_EVENT = "gate3_phase1_binding"
 DEDICATED_EXECUTION_CONTROLLERS = MappingProxyType({
     GATE1_CALIBRATION_RUN_ID: GATE1_CALIBRATION_CONTROLLER_ID,
     GATE2_SUCCESSOR_RUN_ID: GATE2_SUCCESSOR_CONTROLLER_ID,
+    GATE3_PHASE1_RUN_ID: GATE3_PHASE1_CONTROLLER_ID,
 })
 GATE_FOR_STAGE = {
     "smoke": "calibration",
@@ -629,6 +643,39 @@ def build_gate2_smoke_fixture_inventory(
     return inventory
 
 
+def build_gate3_phase1_fixture_inventory(
+        config: LiveConfig,
+        designs: Mapping[int, Mapping[str, Any]] | None = None) -> dict[str, Any]:
+    """Hash only the block 1--4 formation fixtures released in Gate 3 phase 1.
+
+    Block 0 belongs to the completed Gate 2 smoke run. Evaluation and probe
+    fixtures remain outside this release so the immutable phase-1 plan cannot
+    expose or schedule later-stage work.
+    """
+    values = (
+        {block: block_design(config.seed_namespace, block, config.protocol_version)
+         for block in range(1, 5)}
+        if designs is None else dict(designs)
+    )
+    if set(values) != set(range(1, 5)):
+        raise ValueError("Gate 3 phase 1 requires formation designs for blocks 1 through 4")
+    inventory: dict[str, Any] = {}
+
+    def add(name: str, fixture: Any) -> None:
+        inventory[name] = {
+            "namespace": fixture.namespace,
+            "defect": fixture.defect,
+            "packet_hash": fixture.packet.packet_hash,
+            "oracle_hash": digest(list(fixture.packet.correct_answer)),
+        }
+
+    for block in range(1, 5):
+        for episode, pair in enumerate(values[block]["formation"]):
+            for role, fixture in zip(ROLES, pair):
+                add(f"block/{block}/formation/{episode}/{role}", fixture)
+    return inventory
+
+
 class _PlanBuilder:
     def __init__(self, config: LiveConfig):
         self.config = config
@@ -770,7 +817,7 @@ def build_gate1_calibration_plan(config: LiveConfig) -> RunPlan:
         protocol_hash,
         digest(config.to_dict()),
         _frozen_mapping(build_calibration_fixture_inventory(config)),
-        _implementation_hash(),
+        GATE1_GATE2_FROZEN_IMPLEMENTATION_HASH,
         tuple(builder.requests),
         (),
     )
@@ -802,7 +849,7 @@ def build_gate2_successor_smoke_plan(config: LiveConfig) -> RunPlan:
         protocol_hash,
         digest(config.to_dict()),
         _frozen_mapping(build_gate2_smoke_fixture_inventory(config, design)),
-        _implementation_hash(),
+        GATE1_GATE2_FROZEN_IMPLEMENTATION_HASH,
         tuple(builder.requests),
         tuple(builder.checkpoints),
     )
@@ -815,6 +862,57 @@ def build_gate2_successor_smoke_plan(config: LiveConfig) -> RunPlan:
             or {checkpoint.history for checkpoint in plan.checkpoints} != {"U", "C"}
             or any(checkpoint.block != 0 for checkpoint in plan.checkpoints)):
         raise ValueError("Gate 2 canonical smoke plan has drifted")
+    return plan
+
+
+def build_gate3_phase1_plan(config: LiveConfig) -> RunPlan:
+    """Build the exact v1.1 Gate 3 phase-1 plan: blocks 1--4 formation only."""
+    if (config.run_id != GATE3_PHASE1_RUN_ID
+            or config.protocol_version != "v1.1"
+            or config.source != "empirical-live"
+            or config.run_type != "pilot"
+            or config.stage != "formation"
+            or config.blocks != 5
+            or config.split != GATE2_SUCCESSOR_NAMESPACE
+            or config.seed_namespace != GATE2_SUCCESSOR_NAMESPACE
+            or config.calibration_namespace != "calibration/v1.1"):
+        raise ValueError(
+            "Gate 3 phase 1 requires its fixed empirical v1.1 five-block "
+            "formation configuration and frozen Gate 2 namespace"
+        )
+    designs = {
+        block: block_design(config.seed_namespace, block, config.protocol_version)
+        for block in range(1, 5)
+    }
+    builder = _PlanBuilder(config)
+    for block in range(1, 5):
+        builder.formation(block, "formation", designs[block])
+    protocol_hash = file_hash(Path(__file__).resolve().parents[2] / "SPRINT_PROJECT_PLAN.md")
+    plan = RunPlan(
+        config.run_id,
+        config.source,
+        config.run_type,
+        config.split,
+        config.protocol_version,
+        protocol_hash,
+        digest(config.to_dict()),
+        _frozen_mapping(build_gate3_phase1_fixture_inventory(config, designs)),
+        _implementation_hash(),
+        tuple(builder.requests),
+        tuple(builder.checkpoints),
+    )
+    if (plan.planned_counts() != {
+            "logical_requests": 320,
+            "by_stage": {"formation": 320},
+            "by_phase": {"formation": 320},
+            "checkpoints": 8,
+            }
+            or sum(request.action == "message" for request in plan.requests) != 160
+            or sum(request.action == "verdict" for request in plan.requests) != 160
+            or {(checkpoint.block, checkpoint.history)
+                for checkpoint in plan.checkpoints}
+            != {(block, history) for block in range(1, 5) for history in ("U", "C")}):
+        raise ValueError("Gate 3 phase-1 canonical formation plan has drifted")
     return plan
 
 
@@ -831,6 +929,8 @@ def build_request_plan(config: LiveConfig) -> RunPlan:
     if (config.run_id == GATE2_SUCCESSOR_RUN_ID
             and config.protocol_version == "v1.1"):
         return build_gate2_successor_smoke_plan(config)
+    if config.run_id == GATE3_PHASE1_RUN_ID:
+        return build_gate3_phase1_plan(config)
     if config.run_type not in {"pilot", "confirmation"}:
         raise ValueError("the v1 request planner supports pilot or confirmation runs")
     builder = _PlanBuilder(config)
@@ -1178,6 +1278,7 @@ class DurableRun:
                 None,
                 GATE1_CALIBRATION_CONTROLLER_ID,
                 GATE2_SUCCESSOR_CONTROLLER_ID,
+                GATE3_PHASE1_CONTROLLER_ID,
         }:
             raise ResumeError("execution controller is unknown or malformed")
         from .stage2_release_state import (
@@ -2050,12 +2151,14 @@ class StagedExecutor:
                     event.get("kind") in {
                         GATE1_CALIBRATION_BINDING_EVENT,
                         GATE2_SUCCESSOR_BINDING_EVENT,
+                        GATE3_PHASE1_BINDING_EVENT,
                     }
                     for event in run.events
                 )):
             raise AuthorizationRequiredError(
-                "dedicated release runs require the smoke-only controller or "
-                "the calibration-only controller bound to their fixed run id"
+                "dedicated release runs require the smoke-only controller, the "
+                "calibration-only controller, or the formation-only controller "
+                "bound to their fixed run id"
             )
         self.run, self.provider, self.request_factory = run, provider, request_factory
         self._transport_metadata: dict[str, Any] | None = None
