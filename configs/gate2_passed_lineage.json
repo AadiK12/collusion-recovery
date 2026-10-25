@@ -2,6 +2,7 @@
   "artifact_type": "gate_2_v1_1_passed_lineage_v1",
   "captured_at": "2026-10-25T01:26:00+00:00",
   "source_commit": "ed03745ae68faaef8d844ffc9235ac36326bc204",
+  "source_tree": "7cc4371dde8f677d95dbadf48af54e419dddcd8c",
   "source_clean_at_capture": true,
   "run_id": "6abffb64-f71b-4868-89cb-28b0aff0c7e3",
   "run_directory": "runs/empirical/gate2-smoke-v1.1-6abffb64-f71b-4868-89cb-28b0aff0c7e3",
@@ -11,6 +12,7 @@
   "config_hash": "0295189338f445de54eb50537c5753494a6fe557617d3edd6ab352fb250a79d9",
   "plan_hash": "8170c101e4fd3fc477e6e27a28bdef6c0fcbd48a1e99201ce252283f090e28da",
   "implementation_hash": "019fb0f4637e4e85c7cb70540c3697f37125569bbe82194dcad2244854b08279",
+  "implementation_file_count": 43,
   "protocol_hash": "e6d1d8bc78b7d802e9e65506e2b3f13b4ff541d3f9d57f3117f1f306f57a41bf",
   "gate1_lineage_hash": "d5b01a21e431b4635459292e2749909dcc939dde334cce02d97c7b4d6b23c844",
   "smoke_report_hash": "cfc54ebb1b5fad1244fe9b4ea752b77629102b6ef00f434460f07e32ebe0e67c",
@@ -60,5 +62,5 @@
     "sha256": "e7f715b81c61c1f7ad1a73158d4dcd9dc4587eee75140538a0232f8c88c94ab4",
     "size_bytes": 2724909
   },
-  "lineage_hash": "4d8845be50cab50713d4d9faa9ebf9152c34f970f0c4abfc3af9d8f1446012fe"
+  "lineage_hash": "35179df0e35866cb7bc975ec44154e8ef5ac7d895f677c58aa274ae518334f3a"
 }
