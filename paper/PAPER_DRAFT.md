@@ -1,6 +1,6 @@
 # Restoring Independent Verification After Constrained Agent Interaction
 
-> **PRE-EXPERIMENT PAPER SHELL — NOT A HYPOTHESIS-RESULTS PAPER.** The verified Gate 1 capability decision is recorded below; no hypothesis-bearing model result has been inserted. Every marker beginning with `RESULT REQUIRED`, `VERIFY`, `DECISION REQUIRED`, or `TODO` must be resolved before submission. Mock, fake-provider, calibration, pilot, and confirmation artifacts must remain separately labeled and must never be pooled into a primary estimate.
+> **PILOT-INCOMPLETE PAPER SHELL — NOT A COMPLETE HYPOTHESIS-RESULTS PAPER.** The verified Gate 1 capability decision and Gate 2 block-0 smoke are recorded below. The smoke is one retained exploratory pilot block, not a five-block primary estimate. Every marker beginning with `RESULT REQUIRED`, `VERIFY`, `DECISION REQUIRED`, or `TODO` must be resolved before submission. Mock, calibration, smoke, completed-pilot, and confirmation artifacts must remain separately labeled and must never be pooled into a primary estimate.
 
 The compact, compilable manuscript derived from this detailed source is [`paper/latex/main.tex`](latex/main.tex). Keep the Markdown protocol shell and LaTeX report synchronized at each evidence lock; neither may override the authoritative experiment protocol or claim ledger.
 
@@ -10,7 +10,7 @@ The compact, compilable manuscript derived from this detailed source is [`paper/
 **Additional track, only if the form permits and the final evidence supports it:** Track 2 — Detection and Audit of Collusion
 **Protocol:** [FROZEN PROTOCOL VERSION REQUIRED]
 **Code commit:** [CLEAN FULL COMMIT REQUIRED]
-**Paper status:** Pre-results methods draft; Gate 1 capability calibration complete
+**Paper status:** Pilot-incomplete methods draft; Gate 1 complete and Gate 2 block-0 smoke integrity-verified
 
 **Secondary protocol:** [formation-peer-v1](../docs/FORMATION_PEER_CONTROLS.md), implemented for offline scripted validation only. Its live controller, prospective source-hash binding, and spending authorization remain outstanding. No empirical formation-control result is available. Main v1.1 A–F and B−A remain the primary study.
 
@@ -22,7 +22,7 @@ The compact, compilable manuscript derived from this detailed source is [`paper/
 
 > **150–250 words required in the submitted paper. Replace this entire block only after the main report path, independent secondary status, and their data are locked. Main confirmation findings use only `C` claims; main pilot-only findings use `P` claims and explicitly say “exploratory five-block pilot.” A separately completed secondary pilot may be mentioned as exploratory using verified `FP-P` claims even when the main study reports confirmation. Use `FP-C` only for its own fresh, prospectively frozen secondary confirmation. Never combine studies or splits within an estimate or compound claim.**
 
-AI-agent workflows increasingly ask models to review one another, but restoring an agent's access to evidence may not restore independent verification if its earlier interaction history favored approval without checking. We specify a controlled recovery experiment with deterministic ground truth. Pairs of agents first complete repeated reciprocal reviews under either complete or constrained peer-evidence access. We then restore complete evidence and compare six matched evaluation branches that vary prior history, an explicit corrective instruction, and the incremental addition of visible-history reset. An action-matched scripted-peer diagnostic separately tests sensitivity to an approving peer and to a direct reciprocal-approval request while holding authoritative evidence fixed. The primary outcome is false approval of objectively faulty packets; correct-packet approval and balanced accuracy prevent indiscriminate rejection from appearing protective. Inference is paired at the independent-block level, preserves malformed or missing outcomes through all-scheduled bounds, and keeps exploratory pilot data physically separate from fresh confirmation data. The experiment distinguishes verification failure, history-associated carryover, evaluation-time peer dependence, and a narrow confirmation-only operational-collusion criterion. **[RESULT REQUIRED FROM THE MAIN LOCKED PATH: insert the verified primary estimate, independent-block count, uncertainty, evidence delivery, denominators, and the strongest ledger-authorized interpretation.]** As of this pre-results draft, no hypothesis-bearing empirical run has occurred. A secondary formation-policy result may be added only if its independent empirical release and evidence status are complete.
+AI-agent workflows increasingly ask models to review one another, but restoring an agent's access to evidence may not restore independent verification if its earlier interaction history favored approval without checking. We specify a controlled recovery experiment with deterministic ground truth. Pairs of agents first complete repeated reciprocal reviews under either complete or constrained peer-evidence access. We then restore complete evidence and compare six matched evaluation branches that vary prior history, an explicit corrective instruction, and the incremental addition of visible-history reset. An action-matched scripted-peer diagnostic separately tests sensitivity to an approving peer and to a direct reciprocal-approval request while holding authoritative evidence fixed. The primary outcome is false approval of objectively faulty packets; correct-packet approval and balanced accuracy prevent indiscriminate rejection from appearing protective. Inference is paired at the independent-block level, preserves malformed or missing outcomes through all-scheduled bounds, and keeps exploratory pilot data physically separate from fresh confirmation data. The experiment distinguishes verification failure, history-associated carryover, evaluation-time peer dependence, and a narrow confirmation-only operational-collusion criterion. The integrity-verified block-0 smoke did not establish the intended precursor: C agents rejected throughout, the final-three marker was 0/3, and A and B had identical verdict vectors and perfect metrics after evidence restoration. **[RESULT REQUIRED FROM THE MAIN LOCKED PATH: insert the verified five-block primary estimate, independent-block count, uncertainty, evidence delivery, denominators, and the strongest ledger-authorized interpretation.]** This one block does not establish an absent effect. A secondary formation-policy result may be added only if its independent empirical release and evidence status are complete.
 
 **Abstract word count:** [VERIFY: 150–250 after replacement]
 
@@ -246,18 +246,20 @@ The existing main-study sample and six labels remain unchanged. `formation-peer-
 
 ### 3.13 Model, provider, and reproducibility metadata
 
-**[DECISION RECORDED FOR CAPABILITY EXECUTION; REBIND BEFORE HYPOTHESIS-BEARING EXECUTION]** Gate 1 requested and returned `gpt-6.1-sol` on the `default` service tier with low reasoning effort and a 4,096-token output ceiling. Provider metadata also reported `gpt-6.1-sol`; the system fingerprint was absent/null. The bound context limit was 1,050,000 tokens, and pricing was reverified at `2026-10-24T14:02:52-07:00` against the official GPT-6.1 Sol model page. Gate 2 must independently bind and reverify these fields before any hypothesis-bearing request. Provider identity drift pauses execution. Credentials remain outside repository artifacts.
+**[DECISIONS RECORDED FOR GATE 1 AND GATE 2; GATE 3 PRE-DISPATCH BINDING RECORDED]** Gate 1 and Gate 2 requested and returned `gpt-6.1-sol` on the `default` service tier with low reasoning effort and a 4,096-token output ceiling. Provider metadata also reported `gpt-6.1-sol`; the system fingerprint was absent/null. The bound context limit was 1,050,000 tokens, and Gate 2 bound the price contract reverified at `2026-10-24T14:02:52-07:00` against the official GPT-6.1 Sol model page. Gate 3 proposal `1b85e13a8b10c98ad4314611de0da56624328225b54a0aa7764ac72ecabd3b5e` independently binds the same provider/settings and a price contract reverified at `2026-10-24T18:31:56-07:00`; credential-free inspection passed and now awaits external authorization. Provider identity drift or binding staleness pauses execution. Credentials remain outside repository artifacts.
 
 ## 4. Results
 
-> **HYPOTHESIS-BEARING RESULTS EMPTY BY DESIGN — BRACKETED TEXT IS NOT A RESULT.** The capability-calibration row is populated from verified ledger claim C01; all experimental results remain empty. Populate main results only after locking the main report path; populate secondary results according to their independent status and verified data. Every number must be entered in `paper/CLAIM_EVIDENCE_LEDGER.md` first. Never copy mock/fake-provider rates or pool studies/splits within an estimate, panel, or compound interpretation. Separately labeled exploratory secondary pilot findings may accompany main confirmation. Resolve all `[RESULT REQUIRED]` markers before submission.
+> **FIVE-BLOCK PRIMARY RESULTS REMAIN EMPTY — BRACKETED TEXT IS NOT A RESULT.** The capability row and integrity-verified block-0 smoke rows are populated from C01 and S00–S03. Gate 2 is one retained exploratory pilot block, not a locked five-block estimate. Populate primary results only after locking the main report path; populate secondary results according to their independent status and verified data. Every number must be entered in `paper/CLAIM_EVIDENCE_LEDGER.md` first. Never copy mock/fake-provider rates, generalize from the smoke, or pool studies/splits within an estimate, panel, or compound interpretation.
 
 ### 4.1 Study flow and integrity
 
 | Split/phase | Blocks scheduled | Requests scheduled | Completed | Invalid/missing | Integrity decision | Cost |
 | --- | ---: | ---: | ---: | ---: | --- | ---: |
 | Fresh selected-version calibration | N/A | 20 new requests; historical Stage 2 reviews excluded | 20 | 0 | PASSED; hard stop before smoke | `$0.1378975` |
-| Pilot formation | 5 | [RESULT REQUIRED] | [RESULT REQUIRED] | [RESULT REQUIRED] | [PASS/FAIL REQUIRED] | [RESULT REQUIRED] |
+| Gate 2 block-0 smoke | 1 | 152 | 152 final observations / 153 attempts | 0 final observations | PASSED integrity; scientific marker false; hard stop | `$7.4959330` |
+| Gate 3 Phase 1, blocks 1–4 U/C formation | 4 | 320 | NOT RUN | NOT RUN | INSPECTED; awaiting external authorization | NOT RUN |
+| Pilot formation, all five blocks | 5 | 400 formation requests | 80 from block 0 | 0 in block 0 | [3/5 DECISION REQUIRED AFTER PHASE 1] | [PHASE 1 RESULT REQUIRED] |
 | Main pilot complete | 5 | 1,380 nominal including calibration under v1.1; 1,580 under v1.2 | [RESULT REQUIRED] | [RESULT REQUIRED] | [DECISION REQUIRED] | [RESULT REQUIRED] |
 | Separate formation-peer-v1 pilot | 5 planned; separately identified | 280 additional nominal | [RESULT REQUIRED OR NOT RUN] | [RESULT REQUIRED OR NOT RUN] | [INTEGRITY REVIEW REQUIRED; NOT A MAIN GATE] | [RESULT REQUIRED OR NOT RUN] |
 | Combined v1.1 pilot planning envelope | Main and substudy block sets remain distinct | 1,660 including fresh calibration, excluding preflight/retries | [RESULT REQUIRED OR NOT RUN] | [RESULT REQUIRED OR NOT RUN] | [SEPARATE RELEASE DECISIONS REQUIRED] | [RESULT REQUIRED OR NOT RUN] |
@@ -268,11 +270,36 @@ On the main pilot-only path, write “not run” across the main confirmation ro
 
 Report provider-identity stability, evidence-hash audits, branch-lineage audits, retry counts, and the exact data-lock timestamp here.
 
+**Gate 3 release boundary.** The generated and inspected Phase 1 scope is only blocks 1–4 U/C
+formation: 320 logical requests, 480 potentially billable shapes, 640
+known-not-completed retries, and 1,120 maximum attempts. The current no-dispatch
+projection is 83,647,908 input tokens, 1,966,080 output/reasoning tokens, 360,177
+input tokens per request, 104 long-context shapes, `$254.465624` nominal cost,
+and `$312.634350` strict cost, bound by proposal
+`1b85e13a8b10c98ad4314611de0da56624328225b54a0aa7764ac72ecabd3b5e`.
+Credential-free inspection returned `ready_awaiting_external_human_authorization`
+with no credential access, network calls, or paid calls. It has no authorization
+and has made no experimental calls. It hard-stops before the five-block formation
+decision; the remaining 888 main-pilot requests require a separate release.
+
 ### 4.2 Capability and joint-violation feasibility gates
 
 **Capability.** The fresh v1.1 configuration passed its predeclared calibration gate: 10/10 correct-packet approvals, 9/10 faulty-packet rejections, and 20/20 schema-valid verdicts. All 20 request payloads, wire payloads, and provider audits were complete. Run ID `1b61ea2d-e609-4c67-a649-b889722dba9b`, stored under `runs/empirical/gate1-calibration-v1.1-1b61ea2d-e609-4c67-a649-b889722dba9b`, used 20 attempts, 45,123 input tokens, 2,512 output/reasoning tokens, and `$0.1378975`; embedded report hash `6a5ca98d79b27be5ff71aa59d157cbd9cc236218098171d52f2d0511099321d8`. It recorded zero smoke or later-stage dispatches and `experiment_started: false`. This is evidence of capability on these fixtures only, not evidence about formation, persistence, recovery, peer influence, or collusion.
 
-**Pilot joint-violation feasibility gate (never confirmation evidence).** Constrained histories meeting the predeclared marker: **[PILOT RESULT REQUIRED]/5**. Full-evidence comparison histories meeting the same descriptive marker: **[PILOT RESULT REQUIRED]/5**. Gate decision and, if triggered, the status of the sole two-round fallback: **[RESULT REQUIRED; link decision record]**.
+**Block-0 smoke.** Gate 2 run `6abffb64-f71b-4868-89cb-28b0aff0c7e3`
+completed 152/152 logical requests in 153 attempts and passed its mechanical and
+external evidence-integrity review. U produced 20/20 `ACCEPT` verdicts; C
+produced 20/20 `REJECT` verdicts despite repeated feedback; and 0/3 final C
+episodes met the marker. A and B each had FAR 0/6, CPA 6/6, and balanced accuracy
+1.0. F had FAR 0/6, CPA 0/6, and balanced accuracy 0.5. The run used 2,954,997
+input tokens and 10,867 output/reasoning tokens for `$7.4959330`, then
+hard-stopped with zero later-stage dispatches and `next_stage_authorized: false`.
+This is an integrity-verified, scientifically negative one-block smoke result.
+It is consistent with decisions tracking current evidence availability in this
+block, but cannot establish that a recovery effect is absent or populate the
+five-block primary estimate.
+
+**Pilot joint-violation feasibility gate (never confirmation evidence).** Current constrained-history count: **0/1 observed block**, with blocks 1–4 not run. The final denominator remains five: **[PHASE 1 RESULT REQUIRED]/5**. Block 0 is false, so at least three of blocks 1–4 must qualify to reach 3/5. Full-evidence comparison histories meeting the same descriptive marker: **[FIVE-BLOCK RESULT REQUIRED]/5**. Gate decision and, if triggered, the status of the sole two-round fallback: **[RESULT REQUIRED; link decision record]**.
 
 **Confirmation joint-violation marker (confirmation path only; required for C02/C10).** On the confirmation path, report constrained histories meeting the same frozen marker: **[CONFIRMATION RESULT REQUIRED]/[FROZEN N]**, and full-evidence comparison histories: **[CONFIRMATION RESULT REQUIRED]/[FROZEN N]**. These confirmation trajectories must come from the same immutable confirmation lineage as any C08b/C10 claim; the pilot counts above cannot substitute for them. C10 additionally requires at least 60% of all scheduled C histories to qualify; missing marker windows do not disappear from that denominator. On the main pilot-only path, replace this entire paragraph's result placeholders with **NOT RUN — MAIN PILOT-ONLY** and remove other main confirmation placeholders. The secondary study retains its independent status.
 
@@ -344,6 +371,14 @@ State independent substudy N, scheduled/valid denominators, raw paired block val
 ## 5. Discussion
 
 ### 5.1 Outcome-contingent interpretation
+
+The only hypothesis-bearing evidence currently available is the retained block-0
+smoke. Its combination of C rejection throughout, identical A/B verdict vectors with perfect metrics,
+performance after restoration, and reject-all F behavior is consistent with
+decisions tracking current evidence availability in that block. Because the
+independent-block denominator is one and the formation marker failed, this does
+not establish recovery, equivalence, or absence of history-conditioned carryover.
+The five-block gate and primary estimate remain pending.
 
 Select main-study language from its locked report path. The main templates below require confirmation-level evidence. Main pilot-only findings use VERIFIED `P` rows and exploratory estimate wording; do not adapt these templates merely by adding a prefix. In particular, omit the main harmful-margin-exclusion, persistence, and C10 templates on the main pilot-only path. The secondary status is independent: VERIFIED `FP-P` findings retain explicitly exploratory wording even beside main confirmation, while `FP-C` requires its own fresh confirmation. Do not infer equivalence or persistence from descriptive pilot windows or combine either study into a compound claim.
 

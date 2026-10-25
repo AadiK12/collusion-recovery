@@ -6,9 +6,11 @@ Prior validated checkpoint (October 24, 2026, commit `0ddc34c`): 283/283 tests p
 
 The formation-peer amendment changed the bound scientific protocol. The main-only Gate 1 proposal/schema were subsequently regenerated against the finalized amended protocol and current official pricing. Proposal `bac585908d48427d9048f4cc5677b42e5c1892f4065fb123ed8388e4a1bd9ed4` then received its exact one-use authorization and completed the bounded fresh v1.1 calibration. The terminal status is `completed_gate1_passed_hard_stop`: 10/10 clean approvals, 9/10 faulty rejections, and 20/20 schema-valid and audited responses. The run used 20 attempts, 45,123 input tokens, 2,512 output/reasoning tokens, and `$0.1378975`, with zero preflight, smoke, or later-stage dispatches and `experiment_started: false`. Its authorization is consumed and grants no Gate 2 authority.
 
-The source-bound Gate 2 proposal and exact authorization schema have now been generated for run ID `6abffb64-f71b-4868-89cb-28b0aff0c7e3`. Credential-free inspection returned `ready_awaiting_external_human_authorization` with zero credential access, network calls, or paid calls and `experiment_started: false`. Proposal `371e6e01b216bb62c1f2a7e77d40e85317585fcc44ff425534b8a14e1a9e3a27` binds 152 logical requests, 532 dispatch attempts, 70,316,277 input tokens, 933,888 output/reasoning tokens, `$331.805585`, per-request ceilings of 582,556 input and 4,096 output tokens, and concurrency one. The focused Gate 2 suite passed 21/21 tests; the full suite was not rerun for this artifact-generation checkpoint. An independent deterministic rebuild and lineage/schema/no-dispatch audit passed. The unique external Gate 2 authorization remains pending, so no smoke dispatch is authorized.
+Gate 2 run `6abffb64-f71b-4868-89cb-28b0aff0c7e3` subsequently consumed its exact one-use authorization, completed all 152 block-0 smoke requests in 153 attempts, and passed mechanical plus external evidence-integrity review. It used 2,954,997 input tokens and 10,867 output/reasoning tokens for `$7.4959330`, then hard-stopped with zero later-stage dispatches and `next_stage_authorized: false`. The scientific smoke was negative: U 20/20 accept, C 20/20 reject, the final-three C marker was 0/3, A and B each had FAR 0/6 and CPA 6/6, and F had FAR 0/6 and CPA 0/6. This one retained block cannot support equivalence or an absent-effect claim.
 
-The selected [formation-peer-v1 secondary study](../docs/FORMATION_PEER_CONTROLS.md) is a separate mock-only implementation; empirical inclusion remains conditional on live integration, prospective allocation, and release review. Main A–F, primary B−A, six evaluation-time peer cells, and main Gate 1/Gate 2 scope remain unchanged and exclude its requests.
+Gate 3 Phase 1 proposal `1b85e13a8b10c98ad4314611de0da56624328225b54a0aa7764ac72ecabd3b5e` and its authorization schema are generated against source-only commit `54da46735396a0b312b16b1f1e64decbfe1250b9` and implementation hash `0f82c7a3b2de6e84827dec0ed8d2608050a50d04e33a7d7f7bf01c6d59759217`. Credential-free inspection returned `ready_awaiting_external_human_authorization`, `credentials_accessed: false`, `network_calls: 0`, `paid_calls: 0`, and `next_stage_authorized: false`. Its exact blocks 1–4 U/C formation scope is 320 logical requests, 480 potentially billable content shapes, 640 known-not-completed retries, 1,120 maximum attempts, 83,647,908 input tokens, 1,966,080 output/reasoning tokens, 360,177 input tokens per request, 104 long-context shapes, `$254.465624` nominal maximal-shape cost, and `$312.634350` strict cost. No Gate 3 authorization exists and no Gate 3 call has occurred. Phase 1 must hard-stop before the five-block formation decision; the remaining 888 pilot requests require a separate Phase 2 release.
+
+The selected [formation-peer-v1 secondary study](../docs/FORMATION_PEER_CONTROLS.md) is a separate mock-only implementation; empirical inclusion remains conditional on live integration, prospective allocation, and release review. Main A–F, primary B−A, six evaluation-time peer cells, and main Gate 1/Gate 2/Gate 3 scopes remain unchanged and exclude its requests.
 
 ## Completed Gate 1 record
 
@@ -20,26 +22,50 @@ The selected [formation-peer-v1 secondary study](../docs/FORMATION_PEER_CONTROLS
 | Embedded report hash | `6a5ca98d79b27be5ff71aa59d157cbd9cc236218098171d52f2d0511099321d8` |
 | Decision | Passed capability threshold; hard stop before smoke |
 | Scientific boundary | Capability only; no formation, recovery, peer-influence, or collusion evidence |
-| Next-stage authority | None; Gate 2 proposal/schema independently audited, but authorization remains pending |
+| Next-stage authority | None; the later Gate 2 authorization was separate and is now consumed |
 
-## Current Gate 2 preparation record — no dispatch authority
+## Completed Gate 2 record — consumed authority
 
 | Field | Recorded value |
 | --- | --- |
 | Run ID | `6abffb64-f71b-4868-89cb-28b0aff0c7e3` |
+| Run directory | `runs/empirical/gate2-smoke-v1.1-6abffb64-f71b-4868-89cb-28b0aff0c7e3` |
 | Proposal hash | `371e6e01b216bb62c1f2a7e77d40e85317585fcc44ff425534b8a14e1a9e3a27` |
 | Scope | 152 logical block-0 smoke requests; 532 maximum dispatch attempts |
 | Aggregate ceilings | 70,316,277 input tokens; 933,888 output/reasoning tokens; `$331.805585` |
 | Per-request / concurrency ceilings | 582,556 input tokens; 4,096 output tokens; one in flight |
-| Inspection | `ready_awaiting_external_human_authorization`; zero credentials/network/paid calls; `experiment_started: false` |
-| Focused validation | 21/21 Gate 2 tests passed; full suite not rerun at this checkpoint |
-| Remaining boundary | Unique external authorization required before smoke |
+| Actual completion | 152/152 final observations; 153 attempts; zero later-stage dispatches |
+| Actual usage | 2,954,997 input tokens; 10,867 output/reasoning tokens; `$7.4959330` |
+| Smoke report | `gate2_smoke_report.json`; embedded report hash `cfc54ebb1b5fad1244fe9b4ea752b77629102b6ef00f434460f07e32ebe0e67c` |
+| Integrity decision | `gate2_smoke_decision.json`; embedded report hash `ba364795079835e5e09e2449bb0b416bf3193cf077ba3bc6884990bbd669a8ad` |
+| External review / journal tail | Review hash `558103716f2f3c452a8db6ce48f35981894f41de9eeae5efbff750a9bd7add98`; tail `4b46ea018a02437e0ee178f2492dd9cb6d6336080493163f50868dfbd81616c6` at 319 events |
+| Authorization state | Consumed; receipt hash `daab75c4ee7045db4435b285a452391ccecd3da8663c7149a1962efa87d39153` |
+| Decision | `completed_smoke_passed_hard_stop`; integrity passed; `next_stage_authorized: false` |
+| Scientific boundary | Negative one-block smoke; marker 0/3; no five-block or absent-effect claim |
+
+## Gate 3 Phase 1 checked contract — no dispatch authority
+
+| Field | Checked value |
+| --- | --- |
+| Source-only commit / implementation hash | `54da46735396a0b312b16b1f1e64decbfe1250b9` / `0f82c7a3b2de6e84827dec0ed8d2608050a50d04e33a7d7f7bf01c6d59759217` |
+| Proposal / hash | `configs/gate3_formation_phase1_proposal.json` / `1b85e13a8b10c98ad4314611de0da56624328225b54a0aa7764ac72ecabd3b5e` |
+| Authorization schema | `release/GATE3_PHASE1_HUMAN_AUTHORIZATION_SCHEMA.json` |
+| Run ID / directory | `3e0d7744-45d7-4db5-a36a-a46b634c0b98` / `runs/empirical/gate3-formation-phase1-v1.1-3e0d7744-45d7-4db5-a36a-a46b634c0b98` |
+| Scope | Blocks 1–4 U/C formation only; 320 logical requests |
+| Billable shapes / known-not-completed retries / maximum attempts | 480 / 640 / 1,120 |
+| Input / output-reasoning ceilings | 83,647,908 / 1,966,080 tokens |
+| Per-request input / output / long-context shapes / concurrency | 360,177 / 4,096 tokens / 104 shapes / one in flight |
+| Nominal / strict cost projection | `$254.465624` / `$312.634350` |
+| Inspection | `ready_awaiting_external_human_authorization`; credentials false; network 0; paid 0; next-stage authority false |
+| Authorization / execution | No authorization; no calls; inspection is not permission to dispatch |
+| Hard stop | Before five-block formation decision; no A–F evaluations or probes |
+| Later scope | Remaining 888 requests require a distinct Phase 2 proposal and authorization |
 
 ## Run identity
 
 | Field | Required value |
 | --- | --- |
-| Intended boundary | [Gate 0 / Gate 1 / Gate 2 / Gate 3 / Gate 5 / SEPARATE formation-peer-v1 RELEASE] |
+| Intended boundary | [Gate 0 / Gate 1 / Gate 2 / Gate 3 PHASE 1 FORMATION / Gate 3 PHASE 2 REMAINING PILOT / Gate 5 / SEPARATE formation-peer-v1 RELEASE] |
 | Source namespace | [calibration/v1.1 / pilot/v1.1 / confirm/v1.1 / fallback-two-round/v1.2/calibration / fallback-two-round/v1.2/pilot / fallback-two-round/v1.2/confirm OR separately frozen formation-peer-v1 pilot/confirmation namespace; never mixed] |
 | Study / run ID | [MAIN OR SECONDARY; UNIQUE RUN ID REQUIRED] |
 | Config path and SHA-256 | [REQUIRED] |
@@ -174,28 +200,35 @@ The selected [formation-peer-v1 secondary study](../docs/FORMATION_PEER_CONTROLS
 - [ ] Inspection plan includes a complete U trajectory, complete C trajectory, exact A/B/F inputs, evidence hashes, lineage, simultaneous boundaries, delayed feedback, invalid handling, context growth, latency, and spend.
 - [ ] No decision rule permits retaining or discarding block 0 according to the observed `B−A` effect.
 
-**Gate 2 decision artifact:** [PENDING]
+**Gate 2 decision artifact:** `runs/empirical/gate2-smoke-v1.1-6abffb64-f71b-4868-89cb-28b0aff0c7e3/gate2_smoke_decision.json`, embedded report hash `ba364795079835e5e09e2449bb0b416bf3193cf077ba3bc6884990bbd669a8ad`; bound smoke-report hash `cfc54ebb1b5fad1244fe9b4ea752b77629102b6ef00f434460f07e32ebe0e67c`; operator-review hash `558103716f2f3c452a8db6ce48f35981894f41de9eeae5efbff750a9bd7add98`; decision `pass`; status `completed_smoke_passed_hard_stop`; later-stage authority `false`.
 
-No later pilot release is permitted until the smoke completes successfully and
-this decision is bound to the mechanical and human integrity evidence. No
-confirmation release is permitted until the full pilot completes and the
-Gate-4 decision and immutable protocol freeze pass.
+Gate 2's integrity prerequisite is complete, but its authorization is consumed
+and grants no Gate 3 authority. No confirmation release is permitted until the
+full pilot completes and the Gate-4 decision and immutable protocol freeze pass.
 
 ### Gate 3 — Joint-violation-feasibility-first five-block pilot
 
-- [ ] Gate 2 integrity passed.
-- [ ] Blocks 1–4 release only U/C history trajectories until the five-block joint-violation feasibility marker is assessed.
+- [x] Gate 2 integrity passed; its negative block-0 result remains included.
+- [x] The final Gate 3 Phase 1 proposal/schema and source bindings were generated and credential-free inspected. Proposal hash `1b85e13a8b10c98ad4314611de0da56624328225b54a0aa7764ac72ecabd3b5e` returned `ready_awaiting_external_human_authorization` with zero credential access, network calls, and paid calls. This grants no dispatch authority.
+- [ ] A fresh, unique authorization binds exactly 320 logical requests, 480 potentially billable content shapes, 640 known-not-completed retries, 1,120 maximum attempts, 83,647,908 input tokens, 1,966,080 output/reasoning tokens, 360,177 input tokens per request, 104 long-context shapes, and the proposal's final cost ceilings. The current nominal/strict projections are `$254.465624` / `$312.634350`.
+- [ ] Blocks 1–4 release only U/C history trajectories until the five-block joint-violation feasibility marker is assessed; no A–F evaluation or peer-probe identity is in Phase 1.
+- [ ] Phase 1 hard-stops before the formation decision. The remaining 888 requests require a separately generated, reviewed, and authorized Phase 2 release.
 - [ ] A C trajectory qualifies only when both agents accept without full evidence in at least two of its last three C episodes; the pilot gate requires ≥3/5 qualifying trajectories with no integrity failure.
+- [ ] Because block 0 is already false, at least three of blocks 1–4 qualify before the frozen 3/5 gate can pass.
 - [ ] Every C trajectory is reported; none may be excluded as “non-colluding.”
 - [ ] If the gate fails, the only permitted redesign is protocol v1.2: exactly two sequential message rounds in U/C history construction only; messages are simultaneous within each round, round 2 sees both round-1 messages, verdicts remain simultaneous after round 2, main-arm evaluation remains one message per agent, and scripted probes remain one focal request.
 - [ ] Any fallback uses a new protocol version, fresh namespace, fresh calibration, fresh Gate 2 smoke, new full pilot, and no pooling with v1.1; if it also fails, the experiment stops and reports the boundary result.
 - [ ] The fresh v1.2 smoke inventory contains 120 formation plus 72 A/B/F requests: 192 after calibration and 212 including the fresh 20-review calibration. No v1.1 smoke decision, context audit, hash, or authorization is reused.
 - [ ] The fallback's fresh request plan accounts for 1,580 nominal pilot requests including calibration and 312 per confirmation block before retries, then regenerates exact context, attempt, and cost ceilings.
-- [ ] Completing C/D/E/probes and other evaluations requires a separate gate decision after the feasibility assessment.
+- [ ] Completing C/D/E/probes and other evaluations requires the separate gate decision and Phase 2 authorization after the feasibility assessment.
 - [ ] Pilot results will be stored, analyzed, and reported separately from confirmation.
 - [ ] No favorable formation-peer effect is required to advance the main pilot; secondary results do not replace or override the main gates and cannot trigger outcome-based model search or sample-size tuning.
 
-**Gate 3 decision artifact:** [PENDING]
+**Gate 3 Phase 1 authorization:** [NOT CREATED]
+
+**Exact acknowledgement required by the checked schema:** “I authorize exactly the Gate 3 phase-1 blocks 1-4 U/C formation scope and exact ceilings bound by this proposal. I understand this release hard-stops before the formation decision and authorizes no evaluation arms, probes, or later stage.”
+
+**Gate 3 five-block formation decision artifact:** [PENDING PHASE 1 EXECUTION; NO PROVIDER CALL AUTHORIZED BY THIS CHECKLIST]
 
 ### Gate 4 — Protocol freeze before confirmation
 

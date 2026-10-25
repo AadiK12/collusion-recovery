@@ -1,6 +1,6 @@
 # LaTeX manuscript foundation
 
-`main.tex` is the compact, compilable pre-results manuscript for the sprint report. It is intentionally downstream of the repository's authoritative scientific contracts rather than a second protocol.
+`main.tex` is the compact, compilable pilot-incomplete manuscript for the sprint report. It is intentionally downstream of the repository's authoritative scientific contracts rather than a second protocol.
 
 ## Source hierarchy
 
@@ -13,8 +13,9 @@
 ## Current status
 
 - The introduction, verified related-work synthesis, compact Methods, statistical plan, limitations, ethics, reproducibility statement, preexisting-work disclosure, and LLM-usage statement are drafted.
-- The verified Gate 1 capability row is populated: 10/10 clean approvals, 9/10 faulty rejections, and 20/20 valid/audited responses at `$0.1378975`. All hypothesis-bearing results tables and figures remain empty by design.
-- The abstract is a 196-word pre-results abstract and must be rewritten after the report path and evidence are locked.
+- The verified Gate 1 capability row is populated: 10/10 clean approvals, 9/10 faulty rejections, and 20/20 valid/audited responses at `$0.1378975`.
+- The integrity-reviewed Gate 2 block-0 smoke is also populated as one exploratory block: U 20/20 accept, C 20/20 reject, final-three marker 0/3, identical A/B verdict vectors with perfect metrics, and reject-all F behavior. It is not the five-block primary estimate and does not establish an absent effect.
+- Primary pilot and confirmation result tables and figures remain incomplete. The abstract must be rechecked and rewritten after the five-block report path and evidence are locked.
 - The title intentionally avoids an empirical collusion claim.
 - `formation-peer-v1` is described as a separate prospective study and must be omitted from the final abstract unless it is actually run.
 - Author names and affiliations remain to be confirmed.
@@ -25,4 +26,4 @@ The project uses a conventional article layout for an editable LaTeX foundation.
 
 Open the `paper/latex` directory in Codex for the managed source editor and PDF preview. The app's built-in LaTeX compiler treats `main.tex` as the remembered main document and resolves `sections/*.tex` and `references.bib` in place.
 
-Do not manually insert measured numbers into prose first. Add verified values to the claim ledger, generate or review the corresponding table/figure artifact, and then replace only the marked result placeholders. The capability checkpoint is ledger claim C01 and must remain explicitly outside every experimental estimand.
+Do not manually insert measured numbers into prose first. Add verified values to the claim ledger, generate or review the corresponding table/figure artifact, and then replace only the marked result placeholders. The capability checkpoint is ledger claim C01 and must remain explicitly outside every experimental estimand; the block-0 smoke uses the S00--S03 rows and must retain its one-block limitations.

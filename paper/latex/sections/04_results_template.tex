@@ -3,12 +3,12 @@
 
 \noindent\fcolorbox{placeholderred}{white}{%
 \parbox{0.96\linewidth}{\small
-\textbf{Hypothesis-bearing results empty by design.} Only the verified capability
-checkpoint is populated. Populate experimental results only after the main report
-path (fresh confirmation or explicitly exploratory five-block pilot) is locked.
-Every number must first be entered and verified in the claim--evidence ledger.
-Never copy mock rates, reuse capability calibration as a study outcome, or pool
-pilot with confirmation.}}
+\textbf{Five-block primary results remain empty.} The verified capability and
+integrity-reviewed block-0 smoke are populated. The smoke is one retained
+exploratory block, not a five-block estimate. Every number must first be entered
+and verified in the claim--evidence ledger. Never copy mock rates, generalize from
+the smoke, reuse capability calibration as an outcome, or pool pilot with
+confirmation.}}
 
 \subsection{Study flow and integrity}
 
@@ -27,15 +27,19 @@ cost. State whether the report is confirmation or exploratory pilot-only.}
 Stage & Scheduled & Attempted & Valid & Missing/invalid & Blocks \\
 \midrule
 Fresh capability calibration & 20 & 20 & 20 & 0 & -- \\
-Main smoke (within pilot block 0) & 152 & -- & -- & -- & 1 \\
+Main smoke (within pilot block 0) & 152 & 153 & 152 & 0 & 1 \\
+Gate 3 blocks 1--4 U/C formation & 320 & 0 & 0 & -- (not run) & 4 \\
 Main locked report split & -- & -- & -- & -- & -- \\
 Formation-peer split, if run & -- & -- & -- & -- & -- \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The smoke is the A/B/F subset of pilot block 0 and is included in the locked
-five-block pilot total; it is not an additional sixth block.
+The smoke is the U/C plus A/B/F subset of pilot block 0 and is included in the
+locked five-block pilot total; it is not an additional sixth block. Gate~3
+Phase~1's generated contract passed credential-free inspection and awaits external
+authorization; it remains unexecuted and must hard-stop before the five-block
+formation decision. Its remaining 888 pilot requests are a separate release.
 
 \subsection{Capability and formation feasibility}
 
@@ -48,10 +52,16 @@ The release recorded zero smoke or later-stage dispatches and
 calibration fixtures only; it is not a result about formation, recovery, peer
 influence, or collusion.
 
-\resultplaceholder{After an authorized pilot, report the number of all scheduled
-C histories meeting the final-three joint-violation marker. That gate is
-descriptive formation evidence, not the primary recovery effect or proof of
-collusion.}
+The separately authorized Gate~2 run completed 152/152 logical smoke requests in
+153 attempts and passed its mechanical and external evidence-integrity review.
+U produced 20/20 \texttt{ACCEPT} verdicts; C produced 20/20 \texttt{REJECT}
+verdicts despite feedback; and 0/3 final C episodes met the marker. A and B each
+had FAR 0/6, CPA 6/6, and balanced accuracy 1.0. F had FAR 0/6, CPA 0/6, and
+balanced accuracy 0.5. The run used 2,954,997 input tokens and 10,867
+output/reasoning tokens for \$7.4959330, then hard-stopped with no later-stage
+dispatch. This is a scientifically negative one-block smoke result, not evidence
+that the effect is absent or a five-block estimate. With block 0 false, at least
+three of blocks 1--4 must qualify to reach the frozen 3/5 formation gate.
 
 \subsection{Primary recovery outcome}
 

@@ -6,19 +6,29 @@ The main report path does not merge the selected [formation-peer-v1 secondary st
 
 Record secondary reporting status independently: **[NOT RUN / OFFLINE ONLY / EXPLORATORY PILOT ONLY / SECONDARY CONFIRMATION]**. A main-confirmation report may include a distinctly labeled exploratory secondary section using verified FP-P rows; those results never support main confirmation, C10, or a cross-study compound claim. FP-C rows require a separate prospective confirmation freeze and empirical run. A completed secondary pilot is not relabeled NOT RUN merely because secondary confirmation was not conducted.
 
-Readiness must be recorded at the exact release state. The October 24, 2026 `0ddc34c` checkpoint documented 283/283 passing tests and the pre-amendment Gate 1 proposal/hash snapshot. The main-only Gate 1 proposal/schema were later regenerated against the amended protocol and current pricing; at that pre-dispatch checkpoint, credential-free inspection reported `ready_awaiting_external_human_authorization`. Preserve that snapshot as provenance. The exact one-use authorization was subsequently consumed by a passed capability release that hard-stopped before smoke. The exact Gate 2 proposal/schema have now been generated, credential-free inspected, and independently audited, and the focused Gate 2 suite passed 21/21 tests; the full suite was not rerun at this artifact-generation checkpoint. A separate authorization remains pending.
+Readiness must be recorded at the exact release state. The October 24, 2026 `0ddc34c` checkpoint documented 283/283 passing tests and the pre-amendment Gate 1 proposal/hash snapshot. Preserve that snapshot as provenance, not current status. Fresh Gate 1 later passed under consumed one-use authority. Gate 2 run `6abffb64-f71b-4868-89cb-28b0aff0c7e3` then consumed its separate authorization, completed the 152-request block-0 smoke, passed mechanical plus external integrity review, and hard-stopped with no later-stage authority. Its scientific result was negative in one independent block and cannot support equivalence or an absent-effect claim. The Gate 3 Phase 1 proposal/schema are generated and credential-free inspection passed; it still has no authorization and has made no calls.
 
-Current Gate 2 preparation checkpoint, which grants no dispatch authority:
+Completed Gate 2 evidence and current Gate 3 inspected-but-unauthorized boundary:
 
 | Field | Recorded value |
 | --- | --- |
 | Run ID | `6abffb64-f71b-4868-89cb-28b0aff0c7e3` |
 | Proposal hash | `371e6e01b216bb62c1f2a7e77d40e85317585fcc44ff425534b8a14e1a9e3a27` |
 | Scope | 152 logical block-0 smoke requests; 532 maximum attempts |
-| Aggregate ceilings | 70,316,277 input tokens; 933,888 output/reasoning tokens; `$331.805585` |
-| Per-request / concurrency ceilings | 582,556 input tokens; 4,096 output tokens; one request in flight |
-| Inspection state | Zero credential access, network calls, and paid calls; `experiment_started: false` |
-| Remaining boundary | Unique Gate 2 authorization required |
+| Actual completion / usage | 152/152 final observations; 153 attempts; 2,954,997 input; 10,867 output/reasoning; `$7.4959330` |
+| Smoke report | `runs/empirical/gate2-smoke-v1.1-6abffb64-f71b-4868-89cb-28b0aff0c7e3/gate2_smoke_report.json`; embedded hash `cfc54ebb1b5fad1244fe9b4ea752b77629102b6ef00f434460f07e32ebe0e67c` |
+| Integrity decision | Same run directory, `gate2_smoke_decision.json`; embedded hash `ba364795079835e5e09e2449bb0b416bf3193cf077ba3bc6884990bbd669a8ad`; review hash `558103716f2f3c452a8db6ce48f35981894f41de9eeae5efbff750a9bd7add98` |
+| Gate 2 terminal state | `completed_smoke_passed_hard_stop`; authorization consumed; `next_stage_authorized: false` |
+| Gate 2 scientific boundary | U 20/20 accept; C 20/20 reject; marker 0/3; A/B FAR 0/6 and CPA 6/6; F FAR 0/6 and CPA 0/6; one block only |
+| Gate 3 source binding | Source-only commit `54da46735396a0b312b16b1f1e64decbfe1250b9`; implementation hash `0f82c7a3b2de6e84827dec0ed8d2608050a50d04e33a7d7f7bf01c6d59759217` |
+| Gate 3 proposal/schema | `configs/gate3_formation_phase1_proposal.json`, hash `1b85e13a8b10c98ad4314611de0da56624328225b54a0aa7764ac72ecabd3b5e`; `release/GATE3_PHASE1_HUMAN_AUTHORIZATION_SCHEMA.json` |
+| Gate 3 inspection | `ready_awaiting_external_human_authorization`; credentials false; network 0; paid 0; next-stage authority false |
+| Gate 3 Phase 1 scope | Blocks 1–4 U/C formation only; 320 logical requests; no authorization or calls |
+| Gate 3 Phase 1 ceilings | 480 billable shapes; 640 known-not-completed retries; 1,120 max attempts; 83,647,908 input; 1,966,080 output/reasoning; 360,177 input/request; 4,096 output/request; 104 long-context; one in flight; `$254.465624` nominal / `$312.634350` strict |
+| Gate 3 hard stop / decision | Stop before five-block formation decision; block 0 is false, so at least 3 of blocks 1–4 must qualify to reach 3/5 |
+| Later scope | Remaining 888 requests require separate Phase 2 authorization |
+
+Gate 3 remains unauthorized. Its checked schema requires the exact acknowledgement: “I authorize exactly the Gate 3 phase-1 blocks 1-4 U/C formation scope and exact ceilings bound by this proposal. I understand this release hard-stops before the formation decision and authorizes no evaluation arms, probes, or later stage.” Recording that sentence here does not create the required external, owner-only, single-use authorization artifact.
 
 ## 1. Release identity
 
@@ -41,7 +51,7 @@ Current Gate 2 preparation checkpoint, which grants no dispatch authority:
 
 | Artifact | Version / namespace | Path or immutable locator | SHA-256 | Reviewer |
 | --- | --- | --- | --- | --- |
-| Scientific protocol | [REQUIRED] | [REQUIRED] | [REQUIRED] | [REQUIRED] |
+| Scientific protocol | Frozen selected version | `SPRINT_PROJECT_PLAN.md` | [REQUIRED] | [REQUIRED] |
 | Protocol revisions | [NONE / LIST] | [REQUIRED] | [REQUIRED] | [REQUIRED] |
 | Historical Stage 2 provenance / consumed-release receipt | `calibration/v1` historical only | [REQUIRED] | [REQUIRED] | [REQUIRED] |
 | Selected-version Gate 1 controller/config/proposal | [`calibration/v1.1` OR `fallback-two-round/v1.2/calibration`] | [REQUIRED] | [REQUIRED] | [REQUIRED] |
@@ -49,6 +59,9 @@ Current Gate 2 preparation checkpoint, which grants no dispatch authority:
 | Gate 1 authorization / consumption receipt / decision | [REQUIRED; UNIQUE RELEASE] | [REQUIRED] | [REQUIRED] | [REQUIRED] |
 | Gate 2 smoke controller/config/proposal | [`pilot/v1.1/block-0` OR `fallback-two-round/v1.2/pilot/block-0`] | [REQUIRED] | [REQUIRED] | [REQUIRED] |
 | Gate 2 authorization / consumption receipt / smoke-integrity decision | [REQUIRED; SEPARATE UNIQUE RELEASE] | [REQUIRED] | [REQUIRED] | [REQUIRED] |
+| Gate 3 Phase 1 formation controller/config/proposal | `pilot/v1.1/blocks-1-4-formation` | `configs/gate3_formation_phase1_proposal.json`; source commit `54da46735396a0b312b16b1f1e64decbfe1250b9`; implementation `0f82c7a3b2de6e84827dec0ed8d2608050a50d04e33a7d7f7bf01c6d59759217` | `1b85e13a8b10c98ad4314611de0da56624328225b54a0aa7764ac72ecabd3b5e` | [INSPECTION REVIEWER REQUIRED] |
+| Gate 3 Phase 1 authorization / consumption receipt / five-block formation decision | [NOT RUN OR REQUIRED UNIQUE RELEASE] | [REQUIRED IF RUN] | [REQUIRED IF RUN] | [REQUIRED IF RUN] |
+| Gate 3 Phase 2 remaining-pilot controller/config/proposal/authorization | [NOT RUN OR DISTINCT 888-REQUEST RELEASE] | [REQUIRED IF RUN] | [REQUIRED IF RUN] | [REQUIRED IF RUN] |
 | Pilot request plan | [`pilot/v1.1` OR `fallback-two-round/v1.2/pilot`] | [REQUIRED] | [REQUIRED] | [REQUIRED] |
 | Pilot gate decisions | [REQUIRED] | [REQUIRED] | [REQUIRED] | [REQUIRED] |
 | Challenge-pair schedule and balance audit | [`protocol/v1.1` OR `protocol/v1.2`] | [REQUIRED] | [REQUIRED] | [REQUIRED] |
@@ -69,11 +82,12 @@ Current Gate 2 preparation checkpoint, which grants no dispatch authority:
 
 Pilot and confirmation run IDs must be listed separately. A confirmation-path primary estimate may reference confirmation IDs only; a pilot-only primary estimate may reference pilot IDs only and must use an eligible `P` row.
 
-The main Gate 1/Gate 2 rows above exclude formation-peer-v1 requests. Their authorizations and passed decisions do not grant secondary-study spending or automatically establish calibration applicability.
+The main Gate 1/Gate 2/Gate 3 rows above exclude formation-peer-v1 requests. Their authorizations and passed decisions do not grant secondary-study spending or automatically establish calibration applicability. Gate 2 authority is consumed; Gate 3 Phase 1 and Phase 2 each require their own exact release.
 
 ### Pilot run IDs
 
-- [REQUIRED]
+- `6abffb64-f71b-4868-89cb-28b0aff0c7e3` — retained block-0 Gate 2 smoke; integrity passed; scientifically negative one-block result.
+- [REQUIRED FOR ANY LATER PILOT RELEASE]
 
 ### Confirmation run IDs
 
@@ -141,6 +155,7 @@ The combined five-block main v1.1 plus secondary planning total is **1,660 logic
 | Artifact | Source inputs | Path | SHA-256 | Reproduction command | Verified by |
 | --- | --- | --- | --- | --- | --- |
 | Empirical flow table | [LOCKED REPORT-SPLIT IDS] | [REQUIRED] | [REQUIRED] | [REQUIRED] | [REQUIRED] |
+| Gate 2 block-0 smoke report and integrity decision | `6abffb64-f71b-4868-89cb-28b0aff0c7e3` | Run directory: `runs/empirical/gate2-smoke-v1.1-6abffb64-f71b-4868-89cb-28b0aff0c7e3`; files: `gate2_smoke_report.json`, `gate2_smoke_decision.json` | Embedded hashes `cfc54ebb1b5fad1244fe9b4ea752b77629102b6ef00f434460f07e32ebe0e67c` / `ba364795079835e5e09e2449bb0b416bf3193cf077ba3bc6884990bbd669a8ad` | Evidence replay / passed-lineage verification | [REQUIRED] |
 | Primary contrasts | [LOCKED REPORT-SPLIT IDS] | [REQUIRED] | [REQUIRED] | [REQUIRED] | [REQUIRED] |
 | Secondary contrasts | [LOCKED REPORT-SPLIT IDS] | [REQUIRED] | [REQUIRED] | [REQUIRED] | [REQUIRED] |
 | Missingness bounds | [LOCKED REPORT-SPLIT IDS] | [REQUIRED] | [REQUIRED] | [REQUIRED] | [REQUIRED] |
@@ -223,7 +238,7 @@ The combined five-block main v1.1 plus secondary planning total is **1,660 logic
 - [ ] Secondary paired-block analysis retains its own pilot/confirmation split, prospective N and analysis seed, raw values, usefulness measures, uncertainty, and all-scheduled bounds. Five blocks are exploratory, not a meaningful-null guarantee.
 - [ ] Main and secondary report statuses are explicit and independent. Each estimate and compound claim uses one study and split; any exploratory FP-P result accompanying main confirmation is separately labeled and excluded from confirmation claims.
 - [ ] Secondary claims identify a total assigned peer-policy effect with truthful reward/feedback mediators. They do not assert a pure peer-action effect, private intent, spontaneous negotiation, mediation of main B−A, or late persistence from eight independent checkpoint-restarted diagnostics.
-- [ ] Separate live secondary provenance and authorization exist for any empirical secondary claim; otherwise outputs remain explicitly `source: mock` or **NOT RUN**. Main Gate 1/Gate 2 decisions and the historical `0ddc34c` ready snapshot are not repurposed as secondary authorization.
+- [ ] Separate live secondary provenance and authorization exist for any empirical secondary claim; otherwise outputs remain explicitly `source: mock` or **NOT RUN**. Main Gate 1/Gate 2/Gate 3 decisions and the historical `0ddc34c` ready snapshot are not repurposed as secondary authorization.
 - [ ] The release contains no unresolved `RESULT REQUIRED`, `VERIFY`, `DECISION REQUIRED`, `TODO`, or `[REQUIRED]` marker in user-facing artifacts.
 - [ ] Offline reproduction was tested from a clean checkout.
 - [ ] Analysis reproduction matched the listed table and figure hashes.
