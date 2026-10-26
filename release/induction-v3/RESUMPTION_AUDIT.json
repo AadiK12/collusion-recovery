@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "reviewed_at": "2026-10-26T09:51:52.218539+00:00",
+  "release_hash": "67f5ec29e9d76ed3e0b5e912b57dda221de3a0c3613171888c86fd6c59206b14",
+  "domains": [
+    "science",
+    "accounting",
+    "security"
+  ],
+  "scope": "Exact original trajectories, deterministic cached replay, paced distinct new attempts, unchanged old liability and aggregate caps. No repair.",
+  "root_review": "Reviewed additive ledger, replay boundary/state/tool handling, pacing estimator, original design equality, and independent test/failure-path evidence. No unresolved blocker.",
+  "evidence": [
+    {
+      "path": "experiments/induction_v3/accounting.py",
+      "sha256": "8b96fea77399a57a20d5561b1d326d9ff53c871ade629a2d2dbf43506cc09360"
+    },
+    {
+      "path": "experiments/induction_v3/liability_accounting.py",
+      "sha256": "6acae93d1107a1b744136ed1af334536d2f0cb34c5a15092dc1611a30a9372f1"
+    },
+    {
+      "path": "experiments/induction_v3/pacing.py",
+      "sha256": "cf93a90ee2959c657b8bbb3034f32e50fc9640b97c24c11ef56baa05477bc9c6"
+    },
+    {
+      "path": "experiments/induction_v3/replay.py",
+      "sha256": "02f7bc911f0b5cbf8ba82e6e21bfb59f4a4174a8196eb9b7f334d91a89c552bf"
+    },
+    {
+      "path": "experiments/induction_v3/resumption.py",
+      "sha256": "26466737725f5c511b763aa56bedfcddd01277b8a2f52921ebe7e8b25f5d4a03"
+    },
+    {
+      "path": "release/induction-v3/resumption.json",
+      "sha256": "9a6ac5d9890b5c82612288412ddeed0cb54baada3e187514c80f70d488bc0d9c"
+    },
+    {
+      "path": "reports/induction-v3/execution/RESUMPTION_DECISION.md",
+      "sha256": "e08fb41ce297b1d860a406a7d27bae1cfd8ec62e7bc4850439e5b6ca87cefcf0"
+    },
+    {
+      "path": "reports/induction-v3/execution/liability-accounting.md",
+      "sha256": "7955efc544fe6ea1e87b4ee397c498e9439c85e31d24c1cf63877e6defd8cf2c"
+    },
+    {
+      "path": "reports/induction-v3/execution/pacing-calibration.json",
+      "sha256": "3a7c11a73200b9f4e3cf3a0f3f98eae17496d2ad29fdf445f6dafff03f849f7b"
+    },
+    {
+      "path": "reports/induction-v3/execution/pacing-calibration.md",
+      "sha256": "d6d9f3114e0f61c1c6320655eaad410af3a8b44479b67a6c2d9889b1e8e6d8b2"
+    },
+    {
+      "path": "reports/induction-v3/execution/replay-final-reference-1.json",
+      "sha256": "f48eef60ed83ce72409f11e7784b60d71b362108d36472ef6e950b6bdad90ba7"
+    },
+    {
+      "path": "reports/induction-v3/execution/replay-final-warmup_raw-1.json",
+      "sha256": "c55d706c2f1718d45973ec747e4ce60ef8f5c139ad778290c1fd4f7762916845"
+    },
+    {
+      "path": "reports/induction-v3/execution/replay-final-warmup_summary-1.json",
+      "sha256": "c9ab85b66c9b761c784e7d35e0b43eede65f1fc34159f8fb987576af6925c374"
+    },
+    {
+      "path": "reports/induction-v3/execution/resumption-accounting-review.json",
+      "sha256": "ee68c3bef305a44d00ba7c8ccb767ccb13ac645c2ffaa44324d3a084b76be0a5"
+    },
+    {
+      "path": "reports/induction-v3/execution/resumption-accounting-review.md",
+      "sha256": "10863303f3720044bcceba14afc98bd516714db1593d4506b9324e72bcd3b107"
+    },
+    {
+      "path": "reports/induction-v3/execution/resumption-science-review.json",
+      "sha256": "736cbee2a1912051427afe3010e6fca0a50e021d4cc83e87ec682987aa0f93c9"
+    },
+    {
+      "path": "reports/induction-v3/execution/resumption-science-review.md",
+      "sha256": "5f1d6ee2814ae6c9aa4a96fe67318259a800c2168e23192e272c39307c98f0c0"
+    },
+    {
+      "path": "reports/induction-v3/execution/resumption-science-tests.txt",
+      "sha256": "dd5e7f9b581e070e26da5607d4f57c64bef5a7583825095c0ae8d3b70e1c3dd1"
+    },
+    {
+      "path": "reports/induction-v3/execution/resumption-security-review.json",
+      "sha256": "3c8ea4ff1273b362dd4d78c575f52500e54c07865c0520469b46f04dbaf26af7"
+    },
+    {
+      "path": "reports/induction-v3/execution/resumption-security-review.md",
+      "sha256": "0eb9aecf1fe61b19a9b5038f4c26d12f67b4445ffdcd3a4e8e9e4e40ccae4a32"
+    },
+    {
+      "path": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4/journal.jsonl",
+      "sha256": "8f5e4b84fda9702edf77e1b8ee47039da030225a725ec2859ead4e1aceb1e474"
+    },
+    {
+      "path": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4/manifest.json",
+      "sha256": "a869d51aecb9be1d1bdaffdaf1914bb848569bd14737a2cc33389701824f1483"
+    },
+    {
+      "path": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4/requests/eef5c49475cd58bf4239179b64a237c8a88ddec56d2b0a33af93922589313f16.json",
+      "sha256": "9a138aca3bb7ce11b2c0c712744f266ec8b308617343d375519920ab44edd1a2"
+    },
+    {
+      "path": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4/responses/ebb929c67f6b4506ba3f5f091572c78e.json",
+      "sha256": "05f689dfea21c1397e72c38899383f28eb9795141e99dff31ca84b25f6e5ba75"
+    },
+    {
+      "path": "tests/induction_v3/test_accounting.py",
+      "sha256": "8e80f35a503c2c0cbb6b62900d9ddd7652327ac2e8b029288807d5243bf129f2"
+    },
+    {
+      "path": "tests/induction_v3/test_liability_accounting.py",
+      "sha256": "c801360662722bade285f549d8841a7ef52a57ddced416efa0f7a17c2995984b"
+    },
+    {
+      "path": "tests/induction_v3/test_pacing.py",
+      "sha256": "0f9d75cd982b0b15e8a81a48bf0cd1d4522a7bd5372e6d2238edc6a29622e80b"
+    },
+    {
+      "path": "tests/induction_v3/test_replay.py",
+      "sha256": "6e4ba2ce030f3573a222b20f3c7f79368b98a888d9fdd8a6a636f93a9859c846"
+    },
+    {
+      "path": "tests/induction_v3/test_resumption.py",
+      "sha256": "089c849a0aee3e5bb921a6524b3691e030fd8209d5f774343baff537abd5bdff"
+    },
+    {
+      "path": "tests/induction_v3/test_resumption_accounting.py",
+      "sha256": "8d1546655659deeb2de622bf8dde1c6e29caee2b7631ff51e76afd61011ecbde"
+    },
+    {
+      "path": "tests/induction_v3/test_resumption_security.py",
+      "sha256": "e76af3528542bddb5ba95cad0f4d7354193c97270b542ae204aa1f4cd7eaa335"
+    },
+    {
+      "path": "tests/induction_v3/test_transport.py",
+      "sha256": "cbd41c7c7f6e8fc6fa5c774301f7c5ec75bfd4d8912d0bd99045dc208f4e0900"
+    }
+  ]
+}

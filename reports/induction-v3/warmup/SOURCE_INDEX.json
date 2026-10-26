@@ -1,0 +1,86 @@
+{
+  "source_commit": "5afb2c595aa3eff6b9b829a032f4f117b36ee54d",
+  "verification": "Git blob SHA-1 includes the blob header; pinned tree queried through GitHub connector. Local vendor bytes must match. No vendor modules are imported by these tests.",
+  "files": [
+    {
+      "path": "vendor/salt_v3/README.md",
+      "git_blob_sha1": "438f814986e259d02b8440e197290ca1b04b0176",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/README.md"
+    },
+    {
+      "path": "vendor/salt_v3/LICENSE",
+      "git_blob_sha1": "abcd58fe0e09bcd8e887141be41c83ef907a45db",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/LICENSE"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/episode_schedules.py",
+      "git_blob_sha1": "34e99fb8aa2ba3ae00cfb669ce83453d0b369149",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/episode_schedules.py"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/prompts/policies.py",
+      "git_blob_sha1": "6aeb324f4181efb6d8ce851f919311df032700b1",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/prompts/policies.py"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/prompts/system.py",
+      "git_blob_sha1": "bdf43e67f19790c6d903164e6e4da85a773c1b18",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/prompts/system.py"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/prompts/tasks.py",
+      "git_blob_sha1": "242f57e2e38e3ed60d667ceafd7b5d48c60b1e90",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/prompts/tasks.py"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/memory/cross_episode.py",
+      "git_blob_sha1": "24fc84f757bd9f78ea412ef0f7ec8021e3a6a300",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/memory/cross_episode.py"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/memory/messages.py",
+      "git_blob_sha1": "13fd95a6162bc56e0ea6eaf34f355ca2b71150db",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/memory/messages.py"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/runner.py",
+      "git_blob_sha1": "8e8c4a2f0d04ac498a1d08aab6ef4b6bd631ec53",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/runner.py"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/episode_runner.py",
+      "git_blob_sha1": "f4972f10e15e5a5d7a1efa30e7c7fac7be3f65ed",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/episode_runner.py"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/models.py",
+      "git_blob_sha1": "776ca067a63efeae9730993f0621f1cfeb64d295",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/models.py"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/protocol/messaging.py",
+      "git_blob_sha1": "6225c5e1ecb0ce8c12ee096f1a7e8c695ff3f0eb",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/protocol/messaging.py"
+    },
+    {
+      "path": "vendor/salt_v3/task/task_sequences_50x10/rep001_sampled_manifest.json",
+      "git_blob_sha1": "19174f27ae686231a7229ee85740d97e282229b6",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/task/task_sequences_50x10/rep001_sampled_manifest.json"
+    },
+    {
+      "path": "vendor/salt_v3/task/task_sequences_50x10/rep002_sampled_manifest.json",
+      "git_blob_sha1": "f4f04da2bbcf6fc95d4bdcb9a07a85d5da64b9a4",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/task/task_sequences_50x10/rep002_sampled_manifest.json"
+    },
+    {
+      "path": "vendor/salt_v3/task/task_sequences_50x3+50x10/rep001_sampled_manifest.json",
+      "git_blob_sha1": "6521335c86fff351c2be58b1737e68d1bc5a722c",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/task/task_sequences_50x3+50x10/rep001_sampled_manifest.json"
+    },
+    {
+      "path": "vendor/salt_v3/task/task_sequences_50x3+50x10/rep002_sampled_manifest.json",
+      "git_blob_sha1": "e020cfa5019a9d72b53ad9bdbf1b9136282733c7",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/task/task_sequences_50x3+50x10/rep002_sampled_manifest.json"
+    }
+  ]
+}

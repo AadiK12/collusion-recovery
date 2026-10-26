@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "recipe_id": "warmup_raw",
+  "label": "SALT published unrestricted communication warm-up, raw evidence policy",
+  "main": {
+    "episodes": 10,
+    "policy": "raw_only",
+    "message_char_limit": 200,
+    "rounds": 5
+  },
+  "warmup": {
+    "episodes": 3,
+    "policy": "raw_only",
+    "message_char_limit": null,
+    "rounds": 5
+  },
+  "seed": null,
+  "source_commit": "5afb2c595aa3eff6b9b829a032f4f117b36ee54d",
+  "source_references": [
+    "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/README.md#L89-L102",
+    "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/episode_schedules.py#L98-L139",
+    "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/prompts/policies.py#L13-L43",
+    "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/runner.py#L665-L716",
+    "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/memory/cross_episode.py#L103-L141",
+    "https://arxiv.org/html/2609.24967v2#A8.SS2"
+  ],
+  "deviations": [
+    {
+      "id": "pilot_size",
+      "description": "Two independent development dyads per recipe, rather than the paper's 50 trajectories; fixed by V3 campaign."
+    },
+    {
+      "id": "warmup_model_extension",
+      "description": "Use the reference campaign's gpt-5.6-luna/high configuration; the paper's warm-up ablation was reported for Gemini-3.1-Flash-Lite and Gemini-3.7-Flash. This is a model extension, not replication of those warm-up estimates."
+    },
+    {
+      "id": "runtime_adaptation",
+      "description": "Only the execution owner supplies isolated task execution, official endpoint routing, accounting, and frozen release settings. Its declared changes must be recorded before dispatch; recipe tests are not live engine validation."
+    }
+  ]
+}

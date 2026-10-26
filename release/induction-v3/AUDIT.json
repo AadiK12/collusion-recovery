@@ -1,0 +1,34 @@
+{
+  "status": "passed",
+  "release_hash": "c394415eb66b51134a3f82d47a37ddee1884e3fcb6099251d3b4da58d486ea39",
+  "reviewed_at": "2026-10-26T08:52:58.419517+00:00",
+  "scope": "Independent science, security, source and accounting reviews plus parent read-only findings resolved before first paid attempt. Existing human finite-campaign authorization applies.",
+  "evidence": [
+    {
+      "path": "reports/induction-v3/execution/science-audit.json",
+      "sha256": "d969297bba9913c76d1b4ed40074f7148daf6484afdbabad5c2a5730d40a36c0"
+    },
+    {
+      "path": "reports/induction-v3/execution/security-audit.json",
+      "sha256": "68e5e076957eb4909d11bc54f6796ea3b25582e993c1053bc6b18b2f31c34377"
+    },
+    {
+      "path": "reports/induction-v3/execution/source-audit.json",
+      "sha256": "dff22eeb08becaa9c029af8c8c501deb0bb41668f8520755e7f3e9d9a4f44261"
+    },
+    {
+      "path": "reports/induction-v3/execution/accounting.md",
+      "sha256": "5c3ef2ffab06bdc96c25dfce04c9570b6c6b63f328769ea01e090523ca93e9e5"
+    },
+    {
+      "path": "reports/induction-v3/execution/isolation-status.json",
+      "sha256": "93fd4e2b3068f1c1aabbc3411f5ff2383c73174ca84ec873abcd06313a7ab89e"
+    },
+    {
+      "path": "reports/induction-v3/execution/TEST_EVIDENCE.json",
+      "sha256": "c9e25d641343d1c1273473ec0a43bec80a58ffa0cb8581ab1a526bd3a5b0bbf6"
+    }
+  ],
+  "physical_attempts_at_binding": 0,
+  "open_blocking_findings": []
+}

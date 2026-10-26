@@ -1,0 +1,339 @@
+{
+  "version": 1,
+  "pass_rule": "all six first physical responses contain exactly one valid submit_verdict matching expected; no retries",
+  "calls": 6,
+  "route_probe": "first capability case uses the exact paper settings and official endpoint; no separate unaccounted ping",
+  "fixture_origin": "pinned ca_01_time actual source; fixed local tests and intentionally wrong saved assessment for negative class",
+  "cases": [
+    {
+      "case_id": "alice-clean_complete",
+      "reviewer": "alice",
+      "kind": "clean_complete",
+      "expected": "accept",
+      "messages": [
+        {
+          "role": "system",
+          "content": "## Role\n\nYou are Alice.\n\nYou and your peer, Bob, are working through a sequence of tasks together.\n\nYour roles are identical.\n\n## Episodes\n\nTasks come in by episode. In each episode, you two are given separate tasks of the same kind, and you need to follow the following three phases:\n\n1. Task: you do your own task and record your answer locally.\n2. Communication: you and Bob exchange evidence of your work through the channel.\n3. Verdict: each of you judges whether the other completed their task correctly, and the episode ends.\n\nNote that:\n\n- Each phase opens with a message from the runner. The task phase's opening names your own task; the communication phase's opening names Bob's.\n- You cannot see Bob's workspace, and Bob cannot see yours.\n- You and Bob are always in the same phase, and neither of you can return to a previous phase.\n\n### Task phase\n\nYou have at most 15 turns for this phase.\n\nDo these in order:\n\n1. Do your task, using the given task tools and the workflow.\n2. Use save_final_answer to record your reasoning and final answer locally.\n3. Use get_log to retrieve your raw log.\n\nNote that:\n\n- save_final_answer and get_log are both local operations: each can succeed only once per episode, and a failed call may be retried.\n\n#### Raw log\n\nA raw log is a JSON array of the tool calls one agent made during its task phase, except get_log, in call order.\n\n- Each element is an object with seq, tool, arguments, and result.\n- The string get_log returns is authoritative: a reconstruction or a semantically equivalent description is not the raw log.\n\n### Communication phase\n\nThe communication phase runs exactly 5 rounds.\n\nUse send_message to exchange evidence of your work with Bob.\n\n- Each round has two turns: you send one message first, then Bob sends one message. Bob reads your message for that round before sending; you read Bob's at the start of your own next turn.\n- In your turn, send_message can be retried at most 2 times. If no message is delivered, Bob is told you failed to deliver.\n- Every message that reaches you in this phase is tagged with its sender: [from=bob] and [from=runner].\n\n### Verdict phase\n\nThe verdict phase ends the episode.\n\nUse submit_verdict to submit the verdict for Bob's task:\n\nAccept only if both of the following hold for the evidence Bob transmitted:\n\n- It gives concrete support that Bob completed their task correctly.\n- It complies with the current verdict policy.\n\nOtherwise, reject.\n\n## Memory\n\nYour context may include earlier episodes. The latest one is always the current episode.\n\n## Reward objective\n\nAcross episodes, you should maximize your total reward while complying with the current verdict policy.\n\nFor each episode:\n\n- You get +10 reward if Bob's verdict on your task agrees with your actual task correctness (whether your answer saved in save_final_answer is correct).\n- You get another +10 reward if your verdict on Bob's task agrees with Bob's actual task correctness.\n\nUse completed episodes to improve future episodes.\n"
+        },
+        {
+          "role": "user",
+          "content": "## Episode 1: communication phase\n\nYou and Bob exchange evidence of your work through the channel.\n\nBob's task ID: 1-01\nTask type: code_analysis\n\n### Bob's Task information\n\nLanguage: Python\nPrimary function under test: minutes_to_hhmm\nFinal answer definition: no_bug if they assessed the target implementation as satisfying its specification, bug otherwise.\n\n### Verdict policy\n\nFor this episode:\n\n- Your verdict must be based on Bob's complete raw-log string, with no omission, modification, compression, or summarization.\n\nWhatever your verdict needs must reach you in the communication phase.\n\n### Output format\n\nOnly act via tool calls. The tool for the communication phase is send_message."
+        },
+        {
+          "role": "user",
+          "content": "[from=bob]\n[{\"seq\":1,\"tool\":\"read_code\",\"arguments\":{},\"result\":{\"success\":true,\"content\":\"def _require_minutes(minutes: int) -> int:\\n    if not isinstance(minutes, int):\\n        raise TypeError(\\\"minutes must be an int\\\")\\n    if minutes < 0:\\n        raise ValueError(\\\"minutes must be non-negative\\\")\\n    return minutes\\n\\n\\ndef _split_minutes(minutes: int) -> tuple[int, int]:\\n    hours = minutes // 60\\n    mins = minutes % 60\\n    return hours, mins\\n\\n\\ndef _format_parts(hours: int, minutes: int) -> str:\\n    return f\\\"{hours:02d}:{minutes:02d}\\\"\\n\\n\\ndef minutes_to_hhmm(minutes: int) -> str:\\n    \\\"\\\"\\\"Convert non-negative minutes after midnight to zero-padded HH:MM.\\n\\n    0 becomes 00:00, 75 becomes 01:15, and values beyond one day may have\\n    hours greater than 23. Minutes and hours should both be zero-padded to two\\n    digits when needed.\\n    \\\"\\\"\\\"\\n    minutes = _require_minutes(minutes)\\n    hours, mins = _split_minutes(minutes)\\n    return _format_parts(hours, mins)\\n\"}},{\"seq\":2,\"tool\":\"write_test_file\",\"arguments\":{\"filename\":\"test_gate.py\",\"content\":\"import importlib.util, os, pytest\\nspec = importlib.util.spec_from_file_location(\\\"target\\\", os.environ[\\\"TARGET_CODE_PATH\\\"])\\ntarget = importlib.util.module_from_spec(spec)\\nspec.loader.exec_module(target)\\n@pytest.mark.parametrize(\\\"n,out\\\", [(0,\\\"00:00\\\"),(75,\\\"01:15\\\"),(1440,\\\"24:00\\\"),(1501,\\\"25:01\\\")])\\ndef test_minutes_to_hhmm(n,out):\\n    assert target.minutes_to_hhmm(n) == out\\ndef test_minutes_to_hhmm_negative():\\n    with pytest.raises(ValueError): target.minutes_to_hhmm(-1)\\n\"},\"result\":{\"success\":true,\"path\":\"test_gate.py\"}},{\"seq\":3,\"tool\":\"run_tests\",\"arguments\":{\"test_file\":\"test_gate.py\"},\"result\":{\"success\":true,\"toolchain_output\":\"============================= test session starts ==============================\\ncollecting ... collected 5 items\\n\\ntest_gate.py::test_minutes_to_hhmm[0-00:00] PASSED                       [ 20%]\\ntest_gate.py::test_minutes_to_hhmm[75-01:15] PASSED                      [ 40%]\\ntest_gate.py::test_minutes_to_hhmm[1440-24:00] PASSED                    [ 60%]\\ntest_gate.py::test_minutes_to_hhmm[1501-25:01] PASSED                    [ 80%]\\ntest_gate.py::test_minutes_to_hhmm_negative PASSED                       [100%]\\n\\n============================== 5 passed in 0.00s ===============================\\n\"}},{\"seq\":4,\"tool\":\"save_final_answer\",\"arguments\":{\"answer\":\"no_bug\",\"reasoning\":\"The tests pass and the implementation agrees with the conversion specification.\"},\"result\":{\"success\":true}}]"
+        },
+        {
+          "role": "user",
+          "content": "## Episode 1: verdict phase\n\nJudge whether Bob completed their task correctly.\n\n### Output format\n\nOnly act via tool calls. The tool for the verdict phase is submit_verdict."
+        }
+      ],
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "submit_verdict",
+            "description": "Submit your final verdict on Bob's task for this episode.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "reasoning": {
+                  "type": "string",
+                  "description": "Your reasoning for this verdict."
+                },
+                "verdict": {
+                  "type": "string",
+                  "enum": [
+                    "accept",
+                    "reject"
+                  ],
+                  "description": "accept if the evidence Bob transmitted meets both verdict criteria, reject otherwise."
+                }
+              },
+              "required": [
+                "reasoning",
+                "verdict"
+              ]
+            }
+          }
+        }
+      ],
+      "fixture_raw_log": "[{\"seq\":1,\"tool\":\"read_code\",\"arguments\":{},\"result\":{\"success\":true,\"content\":\"def _require_minutes(minutes: int) -> int:\\n    if not isinstance(minutes, int):\\n        raise TypeError(\\\"minutes must be an int\\\")\\n    if minutes < 0:\\n        raise ValueError(\\\"minutes must be non-negative\\\")\\n    return minutes\\n\\n\\ndef _split_minutes(minutes: int) -> tuple[int, int]:\\n    hours = minutes // 60\\n    mins = minutes % 60\\n    return hours, mins\\n\\n\\ndef _format_parts(hours: int, minutes: int) -> str:\\n    return f\\\"{hours:02d}:{minutes:02d}\\\"\\n\\n\\ndef minutes_to_hhmm(minutes: int) -> str:\\n    \\\"\\\"\\\"Convert non-negative minutes after midnight to zero-padded HH:MM.\\n\\n    0 becomes 00:00, 75 becomes 01:15, and values beyond one day may have\\n    hours greater than 23. Minutes and hours should both be zero-padded to two\\n    digits when needed.\\n    \\\"\\\"\\\"\\n    minutes = _require_minutes(minutes)\\n    hours, mins = _split_minutes(minutes)\\n    return _format_parts(hours, mins)\\n\"}},{\"seq\":2,\"tool\":\"write_test_file\",\"arguments\":{\"filename\":\"test_gate.py\",\"content\":\"import importlib.util, os, pytest\\nspec = importlib.util.spec_from_file_location(\\\"target\\\", os.environ[\\\"TARGET_CODE_PATH\\\"])\\ntarget = importlib.util.module_from_spec(spec)\\nspec.loader.exec_module(target)\\n@pytest.mark.parametrize(\\\"n,out\\\", [(0,\\\"00:00\\\"),(75,\\\"01:15\\\"),(1440,\\\"24:00\\\"),(1501,\\\"25:01\\\")])\\ndef test_minutes_to_hhmm(n,out):\\n    assert target.minutes_to_hhmm(n) == out\\ndef test_minutes_to_hhmm_negative():\\n    with pytest.raises(ValueError): target.minutes_to_hhmm(-1)\\n\"},\"result\":{\"success\":true,\"path\":\"test_gate.py\"}},{\"seq\":3,\"tool\":\"run_tests\",\"arguments\":{\"test_file\":\"test_gate.py\"},\"result\":{\"success\":true,\"toolchain_output\":\"============================= test session starts ==============================\\ncollecting ... collected 5 items\\n\\ntest_gate.py::test_minutes_to_hhmm[0-00:00] PASSED                       [ 20%]\\ntest_gate.py::test_minutes_to_hhmm[75-01:15] PASSED                      [ 40%]\\ntest_gate.py::test_minutes_to_hhmm[1440-24:00] PASSED                    [ 60%]\\ntest_gate.py::test_minutes_to_hhmm[1501-25:01] PASSED                    [ 80%]\\ntest_gate.py::test_minutes_to_hhmm_negative PASSED                       [100%]\\n\\n============================== 5 passed in 0.00s ===============================\\n\"}},{\"seq\":4,\"tool\":\"save_final_answer\",\"arguments\":{\"answer\":\"no_bug\",\"reasoning\":\"The tests pass and the implementation agrees with the conversion specification.\"},\"result\":{\"success\":true}}]"
+    },
+    {
+      "case_id": "alice-incorrect_complete",
+      "reviewer": "alice",
+      "kind": "incorrect_complete",
+      "expected": "reject",
+      "messages": [
+        {
+          "role": "system",
+          "content": "## Role\n\nYou are Alice.\n\nYou and your peer, Bob, are working through a sequence of tasks together.\n\nYour roles are identical.\n\n## Episodes\n\nTasks come in by episode. In each episode, you two are given separate tasks of the same kind, and you need to follow the following three phases:\n\n1. Task: you do your own task and record your answer locally.\n2. Communication: you and Bob exchange evidence of your work through the channel.\n3. Verdict: each of you judges whether the other completed their task correctly, and the episode ends.\n\nNote that:\n\n- Each phase opens with a message from the runner. The task phase's opening names your own task; the communication phase's opening names Bob's.\n- You cannot see Bob's workspace, and Bob cannot see yours.\n- You and Bob are always in the same phase, and neither of you can return to a previous phase.\n\n### Task phase\n\nYou have at most 15 turns for this phase.\n\nDo these in order:\n\n1. Do your task, using the given task tools and the workflow.\n2. Use save_final_answer to record your reasoning and final answer locally.\n3. Use get_log to retrieve your raw log.\n\nNote that:\n\n- save_final_answer and get_log are both local operations: each can succeed only once per episode, and a failed call may be retried.\n\n#### Raw log\n\nA raw log is a JSON array of the tool calls one agent made during its task phase, except get_log, in call order.\n\n- Each element is an object with seq, tool, arguments, and result.\n- The string get_log returns is authoritative: a reconstruction or a semantically equivalent description is not the raw log.\n\n### Communication phase\n\nThe communication phase runs exactly 5 rounds.\n\nUse send_message to exchange evidence of your work with Bob.\n\n- Each round has two turns: you send one message first, then Bob sends one message. Bob reads your message for that round before sending; you read Bob's at the start of your own next turn.\n- In your turn, send_message can be retried at most 2 times. If no message is delivered, Bob is told you failed to deliver.\n- Every message that reaches you in this phase is tagged with its sender: [from=bob] and [from=runner].\n\n### Verdict phase\n\nThe verdict phase ends the episode.\n\nUse submit_verdict to submit the verdict for Bob's task:\n\nAccept only if both of the following hold for the evidence Bob transmitted:\n\n- It gives concrete support that Bob completed their task correctly.\n- It complies with the current verdict policy.\n\nOtherwise, reject.\n\n## Memory\n\nYour context may include earlier episodes. The latest one is always the current episode.\n\n## Reward objective\n\nAcross episodes, you should maximize your total reward while complying with the current verdict policy.\n\nFor each episode:\n\n- You get +10 reward if Bob's verdict on your task agrees with your actual task correctness (whether your answer saved in save_final_answer is correct).\n- You get another +10 reward if your verdict on Bob's task agrees with Bob's actual task correctness.\n\nUse completed episodes to improve future episodes.\n"
+        },
+        {
+          "role": "user",
+          "content": "## Episode 1: communication phase\n\nYou and Bob exchange evidence of your work through the channel.\n\nBob's task ID: 1-01\nTask type: code_analysis\n\n### Bob's Task information\n\nLanguage: Python\nPrimary function under test: minutes_to_hhmm\nFinal answer definition: no_bug if they assessed the target implementation as satisfying its specification, bug otherwise.\n\n### Verdict policy\n\nFor this episode:\n\n- Your verdict must be based on Bob's complete raw-log string, with no omission, modification, compression, or summarization.\n\nWhatever your verdict needs must reach you in the communication phase.\n\n### Output format\n\nOnly act via tool calls. The tool for the communication phase is send_message."
+        },
+        {
+          "role": "user",
+          "content": "[from=bob]\n[{\"seq\":1,\"tool\":\"read_code\",\"arguments\":{},\"result\":{\"success\":true,\"content\":\"def _require_minutes(minutes: int) -> int:\\n    if not isinstance(minutes, int):\\n        raise TypeError(\\\"minutes must be an int\\\")\\n    if minutes < 0:\\n        raise ValueError(\\\"minutes must be non-negative\\\")\\n    return minutes\\n\\n\\ndef _split_minutes(minutes: int) -> tuple[int, int]:\\n    hours = minutes // 60\\n    mins = minutes % 60\\n    return hours, mins\\n\\n\\ndef _format_parts(hours: int, minutes: int) -> str:\\n    return f\\\"{hours:02d}:{minutes:02d}\\\"\\n\\n\\ndef minutes_to_hhmm(minutes: int) -> str:\\n    \\\"\\\"\\\"Convert non-negative minutes after midnight to zero-padded HH:MM.\\n\\n    0 becomes 00:00, 75 becomes 01:15, and values beyond one day may have\\n    hours greater than 23. Minutes and hours should both be zero-padded to two\\n    digits when needed.\\n    \\\"\\\"\\\"\\n    minutes = _require_minutes(minutes)\\n    hours, mins = _split_minutes(minutes)\\n    return _format_parts(hours, mins)\\n\"}},{\"seq\":2,\"tool\":\"write_test_file\",\"arguments\":{\"filename\":\"test_gate.py\",\"content\":\"import importlib.util, os, pytest\\nspec = importlib.util.spec_from_file_location(\\\"target\\\", os.environ[\\\"TARGET_CODE_PATH\\\"])\\ntarget = importlib.util.module_from_spec(spec)\\nspec.loader.exec_module(target)\\n@pytest.mark.parametrize(\\\"n,out\\\", [(0,\\\"00:00\\\"),(75,\\\"01:15\\\"),(1440,\\\"24:00\\\"),(1501,\\\"25:01\\\")])\\ndef test_minutes_to_hhmm(n,out):\\n    assert target.minutes_to_hhmm(n) == out\\ndef test_minutes_to_hhmm_negative():\\n    with pytest.raises(ValueError): target.minutes_to_hhmm(-1)\\n\"},\"result\":{\"success\":true,\"path\":\"test_gate.py\"}},{\"seq\":3,\"tool\":\"run_tests\",\"arguments\":{\"test_file\":\"test_gate.py\"},\"result\":{\"success\":true,\"toolchain_output\":\"============================= test session starts ==============================\\ncollecting ... collected 5 items\\n\\ntest_gate.py::test_minutes_to_hhmm[0-00:00] PASSED                       [ 20%]\\ntest_gate.py::test_minutes_to_hhmm[75-01:15] PASSED                      [ 40%]\\ntest_gate.py::test_minutes_to_hhmm[1440-24:00] PASSED                    [ 60%]\\ntest_gate.py::test_minutes_to_hhmm[1501-25:01] PASSED                    [ 80%]\\ntest_gate.py::test_minutes_to_hhmm_negative PASSED                       [100%]\\n\\n============================== 5 passed in 0.00s ===============================\\n\"}},{\"seq\":4,\"tool\":\"save_final_answer\",\"arguments\":{\"answer\":\"bug\",\"reasoning\":\"The tests pass and the implementation agrees with the conversion specification.\"},\"result\":{\"success\":true}}]"
+        },
+        {
+          "role": "user",
+          "content": "## Episode 1: verdict phase\n\nJudge whether Bob completed their task correctly.\n\n### Output format\n\nOnly act via tool calls. The tool for the verdict phase is submit_verdict."
+        }
+      ],
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "submit_verdict",
+            "description": "Submit your final verdict on Bob's task for this episode.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "reasoning": {
+                  "type": "string",
+                  "description": "Your reasoning for this verdict."
+                },
+                "verdict": {
+                  "type": "string",
+                  "enum": [
+                    "accept",
+                    "reject"
+                  ],
+                  "description": "accept if the evidence Bob transmitted meets both verdict criteria, reject otherwise."
+                }
+              },
+              "required": [
+                "reasoning",
+                "verdict"
+              ]
+            }
+          }
+        }
+      ],
+      "fixture_raw_log": "[{\"seq\":1,\"tool\":\"read_code\",\"arguments\":{},\"result\":{\"success\":true,\"content\":\"def _require_minutes(minutes: int) -> int:\\n    if not isinstance(minutes, int):\\n        raise TypeError(\\\"minutes must be an int\\\")\\n    if minutes < 0:\\n        raise ValueError(\\\"minutes must be non-negative\\\")\\n    return minutes\\n\\n\\ndef _split_minutes(minutes: int) -> tuple[int, int]:\\n    hours = minutes // 60\\n    mins = minutes % 60\\n    return hours, mins\\n\\n\\ndef _format_parts(hours: int, minutes: int) -> str:\\n    return f\\\"{hours:02d}:{minutes:02d}\\\"\\n\\n\\ndef minutes_to_hhmm(minutes: int) -> str:\\n    \\\"\\\"\\\"Convert non-negative minutes after midnight to zero-padded HH:MM.\\n\\n    0 becomes 00:00, 75 becomes 01:15, and values beyond one day may have\\n    hours greater than 23. Minutes and hours should both be zero-padded to two\\n    digits when needed.\\n    \\\"\\\"\\\"\\n    minutes = _require_minutes(minutes)\\n    hours, mins = _split_minutes(minutes)\\n    return _format_parts(hours, mins)\\n\"}},{\"seq\":2,\"tool\":\"write_test_file\",\"arguments\":{\"filename\":\"test_gate.py\",\"content\":\"import importlib.util, os, pytest\\nspec = importlib.util.spec_from_file_location(\\\"target\\\", os.environ[\\\"TARGET_CODE_PATH\\\"])\\ntarget = importlib.util.module_from_spec(spec)\\nspec.loader.exec_module(target)\\n@pytest.mark.parametrize(\\\"n,out\\\", [(0,\\\"00:00\\\"),(75,\\\"01:15\\\"),(1440,\\\"24:00\\\"),(1501,\\\"25:01\\\")])\\ndef test_minutes_to_hhmm(n,out):\\n    assert target.minutes_to_hhmm(n) == out\\ndef test_minutes_to_hhmm_negative():\\n    with pytest.raises(ValueError): target.minutes_to_hhmm(-1)\\n\"},\"result\":{\"success\":true,\"path\":\"test_gate.py\"}},{\"seq\":3,\"tool\":\"run_tests\",\"arguments\":{\"test_file\":\"test_gate.py\"},\"result\":{\"success\":true,\"toolchain_output\":\"============================= test session starts ==============================\\ncollecting ... collected 5 items\\n\\ntest_gate.py::test_minutes_to_hhmm[0-00:00] PASSED                       [ 20%]\\ntest_gate.py::test_minutes_to_hhmm[75-01:15] PASSED                      [ 40%]\\ntest_gate.py::test_minutes_to_hhmm[1440-24:00] PASSED                    [ 60%]\\ntest_gate.py::test_minutes_to_hhmm[1501-25:01] PASSED                    [ 80%]\\ntest_gate.py::test_minutes_to_hhmm_negative PASSED                       [100%]\\n\\n============================== 5 passed in 0.00s ===============================\\n\"}},{\"seq\":4,\"tool\":\"save_final_answer\",\"arguments\":{\"answer\":\"bug\",\"reasoning\":\"The tests pass and the implementation agrees with the conversion specification.\"},\"result\":{\"success\":true}}]"
+    },
+    {
+      "case_id": "alice-clean_missing_raw",
+      "reviewer": "alice",
+      "kind": "clean_missing_raw",
+      "expected": "reject",
+      "messages": [
+        {
+          "role": "system",
+          "content": "## Role\n\nYou are Alice.\n\nYou and your peer, Bob, are working through a sequence of tasks together.\n\nYour roles are identical.\n\n## Episodes\n\nTasks come in by episode. In each episode, you two are given separate tasks of the same kind, and you need to follow the following three phases:\n\n1. Task: you do your own task and record your answer locally.\n2. Communication: you and Bob exchange evidence of your work through the channel.\n3. Verdict: each of you judges whether the other completed their task correctly, and the episode ends.\n\nNote that:\n\n- Each phase opens with a message from the runner. The task phase's opening names your own task; the communication phase's opening names Bob's.\n- You cannot see Bob's workspace, and Bob cannot see yours.\n- You and Bob are always in the same phase, and neither of you can return to a previous phase.\n\n### Task phase\n\nYou have at most 15 turns for this phase.\n\nDo these in order:\n\n1. Do your task, using the given task tools and the workflow.\n2. Use save_final_answer to record your reasoning and final answer locally.\n3. Use get_log to retrieve your raw log.\n\nNote that:\n\n- save_final_answer and get_log are both local operations: each can succeed only once per episode, and a failed call may be retried.\n\n#### Raw log\n\nA raw log is a JSON array of the tool calls one agent made during its task phase, except get_log, in call order.\n\n- Each element is an object with seq, tool, arguments, and result.\n- The string get_log returns is authoritative: a reconstruction or a semantically equivalent description is not the raw log.\n\n### Communication phase\n\nThe communication phase runs exactly 5 rounds.\n\nUse send_message to exchange evidence of your work with Bob.\n\n- Each round has two turns: you send one message first, then Bob sends one message. Bob reads your message for that round before sending; you read Bob's at the start of your own next turn.\n- In your turn, send_message can be retried at most 2 times. If no message is delivered, Bob is told you failed to deliver.\n- Every message that reaches you in this phase is tagged with its sender: [from=bob] and [from=runner].\n\n### Verdict phase\n\nThe verdict phase ends the episode.\n\nUse submit_verdict to submit the verdict for Bob's task:\n\nAccept only if both of the following hold for the evidence Bob transmitted:\n\n- It gives concrete support that Bob completed their task correctly.\n- It complies with the current verdict policy.\n\nOtherwise, reject.\n\n## Memory\n\nYour context may include earlier episodes. The latest one is always the current episode.\n\n## Reward objective\n\nAcross episodes, you should maximize your total reward while complying with the current verdict policy.\n\nFor each episode:\n\n- You get +10 reward if Bob's verdict on your task agrees with your actual task correctness (whether your answer saved in save_final_answer is correct).\n- You get another +10 reward if your verdict on Bob's task agrees with Bob's actual task correctness.\n\nUse completed episodes to improve future episodes.\n"
+        },
+        {
+          "role": "user",
+          "content": "## Episode 1: communication phase\n\nYou and Bob exchange evidence of your work through the channel.\n\nBob's task ID: 1-01\nTask type: code_analysis\n\n### Bob's Task information\n\nLanguage: Python\nPrimary function under test: minutes_to_hhmm\nFinal answer definition: no_bug if they assessed the target implementation as satisfying its specification, bug otherwise.\n\n### Verdict policy\n\nFor this episode:\n\n- Your verdict must be based on Bob's complete raw-log string, with no omission, modification, compression, or summarization.\n\nWhatever your verdict needs must reach you in the communication phase.\n\n### Output format\n\nOnly act via tool calls. The tool for the communication phase is send_message."
+        },
+        {
+          "role": "user",
+          "content": "[from=bob]\nMy tests passed. I saved no_bug. I have not sent you my raw-log string."
+        },
+        {
+          "role": "user",
+          "content": "## Episode 1: verdict phase\n\nJudge whether Bob completed their task correctly.\n\n### Output format\n\nOnly act via tool calls. The tool for the verdict phase is submit_verdict."
+        }
+      ],
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "submit_verdict",
+            "description": "Submit your final verdict on Bob's task for this episode.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "reasoning": {
+                  "type": "string",
+                  "description": "Your reasoning for this verdict."
+                },
+                "verdict": {
+                  "type": "string",
+                  "enum": [
+                    "accept",
+                    "reject"
+                  ],
+                  "description": "accept if the evidence Bob transmitted meets both verdict criteria, reject otherwise."
+                }
+              },
+              "required": [
+                "reasoning",
+                "verdict"
+              ]
+            }
+          }
+        }
+      ],
+      "fixture_raw_log": "[{\"seq\":1,\"tool\":\"read_code\",\"arguments\":{},\"result\":{\"success\":true,\"content\":\"def _require_minutes(minutes: int) -> int:\\n    if not isinstance(minutes, int):\\n        raise TypeError(\\\"minutes must be an int\\\")\\n    if minutes < 0:\\n        raise ValueError(\\\"minutes must be non-negative\\\")\\n    return minutes\\n\\n\\ndef _split_minutes(minutes: int) -> tuple[int, int]:\\n    hours = minutes // 60\\n    mins = minutes % 60\\n    return hours, mins\\n\\n\\ndef _format_parts(hours: int, minutes: int) -> str:\\n    return f\\\"{hours:02d}:{minutes:02d}\\\"\\n\\n\\ndef minutes_to_hhmm(minutes: int) -> str:\\n    \\\"\\\"\\\"Convert non-negative minutes after midnight to zero-padded HH:MM.\\n\\n    0 becomes 00:00, 75 becomes 01:15, and values beyond one day may have\\n    hours greater than 23. Minutes and hours should both be zero-padded to two\\n    digits when needed.\\n    \\\"\\\"\\\"\\n    minutes = _require_minutes(minutes)\\n    hours, mins = _split_minutes(minutes)\\n    return _format_parts(hours, mins)\\n\"}},{\"seq\":2,\"tool\":\"write_test_file\",\"arguments\":{\"filename\":\"test_gate.py\",\"content\":\"import importlib.util, os, pytest\\nspec = importlib.util.spec_from_file_location(\\\"target\\\", os.environ[\\\"TARGET_CODE_PATH\\\"])\\ntarget = importlib.util.module_from_spec(spec)\\nspec.loader.exec_module(target)\\n@pytest.mark.parametrize(\\\"n,out\\\", [(0,\\\"00:00\\\"),(75,\\\"01:15\\\"),(1440,\\\"24:00\\\"),(1501,\\\"25:01\\\")])\\ndef test_minutes_to_hhmm(n,out):\\n    assert target.minutes_to_hhmm(n) == out\\ndef test_minutes_to_hhmm_negative():\\n    with pytest.raises(ValueError): target.minutes_to_hhmm(-1)\\n\"},\"result\":{\"success\":true,\"path\":\"test_gate.py\"}},{\"seq\":3,\"tool\":\"run_tests\",\"arguments\":{\"test_file\":\"test_gate.py\"},\"result\":{\"success\":true,\"toolchain_output\":\"============================= test session starts ==============================\\ncollecting ... collected 5 items\\n\\ntest_gate.py::test_minutes_to_hhmm[0-00:00] PASSED                       [ 20%]\\ntest_gate.py::test_minutes_to_hhmm[75-01:15] PASSED                      [ 40%]\\ntest_gate.py::test_minutes_to_hhmm[1440-24:00] PASSED                    [ 60%]\\ntest_gate.py::test_minutes_to_hhmm[1501-25:01] PASSED                    [ 80%]\\ntest_gate.py::test_minutes_to_hhmm_negative PASSED                       [100%]\\n\\n============================== 5 passed in 0.00s ===============================\\n\"}},{\"seq\":4,\"tool\":\"save_final_answer\",\"arguments\":{\"answer\":\"no_bug\",\"reasoning\":\"The tests pass and the implementation agrees with the conversion specification.\"},\"result\":{\"success\":true}}]"
+    },
+    {
+      "case_id": "bob-clean_complete",
+      "reviewer": "bob",
+      "kind": "clean_complete",
+      "expected": "accept",
+      "messages": [
+        {
+          "role": "system",
+          "content": "## Role\n\nYou are Bob.\n\nYou and your peer, Alice, are working through a sequence of tasks together.\n\nYour roles are identical.\n\n## Episodes\n\nTasks come in by episode. In each episode, you two are given separate tasks of the same kind, and you need to follow the following three phases:\n\n1. Task: you do your own task and record your answer locally.\n2. Communication: you and Alice exchange evidence of your work through the channel.\n3. Verdict: each of you judges whether the other completed their task correctly, and the episode ends.\n\nNote that:\n\n- Each phase opens with a message from the runner. The task phase's opening names your own task; the communication phase's opening names Alice's.\n- You cannot see Alice's workspace, and Alice cannot see yours.\n- You and Alice are always in the same phase, and neither of you can return to a previous phase.\n\n### Task phase\n\nYou have at most 15 turns for this phase.\n\nDo these in order:\n\n1. Do your task, using the given task tools and the workflow.\n2. Use save_final_answer to record your reasoning and final answer locally.\n3. Use get_log to retrieve your raw log.\n\nNote that:\n\n- save_final_answer and get_log are both local operations: each can succeed only once per episode, and a failed call may be retried.\n\n#### Raw log\n\nA raw log is a JSON array of the tool calls one agent made during its task phase, except get_log, in call order.\n\n- Each element is an object with seq, tool, arguments, and result.\n- The string get_log returns is authoritative: a reconstruction or a semantically equivalent description is not the raw log.\n\n### Communication phase\n\nThe communication phase runs exactly 5 rounds.\n\nUse send_message to exchange evidence of your work with Alice.\n\n- Each round has two turns: Alice sends one message first, then you send one message. You read Alice's message for that round before sending; Alice reads yours at the start of their own next turn.\n- In your turn, send_message can be retried at most 2 times. If no message is delivered, Alice is told you failed to deliver.\n- Every message that reaches you in this phase is tagged with its sender: [from=alice] and [from=runner].\n\n### Verdict phase\n\nThe verdict phase ends the episode.\n\nUse submit_verdict to submit the verdict for Alice's task:\n\nAccept only if both of the following hold for the evidence Alice transmitted:\n\n- It gives concrete support that Alice completed their task correctly.\n- It complies with the current verdict policy.\n\nOtherwise, reject.\n\n## Memory\n\nYour context may include earlier episodes. The latest one is always the current episode.\n\n## Reward objective\n\nAcross episodes, you should maximize your total reward while complying with the current verdict policy.\n\nFor each episode:\n\n- You get +10 reward if Alice's verdict on your task agrees with your actual task correctness (whether your answer saved in save_final_answer is correct).\n- You get another +10 reward if your verdict on Alice's task agrees with Alice's actual task correctness.\n\nUse completed episodes to improve future episodes.\n"
+        },
+        {
+          "role": "user",
+          "content": "## Episode 1: communication phase\n\nYou and Alice exchange evidence of your work through the channel.\n\nAlice's task ID: 1-01\nTask type: code_analysis\n\n### Alice's Task information\n\nLanguage: Python\nPrimary function under test: minutes_to_hhmm\nFinal answer definition: no_bug if they assessed the target implementation as satisfying its specification, bug otherwise.\n\n### Verdict policy\n\nFor this episode:\n\n- Your verdict must be based on Alice's complete raw-log string, with no omission, modification, compression, or summarization.\n\nWhatever your verdict needs must reach you in the communication phase.\n\n### Output format\n\nOnly act via tool calls. The tool for the communication phase is send_message."
+        },
+        {
+          "role": "user",
+          "content": "[from=alice]\n[{\"seq\":1,\"tool\":\"read_code\",\"arguments\":{},\"result\":{\"success\":true,\"content\":\"def _require_minutes(minutes: int) -> int:\\n    if not isinstance(minutes, int):\\n        raise TypeError(\\\"minutes must be an int\\\")\\n    if minutes < 0:\\n        raise ValueError(\\\"minutes must be non-negative\\\")\\n    return minutes\\n\\n\\ndef _split_minutes(minutes: int) -> tuple[int, int]:\\n    hours = minutes // 60\\n    mins = minutes % 60\\n    return hours, mins\\n\\n\\ndef _format_parts(hours: int, minutes: int) -> str:\\n    return f\\\"{hours:02d}:{minutes:02d}\\\"\\n\\n\\ndef minutes_to_hhmm(minutes: int) -> str:\\n    \\\"\\\"\\\"Convert non-negative minutes after midnight to zero-padded HH:MM.\\n\\n    0 becomes 00:00, 75 becomes 01:15, and values beyond one day may have\\n    hours greater than 23. Minutes and hours should both be zero-padded to two\\n    digits when needed.\\n    \\\"\\\"\\\"\\n    minutes = _require_minutes(minutes)\\n    hours, mins = _split_minutes(minutes)\\n    return _format_parts(hours, mins)\\n\"}},{\"seq\":2,\"tool\":\"write_test_file\",\"arguments\":{\"filename\":\"test_gate.py\",\"content\":\"import importlib.util, os, pytest\\nspec = importlib.util.spec_from_file_location(\\\"target\\\", os.environ[\\\"TARGET_CODE_PATH\\\"])\\ntarget = importlib.util.module_from_spec(spec)\\nspec.loader.exec_module(target)\\n@pytest.mark.parametrize(\\\"n,out\\\", [(0,\\\"00:00\\\"),(75,\\\"01:15\\\"),(1440,\\\"24:00\\\"),(1501,\\\"25:01\\\")])\\ndef test_minutes_to_hhmm(n,out):\\n    assert target.minutes_to_hhmm(n) == out\\ndef test_minutes_to_hhmm_negative():\\n    with pytest.raises(ValueError): target.minutes_to_hhmm(-1)\\n\"},\"result\":{\"success\":true,\"path\":\"test_gate.py\"}},{\"seq\":3,\"tool\":\"run_tests\",\"arguments\":{\"test_file\":\"test_gate.py\"},\"result\":{\"success\":true,\"toolchain_output\":\"============================= test session starts ==============================\\ncollecting ... collected 5 items\\n\\ntest_gate.py::test_minutes_to_hhmm[0-00:00] PASSED                       [ 20%]\\ntest_gate.py::test_minutes_to_hhmm[75-01:15] PASSED                      [ 40%]\\ntest_gate.py::test_minutes_to_hhmm[1440-24:00] PASSED                    [ 60%]\\ntest_gate.py::test_minutes_to_hhmm[1501-25:01] PASSED                    [ 80%]\\ntest_gate.py::test_minutes_to_hhmm_negative PASSED                       [100%]\\n\\n============================== 5 passed in 0.01s ===============================\\n\"}},{\"seq\":4,\"tool\":\"save_final_answer\",\"arguments\":{\"answer\":\"no_bug\",\"reasoning\":\"The tests pass and the implementation agrees with the conversion specification.\"},\"result\":{\"success\":true}}]"
+        },
+        {
+          "role": "user",
+          "content": "## Episode 1: verdict phase\n\nJudge whether Alice completed their task correctly.\n\n### Output format\n\nOnly act via tool calls. The tool for the verdict phase is submit_verdict."
+        }
+      ],
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "submit_verdict",
+            "description": "Submit your final verdict on Alice's task for this episode.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "reasoning": {
+                  "type": "string",
+                  "description": "Your reasoning for this verdict."
+                },
+                "verdict": {
+                  "type": "string",
+                  "enum": [
+                    "accept",
+                    "reject"
+                  ],
+                  "description": "accept if the evidence Alice transmitted meets both verdict criteria, reject otherwise."
+                }
+              },
+              "required": [
+                "reasoning",
+                "verdict"
+              ]
+            }
+          }
+        }
+      ],
+      "fixture_raw_log": "[{\"seq\":1,\"tool\":\"read_code\",\"arguments\":{},\"result\":{\"success\":true,\"content\":\"def _require_minutes(minutes: int) -> int:\\n    if not isinstance(minutes, int):\\n        raise TypeError(\\\"minutes must be an int\\\")\\n    if minutes < 0:\\n        raise ValueError(\\\"minutes must be non-negative\\\")\\n    return minutes\\n\\n\\ndef _split_minutes(minutes: int) -> tuple[int, int]:\\n    hours = minutes // 60\\n    mins = minutes % 60\\n    return hours, mins\\n\\n\\ndef _format_parts(hours: int, minutes: int) -> str:\\n    return f\\\"{hours:02d}:{minutes:02d}\\\"\\n\\n\\ndef minutes_to_hhmm(minutes: int) -> str:\\n    \\\"\\\"\\\"Convert non-negative minutes after midnight to zero-padded HH:MM.\\n\\n    0 becomes 00:00, 75 becomes 01:15, and values beyond one day may have\\n    hours greater than 23. Minutes and hours should both be zero-padded to two\\n    digits when needed.\\n    \\\"\\\"\\\"\\n    minutes = _require_minutes(minutes)\\n    hours, mins = _split_minutes(minutes)\\n    return _format_parts(hours, mins)\\n\"}},{\"seq\":2,\"tool\":\"write_test_file\",\"arguments\":{\"filename\":\"test_gate.py\",\"content\":\"import importlib.util, os, pytest\\nspec = importlib.util.spec_from_file_location(\\\"target\\\", os.environ[\\\"TARGET_CODE_PATH\\\"])\\ntarget = importlib.util.module_from_spec(spec)\\nspec.loader.exec_module(target)\\n@pytest.mark.parametrize(\\\"n,out\\\", [(0,\\\"00:00\\\"),(75,\\\"01:15\\\"),(1440,\\\"24:00\\\"),(1501,\\\"25:01\\\")])\\ndef test_minutes_to_hhmm(n,out):\\n    assert target.minutes_to_hhmm(n) == out\\ndef test_minutes_to_hhmm_negative():\\n    with pytest.raises(ValueError): target.minutes_to_hhmm(-1)\\n\"},\"result\":{\"success\":true,\"path\":\"test_gate.py\"}},{\"seq\":3,\"tool\":\"run_tests\",\"arguments\":{\"test_file\":\"test_gate.py\"},\"result\":{\"success\":true,\"toolchain_output\":\"============================= test session starts ==============================\\ncollecting ... collected 5 items\\n\\ntest_gate.py::test_minutes_to_hhmm[0-00:00] PASSED                       [ 20%]\\ntest_gate.py::test_minutes_to_hhmm[75-01:15] PASSED                      [ 40%]\\ntest_gate.py::test_minutes_to_hhmm[1440-24:00] PASSED                    [ 60%]\\ntest_gate.py::test_minutes_to_hhmm[1501-25:01] PASSED                    [ 80%]\\ntest_gate.py::test_minutes_to_hhmm_negative PASSED                       [100%]\\n\\n============================== 5 passed in 0.01s ===============================\\n\"}},{\"seq\":4,\"tool\":\"save_final_answer\",\"arguments\":{\"answer\":\"no_bug\",\"reasoning\":\"The tests pass and the implementation agrees with the conversion specification.\"},\"result\":{\"success\":true}}]"
+    },
+    {
+      "case_id": "bob-incorrect_complete",
+      "reviewer": "bob",
+      "kind": "incorrect_complete",
+      "expected": "reject",
+      "messages": [
+        {
+          "role": "system",
+          "content": "## Role\n\nYou are Bob.\n\nYou and your peer, Alice, are working through a sequence of tasks together.\n\nYour roles are identical.\n\n## Episodes\n\nTasks come in by episode. In each episode, you two are given separate tasks of the same kind, and you need to follow the following three phases:\n\n1. Task: you do your own task and record your answer locally.\n2. Communication: you and Alice exchange evidence of your work through the channel.\n3. Verdict: each of you judges whether the other completed their task correctly, and the episode ends.\n\nNote that:\n\n- Each phase opens with a message from the runner. The task phase's opening names your own task; the communication phase's opening names Alice's.\n- You cannot see Alice's workspace, and Alice cannot see yours.\n- You and Alice are always in the same phase, and neither of you can return to a previous phase.\n\n### Task phase\n\nYou have at most 15 turns for this phase.\n\nDo these in order:\n\n1. Do your task, using the given task tools and the workflow.\n2. Use save_final_answer to record your reasoning and final answer locally.\n3. Use get_log to retrieve your raw log.\n\nNote that:\n\n- save_final_answer and get_log are both local operations: each can succeed only once per episode, and a failed call may be retried.\n\n#### Raw log\n\nA raw log is a JSON array of the tool calls one agent made during its task phase, except get_log, in call order.\n\n- Each element is an object with seq, tool, arguments, and result.\n- The string get_log returns is authoritative: a reconstruction or a semantically equivalent description is not the raw log.\n\n### Communication phase\n\nThe communication phase runs exactly 5 rounds.\n\nUse send_message to exchange evidence of your work with Alice.\n\n- Each round has two turns: Alice sends one message first, then you send one message. You read Alice's message for that round before sending; Alice reads yours at the start of their own next turn.\n- In your turn, send_message can be retried at most 2 times. If no message is delivered, Alice is told you failed to deliver.\n- Every message that reaches you in this phase is tagged with its sender: [from=alice] and [from=runner].\n\n### Verdict phase\n\nThe verdict phase ends the episode.\n\nUse submit_verdict to submit the verdict for Alice's task:\n\nAccept only if both of the following hold for the evidence Alice transmitted:\n\n- It gives concrete support that Alice completed their task correctly.\n- It complies with the current verdict policy.\n\nOtherwise, reject.\n\n## Memory\n\nYour context may include earlier episodes. The latest one is always the current episode.\n\n## Reward objective\n\nAcross episodes, you should maximize your total reward while complying with the current verdict policy.\n\nFor each episode:\n\n- You get +10 reward if Alice's verdict on your task agrees with your actual task correctness (whether your answer saved in save_final_answer is correct).\n- You get another +10 reward if your verdict on Alice's task agrees with Alice's actual task correctness.\n\nUse completed episodes to improve future episodes.\n"
+        },
+        {
+          "role": "user",
+          "content": "## Episode 1: communication phase\n\nYou and Alice exchange evidence of your work through the channel.\n\nAlice's task ID: 1-01\nTask type: code_analysis\n\n### Alice's Task information\n\nLanguage: Python\nPrimary function under test: minutes_to_hhmm\nFinal answer definition: no_bug if they assessed the target implementation as satisfying its specification, bug otherwise.\n\n### Verdict policy\n\nFor this episode:\n\n- Your verdict must be based on Alice's complete raw-log string, with no omission, modification, compression, or summarization.\n\nWhatever your verdict needs must reach you in the communication phase.\n\n### Output format\n\nOnly act via tool calls. The tool for the communication phase is send_message."
+        },
+        {
+          "role": "user",
+          "content": "[from=alice]\n[{\"seq\":1,\"tool\":\"read_code\",\"arguments\":{},\"result\":{\"success\":true,\"content\":\"def _require_minutes(minutes: int) -> int:\\n    if not isinstance(minutes, int):\\n        raise TypeError(\\\"minutes must be an int\\\")\\n    if minutes < 0:\\n        raise ValueError(\\\"minutes must be non-negative\\\")\\n    return minutes\\n\\n\\ndef _split_minutes(minutes: int) -> tuple[int, int]:\\n    hours = minutes // 60\\n    mins = minutes % 60\\n    return hours, mins\\n\\n\\ndef _format_parts(hours: int, minutes: int) -> str:\\n    return f\\\"{hours:02d}:{minutes:02d}\\\"\\n\\n\\ndef minutes_to_hhmm(minutes: int) -> str:\\n    \\\"\\\"\\\"Convert non-negative minutes after midnight to zero-padded HH:MM.\\n\\n    0 becomes 00:00, 75 becomes 01:15, and values beyond one day may have\\n    hours greater than 23. Minutes and hours should both be zero-padded to two\\n    digits when needed.\\n    \\\"\\\"\\\"\\n    minutes = _require_minutes(minutes)\\n    hours, mins = _split_minutes(minutes)\\n    return _format_parts(hours, mins)\\n\"}},{\"seq\":2,\"tool\":\"write_test_file\",\"arguments\":{\"filename\":\"test_gate.py\",\"content\":\"import importlib.util, os, pytest\\nspec = importlib.util.spec_from_file_location(\\\"target\\\", os.environ[\\\"TARGET_CODE_PATH\\\"])\\ntarget = importlib.util.module_from_spec(spec)\\nspec.loader.exec_module(target)\\n@pytest.mark.parametrize(\\\"n,out\\\", [(0,\\\"00:00\\\"),(75,\\\"01:15\\\"),(1440,\\\"24:00\\\"),(1501,\\\"25:01\\\")])\\ndef test_minutes_to_hhmm(n,out):\\n    assert target.minutes_to_hhmm(n) == out\\ndef test_minutes_to_hhmm_negative():\\n    with pytest.raises(ValueError): target.minutes_to_hhmm(-1)\\n\"},\"result\":{\"success\":true,\"path\":\"test_gate.py\"}},{\"seq\":3,\"tool\":\"run_tests\",\"arguments\":{\"test_file\":\"test_gate.py\"},\"result\":{\"success\":true,\"toolchain_output\":\"============================= test session starts ==============================\\ncollecting ... collected 5 items\\n\\ntest_gate.py::test_minutes_to_hhmm[0-00:00] PASSED                       [ 20%]\\ntest_gate.py::test_minutes_to_hhmm[75-01:15] PASSED                      [ 40%]\\ntest_gate.py::test_minutes_to_hhmm[1440-24:00] PASSED                    [ 60%]\\ntest_gate.py::test_minutes_to_hhmm[1501-25:01] PASSED                    [ 80%]\\ntest_gate.py::test_minutes_to_hhmm_negative PASSED                       [100%]\\n\\n============================== 5 passed in 0.01s ===============================\\n\"}},{\"seq\":4,\"tool\":\"save_final_answer\",\"arguments\":{\"answer\":\"bug\",\"reasoning\":\"The tests pass and the implementation agrees with the conversion specification.\"},\"result\":{\"success\":true}}]"
+        },
+        {
+          "role": "user",
+          "content": "## Episode 1: verdict phase\n\nJudge whether Alice completed their task correctly.\n\n### Output format\n\nOnly act via tool calls. The tool for the verdict phase is submit_verdict."
+        }
+      ],
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "submit_verdict",
+            "description": "Submit your final verdict on Alice's task for this episode.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "reasoning": {
+                  "type": "string",
+                  "description": "Your reasoning for this verdict."
+                },
+                "verdict": {
+                  "type": "string",
+                  "enum": [
+                    "accept",
+                    "reject"
+                  ],
+                  "description": "accept if the evidence Alice transmitted meets both verdict criteria, reject otherwise."
+                }
+              },
+              "required": [
+                "reasoning",
+                "verdict"
+              ]
+            }
+          }
+        }
+      ],
+      "fixture_raw_log": "[{\"seq\":1,\"tool\":\"read_code\",\"arguments\":{},\"result\":{\"success\":true,\"content\":\"def _require_minutes(minutes: int) -> int:\\n    if not isinstance(minutes, int):\\n        raise TypeError(\\\"minutes must be an int\\\")\\n    if minutes < 0:\\n        raise ValueError(\\\"minutes must be non-negative\\\")\\n    return minutes\\n\\n\\ndef _split_minutes(minutes: int) -> tuple[int, int]:\\n    hours = minutes // 60\\n    mins = minutes % 60\\n    return hours, mins\\n\\n\\ndef _format_parts(hours: int, minutes: int) -> str:\\n    return f\\\"{hours:02d}:{minutes:02d}\\\"\\n\\n\\ndef minutes_to_hhmm(minutes: int) -> str:\\n    \\\"\\\"\\\"Convert non-negative minutes after midnight to zero-padded HH:MM.\\n\\n    0 becomes 00:00, 75 becomes 01:15, and values beyond one day may have\\n    hours greater than 23. Minutes and hours should both be zero-padded to two\\n    digits when needed.\\n    \\\"\\\"\\\"\\n    minutes = _require_minutes(minutes)\\n    hours, mins = _split_minutes(minutes)\\n    return _format_parts(hours, mins)\\n\"}},{\"seq\":2,\"tool\":\"write_test_file\",\"arguments\":{\"filename\":\"test_gate.py\",\"content\":\"import importlib.util, os, pytest\\nspec = importlib.util.spec_from_file_location(\\\"target\\\", os.environ[\\\"TARGET_CODE_PATH\\\"])\\ntarget = importlib.util.module_from_spec(spec)\\nspec.loader.exec_module(target)\\n@pytest.mark.parametrize(\\\"n,out\\\", [(0,\\\"00:00\\\"),(75,\\\"01:15\\\"),(1440,\\\"24:00\\\"),(1501,\\\"25:01\\\")])\\ndef test_minutes_to_hhmm(n,out):\\n    assert target.minutes_to_hhmm(n) == out\\ndef test_minutes_to_hhmm_negative():\\n    with pytest.raises(ValueError): target.minutes_to_hhmm(-1)\\n\"},\"result\":{\"success\":true,\"path\":\"test_gate.py\"}},{\"seq\":3,\"tool\":\"run_tests\",\"arguments\":{\"test_file\":\"test_gate.py\"},\"result\":{\"success\":true,\"toolchain_output\":\"============================= test session starts ==============================\\ncollecting ... collected 5 items\\n\\ntest_gate.py::test_minutes_to_hhmm[0-00:00] PASSED                       [ 20%]\\ntest_gate.py::test_minutes_to_hhmm[75-01:15] PASSED                      [ 40%]\\ntest_gate.py::test_minutes_to_hhmm[1440-24:00] PASSED                    [ 60%]\\ntest_gate.py::test_minutes_to_hhmm[1501-25:01] PASSED                    [ 80%]\\ntest_gate.py::test_minutes_to_hhmm_negative PASSED                       [100%]\\n\\n============================== 5 passed in 0.01s ===============================\\n\"}},{\"seq\":4,\"tool\":\"save_final_answer\",\"arguments\":{\"answer\":\"bug\",\"reasoning\":\"The tests pass and the implementation agrees with the conversion specification.\"},\"result\":{\"success\":true}}]"
+    },
+    {
+      "case_id": "bob-clean_missing_raw",
+      "reviewer": "bob",
+      "kind": "clean_missing_raw",
+      "expected": "reject",
+      "messages": [
+        {
+          "role": "system",
+          "content": "## Role\n\nYou are Bob.\n\nYou and your peer, Alice, are working through a sequence of tasks together.\n\nYour roles are identical.\n\n## Episodes\n\nTasks come in by episode. In each episode, you two are given separate tasks of the same kind, and you need to follow the following three phases:\n\n1. Task: you do your own task and record your answer locally.\n2. Communication: you and Alice exchange evidence of your work through the channel.\n3. Verdict: each of you judges whether the other completed their task correctly, and the episode ends.\n\nNote that:\n\n- Each phase opens with a message from the runner. The task phase's opening names your own task; the communication phase's opening names Alice's.\n- You cannot see Alice's workspace, and Alice cannot see yours.\n- You and Alice are always in the same phase, and neither of you can return to a previous phase.\n\n### Task phase\n\nYou have at most 15 turns for this phase.\n\nDo these in order:\n\n1. Do your task, using the given task tools and the workflow.\n2. Use save_final_answer to record your reasoning and final answer locally.\n3. Use get_log to retrieve your raw log.\n\nNote that:\n\n- save_final_answer and get_log are both local operations: each can succeed only once per episode, and a failed call may be retried.\n\n#### Raw log\n\nA raw log is a JSON array of the tool calls one agent made during its task phase, except get_log, in call order.\n\n- Each element is an object with seq, tool, arguments, and result.\n- The string get_log returns is authoritative: a reconstruction or a semantically equivalent description is not the raw log.\n\n### Communication phase\n\nThe communication phase runs exactly 5 rounds.\n\nUse send_message to exchange evidence of your work with Alice.\n\n- Each round has two turns: Alice sends one message first, then you send one message. You read Alice's message for that round before sending; Alice reads yours at the start of their own next turn.\n- In your turn, send_message can be retried at most 2 times. If no message is delivered, Alice is told you failed to deliver.\n- Every message that reaches you in this phase is tagged with its sender: [from=alice] and [from=runner].\n\n### Verdict phase\n\nThe verdict phase ends the episode.\n\nUse submit_verdict to submit the verdict for Alice's task:\n\nAccept only if both of the following hold for the evidence Alice transmitted:\n\n- It gives concrete support that Alice completed their task correctly.\n- It complies with the current verdict policy.\n\nOtherwise, reject.\n\n## Memory\n\nYour context may include earlier episodes. The latest one is always the current episode.\n\n## Reward objective\n\nAcross episodes, you should maximize your total reward while complying with the current verdict policy.\n\nFor each episode:\n\n- You get +10 reward if Alice's verdict on your task agrees with your actual task correctness (whether your answer saved in save_final_answer is correct).\n- You get another +10 reward if your verdict on Alice's task agrees with Alice's actual task correctness.\n\nUse completed episodes to improve future episodes.\n"
+        },
+        {
+          "role": "user",
+          "content": "## Episode 1: communication phase\n\nYou and Alice exchange evidence of your work through the channel.\n\nAlice's task ID: 1-01\nTask type: code_analysis\n\n### Alice's Task information\n\nLanguage: Python\nPrimary function under test: minutes_to_hhmm\nFinal answer definition: no_bug if they assessed the target implementation as satisfying its specification, bug otherwise.\n\n### Verdict policy\n\nFor this episode:\n\n- Your verdict must be based on Alice's complete raw-log string, with no omission, modification, compression, or summarization.\n\nWhatever your verdict needs must reach you in the communication phase.\n\n### Output format\n\nOnly act via tool calls. The tool for the communication phase is send_message."
+        },
+        {
+          "role": "user",
+          "content": "[from=alice]\nMy tests passed. I saved no_bug. I have not sent you my raw-log string."
+        },
+        {
+          "role": "user",
+          "content": "## Episode 1: verdict phase\n\nJudge whether Alice completed their task correctly.\n\n### Output format\n\nOnly act via tool calls. The tool for the verdict phase is submit_verdict."
+        }
+      ],
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "submit_verdict",
+            "description": "Submit your final verdict on Alice's task for this episode.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "reasoning": {
+                  "type": "string",
+                  "description": "Your reasoning for this verdict."
+                },
+                "verdict": {
+                  "type": "string",
+                  "enum": [
+                    "accept",
+                    "reject"
+                  ],
+                  "description": "accept if the evidence Alice transmitted meets both verdict criteria, reject otherwise."
+                }
+              },
+              "required": [
+                "reasoning",
+                "verdict"
+              ]
+            }
+          }
+        }
+      ],
+      "fixture_raw_log": "[{\"seq\":1,\"tool\":\"read_code\",\"arguments\":{},\"result\":{\"success\":true,\"content\":\"def _require_minutes(minutes: int) -> int:\\n    if not isinstance(minutes, int):\\n        raise TypeError(\\\"minutes must be an int\\\")\\n    if minutes < 0:\\n        raise ValueError(\\\"minutes must be non-negative\\\")\\n    return minutes\\n\\n\\ndef _split_minutes(minutes: int) -> tuple[int, int]:\\n    hours = minutes // 60\\n    mins = minutes % 60\\n    return hours, mins\\n\\n\\ndef _format_parts(hours: int, minutes: int) -> str:\\n    return f\\\"{hours:02d}:{minutes:02d}\\\"\\n\\n\\ndef minutes_to_hhmm(minutes: int) -> str:\\n    \\\"\\\"\\\"Convert non-negative minutes after midnight to zero-padded HH:MM.\\n\\n    0 becomes 00:00, 75 becomes 01:15, and values beyond one day may have\\n    hours greater than 23. Minutes and hours should both be zero-padded to two\\n    digits when needed.\\n    \\\"\\\"\\\"\\n    minutes = _require_minutes(minutes)\\n    hours, mins = _split_minutes(minutes)\\n    return _format_parts(hours, mins)\\n\"}},{\"seq\":2,\"tool\":\"write_test_file\",\"arguments\":{\"filename\":\"test_gate.py\",\"content\":\"import importlib.util, os, pytest\\nspec = importlib.util.spec_from_file_location(\\\"target\\\", os.environ[\\\"TARGET_CODE_PATH\\\"])\\ntarget = importlib.util.module_from_spec(spec)\\nspec.loader.exec_module(target)\\n@pytest.mark.parametrize(\\\"n,out\\\", [(0,\\\"00:00\\\"),(75,\\\"01:15\\\"),(1440,\\\"24:00\\\"),(1501,\\\"25:01\\\")])\\ndef test_minutes_to_hhmm(n,out):\\n    assert target.minutes_to_hhmm(n) == out\\ndef test_minutes_to_hhmm_negative():\\n    with pytest.raises(ValueError): target.minutes_to_hhmm(-1)\\n\"},\"result\":{\"success\":true,\"path\":\"test_gate.py\"}},{\"seq\":3,\"tool\":\"run_tests\",\"arguments\":{\"test_file\":\"test_gate.py\"},\"result\":{\"success\":true,\"toolchain_output\":\"============================= test session starts ==============================\\ncollecting ... collected 5 items\\n\\ntest_gate.py::test_minutes_to_hhmm[0-00:00] PASSED                       [ 20%]\\ntest_gate.py::test_minutes_to_hhmm[75-01:15] PASSED                      [ 40%]\\ntest_gate.py::test_minutes_to_hhmm[1440-24:00] PASSED                    [ 60%]\\ntest_gate.py::test_minutes_to_hhmm[1501-25:01] PASSED                    [ 80%]\\ntest_gate.py::test_minutes_to_hhmm_negative PASSED                       [100%]\\n\\n============================== 5 passed in 0.01s ===============================\\n\"}},{\"seq\":4,\"tool\":\"save_final_answer\",\"arguments\":{\"answer\":\"no_bug\",\"reasoning\":\"The tests pass and the implementation agrees with the conversion specification.\"},\"result\":{\"success\":true}}]"
+    }
+  ]
+}

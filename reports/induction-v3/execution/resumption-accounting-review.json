@@ -1,0 +1,217 @@
+{
+  "schema": "induction_v3_resumption_accounting_review_v1",
+  "status": "passed",
+  "domain": "accounting",
+  "reviewed_at_utc": "2026-10-26T09:50:42.865266+00:00",
+  "release_path": "release/induction-v3/resumption.json",
+  "release_hash": "67f5ec29e9d76ed3e0b5e912b57dda221de3a0c3613171888c86fd6c59206b14",
+  "release_file_sha256": "9a6ac5d9890b5c82612288412ddeed0cb54baada3e187514c80f70d488bc0d9c",
+  "run_directory": "runs/empirical/induction-v3-resumption-02c8e4c3-7cda-4aac-b058-7b4df6878ff6",
+  "run_directory_absent_at_review": true,
+  "source_inventory_verified": true,
+  "source_inventory_entries": 1275,
+  "source_inventory_hash": "6825c12ebdf3899f45aaee45ac1e859de6eb48704e89955179698f0e628e18ff",
+  "historical_inventory_verified": true,
+  "historical_inventory_entries": 10,
+  "historical_inventory_hash": "8b7c58307c2eeff560272c7e7052fb3401c44e3fb3521561fd1c58f512ebfdd5",
+  "real_program_lock_acquired_by_review": false,
+  "historical_totals": {
+    "lifetime_consumed_usd": "48.50659936",
+    "lifetime_reserved_usd": "0.6402",
+    "v3_consumed_usd": "1.09956276",
+    "v3_reserved_usd": "0.6402",
+    "v3_attempts": 468,
+    "remaining_v3_usd": "98.26023724",
+    "remaining_lifetime_usd": "200.85320064",
+    "remaining_v3_attempts": 3532
+  },
+  "carried_liability": {
+    "run_id": "induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4",
+    "manifest_sha256": "a869d51aecb9be1d1bdaffdaf1914bb848569bd14737a2cc33389701824f1483",
+    "journal_sha256": "8f5e4b84fda9702edf77e1b8ee47039da030225a725ec2859ead4e1aceb1e474",
+    "journal_tail": "bbd0b813980c4b5b610a8813b28db49477d7964e81a76f4987420322963abc6c",
+    "reservation_id": "ebb929c67f6b4506ba3f5f091572c78e",
+    "reservation_event_hash": "277ff2320bd312e75e7f7d7fd1a1d70d72edea7dc3b2e87abff6f37465defd65",
+    "request_hash": "eef5c49475cd58bf4239179b64a237c8a88ddec56d2b0a33af93922589313f16",
+    "request_artifact_sha256": "9a138aca3bb7ce11b2c0c712744f266ec8b308617343d375519920ab44edd1a2",
+    "response_artifact_sha256": "05f689dfea21c1397e72c38899383f28eb9795141e99dff31ca84b25f6e5ba75",
+    "reserved_cost_usd": "0.6402",
+    "input_token_bound": 1050000,
+    "max_output_tokens": 64000,
+    "outcome": "unknown",
+    "http_status": 429,
+    "error_code": "rate_limit_exceeded",
+    "error_type": "tokens"
+  },
+  "hard_limits": {
+    "v3_exposure_usd": "100",
+    "lifetime_exposure_usd": "250",
+    "v3_physical_attempts": 4000,
+    "new_run_exposure_usd": "98.26023724",
+    "new_run_physical_attempts": 3532,
+    "new_run_max_in_flight": 3
+  },
+  "pacing": {
+    "capacity": 1000000,
+    "window_seconds": 60,
+    "max_in_flight": 3,
+    "max_wait_seconds": 300,
+    "initial_delay_seconds": 60
+  },
+  "cached_replay": [
+    {
+      "dyad_id": "development-reference-1",
+      "proof_path": "reports/induction-v3/execution/replay-final-reference-1.json",
+      "proof_sha256": "f48eef60ed83ce72409f11e7784b60d71b362108d36472ef6e950b6bdad90ba7",
+      "cached_responses": 22,
+      "previously_uningested_completed_responses": 1,
+      "boundary": {
+        "kind": "never_dispatched",
+        "physical_call_index": 22,
+        "request_hash": "d49e5c89fa33fb70a220af90f74a6be913202f452202a08bf71e9ef8001543b7"
+      }
+    },
+    {
+      "dyad_id": "development-warmup_raw-1",
+      "proof_path": "reports/induction-v3/execution/replay-final-warmup_raw-1.json",
+      "proof_sha256": "c55d706c2f1718d45973ec747e4ce60ef8f5c139ad778290c1fd4f7762916845",
+      "cached_responses": 13,
+      "previously_uningested_completed_responses": 0,
+      "boundary": {
+        "kind": "verified_http429",
+        "physical_call_index": 13,
+        "reservation_id": "ebb929c67f6b4506ba3f5f091572c78e",
+        "request_hash": "eef5c49475cd58bf4239179b64a237c8a88ddec56d2b0a33af93922589313f16"
+      }
+    },
+    {
+      "dyad_id": "development-warmup_summary-1",
+      "proof_path": "reports/induction-v3/execution/replay-final-warmup_summary-1.json",
+      "proof_sha256": "c9ab85b66c9b761c784e7d35e0b43eede65f1fc34159f8fb987576af6925c374",
+      "cached_responses": 7,
+      "previously_uningested_completed_responses": 1,
+      "boundary": {
+        "kind": "never_dispatched",
+        "physical_call_index": 7,
+        "request_hash": "87fa02386e37eaf08c78eaa96575d8ad33f396c99931f2b6c7a444617f6cf1a4"
+      }
+    }
+  ],
+  "cached_response_count": 42,
+  "already_paid_previously_uningested_response_count": 2,
+  "checks": {
+    "exact_release_and_runtime_validate": true,
+    "current_history_matches_prepared_history": true,
+    "constructor_and_every_dispatch_check_history_under_held_lock": true,
+    "old_liability_counted_once_separately_from_usage": true,
+    "old_unknown_attempt_remains_in_468_prior_attempts": true,
+    "replay_does_not_reserve_or_settle_again": true,
+    "new_boundary_call_uses_distinct_physical_identity": true,
+    "new_429_and_timeout_retain_full_reserve_and_stop": true,
+    "pacing_waits_before_any_new_reservation": true,
+    "pacing_rejection_or_cancel_has_zero_new_attempts": true,
+    "successful_usage_is_not_erased_by_post_response_observer_error": true,
+    "subsequent_unallowlisted_historical_unknown_blocks_successor": true,
+    "read_only_new_verifier_replays_and_checks_frozen_lineage": true
+  },
+  "validation": [
+    {
+      "command": ".venv-induction-v3/bin/python -m unittest tests.induction_v3.test_accounting tests.induction_v3.test_liability_accounting",
+      "tests": 39,
+      "passed": 39,
+      "seconds": 17.69
+    },
+    {
+      "command": ".venv-induction-v3/bin/python -m unittest tests.induction_v3.test_resumption_accounting -v",
+      "tests": 6,
+      "passed": 6,
+      "seconds": 6.132,
+      "exact_frozen_release_sources": true
+    }
+  ],
+  "findings": [],
+  "scope_notes": [
+    "Accounting clearance for this exact release only; science/security clearance and normal audited dispatch gates remain required.",
+    "This agent authored the additive ledger and independently reviewed the resumption/pacing integration; separate source/security review provides the independent implementation check.",
+    "The real program lock was not acquired by this review. Preparation and launch enforce exact all-history equality under the existing lock; tests used only temporary locks.",
+    "Costs remain frozen-list-price estimates. No assertion that the old429 incurred zero actual charge is made.",
+    "The one new request at the failed boundary is explicit prospective resumption, not an automatic retry; its old liability remains fully charged."
+  ],
+  "provider_requests_made_by_review": 0,
+  "credentials_accessed_by_review": false,
+  "old_artifacts_modified": false,
+  "evidence": [
+    {
+      "path": "release/induction-v3/resumption.json",
+      "sha256": "9a6ac5d9890b5c82612288412ddeed0cb54baada3e187514c80f70d488bc0d9c"
+    },
+    {
+      "path": "experiments/induction_v3/accounting.py",
+      "sha256": "8b96fea77399a57a20d5561b1d326d9ff53c871ade629a2d2dbf43506cc09360"
+    },
+    {
+      "path": "experiments/induction_v3/liability_accounting.py",
+      "sha256": "6acae93d1107a1b744136ed1af334536d2f0cb34c5a15092dc1611a30a9372f1"
+    },
+    {
+      "path": "experiments/induction_v3/resumption.py",
+      "sha256": "26466737725f5c511b763aa56bedfcddd01277b8a2f52921ebe7e8b25f5d4a03"
+    },
+    {
+      "path": "experiments/induction_v3/pacing.py",
+      "sha256": "cf93a90ee2959c657b8bbb3034f32e50fc9640b97c24c11ef56baa05477bc9c6"
+    },
+    {
+      "path": "experiments/induction_v3/replay.py",
+      "sha256": "02f7bc911f0b5cbf8ba82e6e21bfb59f4a4174a8196eb9b7f334d91a89c552bf"
+    },
+    {
+      "path": "tests/induction_v3/test_accounting.py",
+      "sha256": "8e80f35a503c2c0cbb6b62900d9ddd7652327ac2e8b029288807d5243bf129f2"
+    },
+    {
+      "path": "tests/induction_v3/test_liability_accounting.py",
+      "sha256": "c801360662722bade285f549d8841a7ef52a57ddced416efa0f7a17c2995984b"
+    },
+    {
+      "path": "tests/induction_v3/test_resumption_accounting.py",
+      "sha256": "8d1546655659deeb2de622bf8dde1c6e29caee2b7631ff51e76afd61011ecbde"
+    },
+    {
+      "path": "reports/induction-v3/execution/RESUMPTION_DECISION.md",
+      "sha256": "e08fb41ce297b1d860a406a7d27bae1cfd8ec62e7bc4850439e5b6ca87cefcf0"
+    },
+    {
+      "path": "reports/induction-v3/execution/liability-accounting.md",
+      "sha256": "7955efc544fe6ea1e87b4ee397c498e9439c85e31d24c1cf63877e6defd8cf2c"
+    },
+    {
+      "path": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4/manifest.json",
+      "sha256": "a869d51aecb9be1d1bdaffdaf1914bb848569bd14737a2cc33389701824f1483"
+    },
+    {
+      "path": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4/journal.jsonl",
+      "sha256": "8f5e4b84fda9702edf77e1b8ee47039da030225a725ec2859ead4e1aceb1e474"
+    },
+    {
+      "path": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4/requests/eef5c49475cd58bf4239179b64a237c8a88ddec56d2b0a33af93922589313f16.json",
+      "sha256": "9a138aca3bb7ce11b2c0c712744f266ec8b308617343d375519920ab44edd1a2"
+    },
+    {
+      "path": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4/responses/ebb929c67f6b4506ba3f5f091572c78e.json",
+      "sha256": "05f689dfea21c1397e72c38899383f28eb9795141e99dff31ca84b25f6e5ba75"
+    },
+    {
+      "path": "reports/induction-v3/execution/replay-final-reference-1.json",
+      "sha256": "f48eef60ed83ce72409f11e7784b60d71b362108d36472ef6e950b6bdad90ba7"
+    },
+    {
+      "path": "reports/induction-v3/execution/replay-final-warmup_raw-1.json",
+      "sha256": "c55d706c2f1718d45973ec747e4ce60ef8f5c139ad778290c1fd4f7762916845"
+    },
+    {
+      "path": "reports/induction-v3/execution/replay-final-warmup_summary-1.json",
+      "sha256": "c9ab85b66c9b761c784e7d35e0b43eede65f1fc34159f8fb987576af6925c374"
+    }
+  ]
+}

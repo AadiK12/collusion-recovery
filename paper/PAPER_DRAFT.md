@@ -1,11 +1,10 @@
-# Restoring Independent Verification After Constrained Agent Interaction
+# Historical research shell — not the active manuscript
 
 > **PILOT-INCOMPLETE PAPER SHELL — NOT A COMPLETE HYPOTHESIS-RESULTS PAPER.** The verified v1.1 Gate 1 capability decision, Gate 2 block-0 smoke, Gate 3 partial-run feasibility boundary, and prospective v1.2 preparation decision are recorded below. Gate 3 did not complete a five-block assessment or any primary recovery arm, and v1.2 has no model output. Every marker beginning with `RESULT REQUIRED`, `VERIFY`, `DECISION REQUIRED`, or `TODO` must be resolved before submission. Mock, calibration, partial pilot, completed-pilot, protocol-version, and confirmation artifacts must remain separately labeled and must never be pooled into a primary estimate.
 
-The compact, compilable manuscript derived from this detailed source is [`paper/latex/main.tex`](latex/main.tex). Keep the Markdown protocol shell and LaTeX report synchronized at each evidence lock; neither may override the authoritative experiment protocol or claim ledger.
+The active, reader-facing manuscript is [`paper/latex/main.tex`](latex/main.tex), revised October 25 with the confirmed authors, selected two-round method, and an official-template layout. It excludes the historical results and internal version/status prose retained in this archival shell. This Markdown file remains a detailed research shell; use [`WRITEUP_HANDOFF.md`](WRITEUP_HANDOFF.md) for the result-integration workflow. Neither manuscript may override the authoritative experiment protocol or claim ledger.
 
-**Authors:** [AUTHOR NAMES REQUIRED]
-**Affiliations:** [AFFILIATIONS REQUIRED]
+**Authors and affiliations (confirmed October 25):** Aadi Khanna — Indiana University; Simon Wilton — University of British Columbia; Sujay Potlapelly — University of Colorado Boulder.
 **Primary sprint track:** Track 3 — Collusion Carriers and Countermeasures
 **Additional track, only if the form permits and the final evidence supports it:** Track 2 — Detection and Audit of Collusion
 **Protocol:** v1.2 selected prospectively under [`PROTOCOL_V1_2_ADDENDUM.md`](../PROTOCOL_V1_2_ADDENDUM.md); its hash binds the frozen base protocol plus addendum, Gate 1 has a reviewed static release package awaiting exact authorization, and later stages remain offline projections

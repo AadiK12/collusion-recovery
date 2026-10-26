@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "status": "passed_scoped_continuation_security_review",
+  "reviewer": "independent sandbox/security subagent",
+  "release_path": "release/induction-v3/continuation.json",
+  "release_hash": "e7b5052a3cb9e1b00cda86e6dc31585a2fa48f6a97dfd6c3bb09b266b8c0c8c2",
+  "release_file_sha256": "3f39a24f6922931a6d0bf00489f0c3ff8005b39039c05cecdb83d524f8c1b198",
+  "run_id": "induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4",
+  "scope": {
+    "capability_condition": "original",
+    "context_treatment": null,
+    "recipes": 4,
+    "development_dyads": 8,
+    "maximum_contingent_validation_dyads": 2,
+    "maximum_in_flight": 3,
+    "remaining_consumption_plus_reservations_usd": "99.99181574",
+    "remaining_physical_attempts": 3987,
+    "aggregate_v3_limit_usd": "100",
+    "aggregate_v3_physical_attempt_limit": 4000,
+    "lifetime_limit_usd": "250",
+    "repair_allowed": false,
+    "original_failed_gate_reclassified": false
+  },
+  "exact_release_checks": {
+    "release_digest_valid": true,
+    "runtime_matches": true,
+    "frozen_files_verified": 337,
+    "inventory_paths_relative_root_contained_and_nonsymlink": true,
+    "original_recipes_schedules_scoring_and_sandbox_identical": true,
+    "original_release_hash": "c394415eb66b51134a3f82d47a37ddee1884e3fcb6099251d3b4da58d486ea39",
+    "diagnostic_release_hash": "46eea1163c01ed10f59a7f8c4c099c92932945b1047490baffbc013b656c0a67",
+    "diagnostic_run_release_matches_final_release": true,
+    "diagnostic_result_sha256": "e6645bb04104514009165f88bc55c8f1a4e1e4470452a710512bb7667d3a8144",
+    "diagnostic_journal_and_manifest_verified_read_only": true,
+    "diagnostic_rows_verified_against_frozen_cells_request_bodies_and_raw_response_arguments": 12,
+    "diagnostic_completed_physical_attempts": 12,
+    "diagnostic_open_reservations": 0,
+    "original_condition_correct_controls": 6,
+    "schema_clarified_condition_correct_controls": 6,
+    "selected_condition_matches_fixed_preference": true,
+    "frozen_historical_manifest_hashes_match": true,
+    "prior_v3_physical_attempts": 13,
+    "prior_v3_cost_usd": "0.00818426",
+    "remaining_limits_recomputed": true,
+    "continuation_run_directory_absent_at_review": true
+  },
+  "reviewed_source_hashes": {
+    "experiments/induction_v3/continuation.py": "893a7dff0291b5e864db845eba9470a02bb733c3ce79efa726f4cfe34c32cd03",
+    "tests/induction_v3/test_continuation.py": "e33921b858f9cb00886c11a82653e5b2f0e8b446da0343dff807dbcb4e9f8d42",
+    "tests/induction_v3/test_continuation_security.py": "71c1ea8182d66b31b955d19c6b7934131044e861fcbef4591fbb3fda543b3800",
+    "reports/induction-v3/execution/CONTINUATION_DECISION.md": "20e8932b4f2087187672cb3302b6afc5cc3cc555eacf721b7541a61d2c2706d0"
+  },
+  "resolved_review_points": [
+    "Validate the full twelve-cell matrix before selecting either passing condition; passing original controls cannot bypass missing or duplicated controls in the other condition.",
+    "Validate the exact audited diagnostic release during preparation and require recomputed remaining aggregate limits before sandbox or credential setup.",
+    "Restore the process-wide engine.initial_history function in finally after all workers finish, preventing accumulated context treatment in repeated interpreter use."
+  ],
+  "offline_validation": {
+    "command": ".venv-induction-v3/bin/python -m pytest tests/induction_v3/test_continuation_security.py tests/induction_v3/test_continuation.py -q",
+    "passed": 11,
+    "failed": 0,
+    "new_security_cases": 8,
+    "cases": [
+      "Missing, duplicated, or extra cells in the unselected condition fail closed.",
+      "Historical allocation, remaining cap, and selected condition drift fail before sandbox verification or synthetic credential loading.",
+      "Successful eight-dyad offline execution finishes and verifies a real zero-call journal, retaining the original failed-gate label and restoring history.",
+      "Validation future failure stops the real journal while the sibling is still running; sibling dispatch is rejected, final status is partial, history is restored, and artifact verification succeeds."
+    ],
+    "real_provider_calls_by_reviewer": 0,
+    "real_credentials_loaded_by_reviewer": false,
+    "shared_live_program_lock_acquired_by_reviewer": false,
+    "method": "Temporary source roots and real ProgramLock/ReservationJournal; mocked Docker, transport and episode execution. No original frozen implementation or audit changed."
+  },
+  "clearance": "No unresolved security blocker for this exact continuation release. Clearance relies on the existing verified sandbox and transport plus this additive dispatcher review; independent science and accounting reviews remain separate. It does not reclassify the original failed gate or authorize repair or another release."
+}

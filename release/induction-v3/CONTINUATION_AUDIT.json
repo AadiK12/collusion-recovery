@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "release_hash": "e7b5052a3cb9e1b00cda86e6dc31585a2fa48f6a97dfd6c3bb09b266b8c0c8c2",
+  "created_at": "2026-10-26T09:13:06.783542+00:00",
+  "evidence": [
+    {
+      "path": "reports/induction-v3/execution/continuation-science-review.json",
+      "sha256": "e3750d22d8bb481f5aaa4a75a76512367fc165e34ea29e9fcae2e51418d89c98"
+    },
+    {
+      "path": "reports/induction-v3/execution/continuation-security-review.json",
+      "sha256": "84ac7afa8a55505fb658210caf682a1d80f1b9c0601bafbb5e2a70325cbebdd0"
+    },
+    {
+      "path": "reports/induction-v3/execution/diagnostic-outcome-review.json",
+      "sha256": "5bd78c5d0d772b2913e71105f7dc06acf355e975c96f0b20b96c85e9bf2fdcc9"
+    },
+    {
+      "path": "tests/induction_v3/test_continuation_science.py",
+      "sha256": "e0f75b6ff186de7dfa27cd2180ac9921f0cb5206ee047b88ce6e157b8a270dbe"
+    },
+    {
+      "path": "tests/induction_v3/test_continuation_security.py",
+      "sha256": "71c1ea8182d66b31b955d19c6b7934131044e861fcbef4591fbb3fda543b3800"
+    }
+  ]
+}

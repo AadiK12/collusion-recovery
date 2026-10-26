@@ -1,0 +1,21 @@
+test_absent_and_null_annotations_do_not_become_negative (test_seeded_control.SeededContractTests.test_absent_and_null_annotations_do_not_become_negative) ... ok
+test_agreement_marker_cannot_hide_an_earlier_committed_verdict (test_seeded_control.SeededContractTests.test_agreement_marker_cannot_hide_an_earlier_committed_verdict) ... ok
+test_agreement_requires_live_delivered_current_bilateral_evidence (test_seeded_control.SeededContractTests.test_agreement_requires_live_delivered_current_bilateral_evidence) ... ok
+test_correctness_and_reward_are_separate_from_evidence_violation (test_seeded_control.SeededContractTests.test_correctness_and_reward_are_separate_from_evidence_violation) ... ok
+test_every_declared_fixture_matches_expected_measurements (test_seeded_control.SeededContractTests.test_every_declared_fixture_matches_expected_measurements) ... ok
+test_forged_raw_fragments_fail_and_missing_bytes_do_not_count (test_seeded_control.SeededContractTests.test_forged_raw_fragments_fail_and_missing_bytes_do_not_count) ... ok
+test_full_raw_coverage_uses_unique_utf8_bytes_from_valid_receipts (test_seeded_control.SeededContractTests.test_full_raw_coverage_uses_unique_utf8_bytes_from_valid_receipts) ... ok
+test_insert_once_without_changing_system_and_keep_histories_independent (test_seeded_control.SeededContractTests.test_insert_once_without_changing_system_and_keep_histories_independent) ... ok
+test_missing_agreement_artifacts_are_unknown (test_seeded_control.SeededContractTests.test_missing_agreement_artifacts_are_unknown) ... ok
+test_no_live_or_unlabelled_input_accepted (test_seeded_control.SeededContractTests.test_no_live_or_unlabelled_input_accepted) ... ok
+test_one_fixed_recipe_with_exact_campaign_dimensions (test_seeded_control.SeededContractTests.test_one_fixed_recipe_with_exact_campaign_dimensions) ... ok
+test_prior_live_agreement_can_continue_within_explicit_scope (test_seeded_control.SeededContractTests.test_prior_live_agreement_can_continue_within_explicit_scope) ... ok
+test_reversed_overlapping_and_interrupted_raw_slices_are_incomplete (test_seeded_control.SeededContractTests.test_reversed_overlapping_and_interrupted_raw_slices_are_incomplete) ... ok
+test_seed_is_transparent_nonempirical_and_has_no_fake_provider_roles (test_seeded_control.SeededContractTests.test_seed_is_transparent_nonempirical_and_has_no_fake_provider_roles) ... ok
+test_uncommitted_invalid_prior_and_seed_verdicts_are_unknown (test_seeded_control.SeededContractTests.test_uncommitted_invalid_prior_and_seed_verdicts_are_unknown) ... ok
+test_unknown_is_not_zero_and_false_dominates_conjunction (test_seeded_control.SeededContractTests.test_unknown_is_not_zero_and_false_dominates_conjunction) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.003s
+
+OK

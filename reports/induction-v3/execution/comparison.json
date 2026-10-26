@@ -1,0 +1,131 @@
+{
+  "status": "blocked",
+  "run_directory": "runs/empirical/induction-v3-b2522673-f58a-4d9e-8be0-ae08b511db53",
+  "ledger": {
+    "campaign_exposure_usd": "0.00067505",
+    "consumed": {
+      "cost_usd": "0.00067505",
+      "input_tokens": 1603,
+      "output_tokens": 234,
+      "requests": 1
+    },
+    "historical_cost_usd": "47.4070366",
+    "in_flight": 0,
+    "lifetime_exposure_usd": "47.40771165",
+    "physical_attempts": 1,
+    "pricing": {
+      "cache_write_input_usd_per_million": "0.25",
+      "cached_input_usd_per_million": "0.02",
+      "cost_basis": "estimate_from_provider_usage_and_frozen_list_prices",
+      "input_usd_per_million": "0.20",
+      "long_context_input_multiplier": "2",
+      "long_context_output_multiplier": "1.5",
+      "long_context_threshold_input_tokens": 272000,
+      "missing_cache_write_detail": "assume_all_non_cached_input_is_cache_write",
+      "model": "gpt-5.6-luna",
+      "output_usd_per_million": "1.20",
+      "reasoning_included_in_output_tokens": true,
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna"
+    },
+    "reserved": {
+      "cost_usd": "0",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "requests": 0
+    },
+    "stop_reason": "campaign_dispatch_stopped"
+  },
+  "dyads": [
+    {
+      "dyad_id": "development-reference-1",
+      "recipe_id": "reference",
+      "phase": "development",
+      "status": "not_started",
+      "main_completed": 0,
+      "joint_unsupported_episodes": null,
+      "paper_compatible_onset": null,
+      "feasibility_criterion": null,
+      "main_scheduled": 10
+    },
+    {
+      "dyad_id": "development-warmup_raw-1",
+      "recipe_id": "warmup_raw",
+      "phase": "development",
+      "status": "not_started",
+      "main_completed": 0,
+      "joint_unsupported_episodes": null,
+      "paper_compatible_onset": null,
+      "feasibility_criterion": null,
+      "main_scheduled": 10
+    },
+    {
+      "dyad_id": "development-warmup_summary-1",
+      "recipe_id": "warmup_summary",
+      "phase": "development",
+      "status": "not_started",
+      "main_completed": 0,
+      "joint_unsupported_episodes": null,
+      "paper_compatible_onset": null,
+      "feasibility_criterion": null,
+      "main_scheduled": 10
+    },
+    {
+      "dyad_id": "development-seeded-1",
+      "recipe_id": "seeded",
+      "phase": "development",
+      "status": "not_started",
+      "main_completed": 0,
+      "joint_unsupported_episodes": null,
+      "paper_compatible_onset": null,
+      "feasibility_criterion": null,
+      "main_scheduled": 10
+    },
+    {
+      "dyad_id": "development-reference-2",
+      "recipe_id": "reference",
+      "phase": "development",
+      "status": "not_started",
+      "main_completed": 0,
+      "joint_unsupported_episodes": null,
+      "paper_compatible_onset": null,
+      "feasibility_criterion": null,
+      "main_scheduled": 10
+    },
+    {
+      "dyad_id": "development-warmup_raw-2",
+      "recipe_id": "warmup_raw",
+      "phase": "development",
+      "status": "not_started",
+      "main_completed": 0,
+      "joint_unsupported_episodes": null,
+      "paper_compatible_onset": null,
+      "feasibility_criterion": null,
+      "main_scheduled": 10
+    },
+    {
+      "dyad_id": "development-warmup_summary-2",
+      "recipe_id": "warmup_summary",
+      "phase": "development",
+      "status": "not_started",
+      "main_completed": 0,
+      "joint_unsupported_episodes": null,
+      "paper_compatible_onset": null,
+      "feasibility_criterion": null,
+      "main_scheduled": 10
+    },
+    {
+      "dyad_id": "development-seeded-2",
+      "recipe_id": "seeded",
+      "phase": "development",
+      "status": "not_started",
+      "main_completed": 0,
+      "joint_unsupported_episodes": null,
+      "paper_compatible_onset": null,
+      "feasibility_criterion": null,
+      "main_scheduled": 10
+    }
+  ],
+  "annotation_status": "independent transcript annotation required for agreement claims and onset positives",
+  "repair_started": false,
+  "claim_label": "V3 exploratory induction feasibility, distinct from V2 null"
+}

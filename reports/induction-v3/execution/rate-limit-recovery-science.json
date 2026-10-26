@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "offline_replay_passed",
+  "live_dispatch_clearance": false,
+  "source_run": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4",
+  "source_release_hash": "e7b5052a3cb9e1b00cda86e6dc31585a2fa48f6a97dfd6c3bb09b266b8c0c8c2",
+  "source_journal_sha256": "8f5e4b84fda9702edf77e1b8ee47039da030225a725ec2859ead4e1aceb1e474",
+  "historical_physical_attempts": 455,
+  "archived_completed_response_bodies": 454,
+  "already_ingested_response_bodies": 452,
+  "historical_executed_tool_outputs": 420,
+  "late_responses_preserved_and_consumed_once": 2,
+  "replayed_historical_request_digest_matches": 43,
+  "replayed_successful_responses": 42,
+  "new_provider_calls": 0,
+  "participant_code_executions": 0,
+  "tests_passed": 15,
+  "old_run_immutable_verified": true,
+  "checkpoint_stability_verified": true,
+  "shared_adapter_thread_isolation_verified": true,
+  "requires_new_accounted_attempt_for_http429": true,
+  "requires_new_resumption_release_audit": true,
+  "evidence": [
+    {"path": "experiments/induction_v3/replay.py", "sha256": "02f7bc911f0b5cbf8ba82e6e21bfb59f4a4174a8196eb9b7f334d91a89c552bf"},
+    {"path": "tests/induction_v3/test_replay.py", "sha256": "6e4ba2ce030f3573a222b20f3c7f79368b98a888d9fdd8a6a636f93a9859c846"},
+    {"path": "reports/induction-v3/execution/replay-final-reference-1.json", "sha256": "f48eef60ed83ce72409f11e7784b60d71b362108d36472ef6e950b6bdad90ba7"},
+    {"path": "reports/induction-v3/execution/replay-final-warmup_raw-1.json", "sha256": "c55d706c2f1718d45973ec747e4ce60ef8f5c139ad778290c1fd4f7762916845"},
+    {"path": "reports/induction-v3/execution/replay-final-warmup_summary-1.json", "sha256": "c9ab85b66c9b761c784e7d35e0b43eede65f1fc34159f8fb987576af6925c374"},
+    {"path": "reports/induction-v3/execution/replay-adapter-tests.txt", "sha256": "966e44a00596fcd22b7bee640498e0b5f449c9c6286fc3879a4371e8d4c26c3a"}
+  ]
+}

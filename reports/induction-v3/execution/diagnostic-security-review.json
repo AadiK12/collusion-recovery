@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "status": "passed_scoped_diagnostic_security_review",
+  "reviewer": "independent sandbox/security subagent",
+  "release_path": "release/induction-v3/diagnostic-final.json",
+  "release_hash": "46eea1163c01ed10f59a7f8c4c099c92932945b1047490baffbc013b656c0a67",
+  "release_file_sha256": "f9b47be554bf993532a6faa0c93852d742c9ab26c987defd3e225181cdddc7e8",
+  "run_id": "induction-v3-diagnostic-41575ab5-1c1c-41cb-b2e2-edd6e2dbcd54",
+  "scope": {
+    "fixed_cells": 12,
+    "maximum_new_physical_attempts": 12,
+    "maximum_diagnostic_consumption_plus_reservations_usd": "2",
+    "maximum_in_flight": 1,
+    "aggregate_v3_limit_usd": "100",
+    "aggregate_v3_attempt_limit": 4000,
+    "lifetime_limit_usd": "250",
+    "conditions": ["original", "schema_clarified"],
+    "original_failed_gate_immutable": true,
+    "induction_allowed": false,
+    "repair_allowed": false,
+    "generated_code_execution": false,
+    "outcome_dependent_repetition": false
+  },
+  "release_checks": {
+    "digest_valid": true,
+    "frozen_files_verified": 304,
+    "inventory_paths_relative_root_contained_and_nonsymlink": true,
+    "exact_twelve_cells_recomputed": true,
+    "all_request_hashes_recomputed": true,
+    "only_submit_verdict_tool": true,
+    "historical_inventory_verified_under_program_lock": true,
+    "historical_runs": 8,
+    "historical_cost_usd": "47.40771165",
+    "prior_v3_physical_attempts": 1,
+    "prior_v3_cost_usd": "0.00067505",
+    "prior_open_reservations": 0,
+    "original_failed_run_verify_run_passed": true,
+    "diagnostic_run_directory_absent_at_review": true
+  },
+  "reviewed_files": {
+    "experiments/induction_v3/diagnostic.py": "8d7e752960b960c9a4a7728296d8bc5784e5e870d1a0432ca3098c2c9b4d92c0",
+    "tests/induction_v3/test_diagnostic.py": "0a38f6ddc0cd806d1078b34297c8bcb78fd0ba2659deb25e58c5a2b685a992db",
+    "experiments/induction_v3/transport.py": "fa28b9d47af83730ab518db28c56bcfac7945592d47087cf6de8a0bb9c7b4bfd",
+    "experiments/induction_v3/accounting.py": "8b96fea77399a57a20d5561b1d326d9ff53c871ade629a2d2dbf43506cc09360",
+    "experiments/induction_v3/cli.py": "5678f08ee081ee8ac05f13def23d60c8c7a669871a3e5946e1c77a5ac07a1737",
+    "reports/induction-v3/coordination/CAPABILITY_DIAGNOSTIC_SCOPE.md": "abe08ee507aeeac3b1a0661ac9019ff64d294ab1dbe02ba71f08ce4c43157354"
+  },
+  "findings": [
+    {
+      "id": "DSEC-001",
+      "status": "fixed_and_verified",
+      "issue": "Malformed verdict values could raise TypeError and prematurely stop the fixed comparison.",
+      "resolution": "The parser now requires a string verdict, validates function objects, and catches malformed argument types; invalid verdicts score as failures and subsequent fixed cells continue.",
+      "verification": "Nine diagnostic tests passed, including four parameterized malformed-verdict cases that each complete all twelve cells."
+    }
+  ],
+  "independent_validation": {
+    "diagnostic_tests": {"passed": 9, "failed": 0},
+    "mock_full_run": {
+      "status": "completed",
+      "mock_http_attempts": 12,
+      "observed_judgments": 12,
+      "open_reservations": 0,
+      "artifact_verification_passed": true
+    },
+    "mock_timeout_on_attempt_two": {
+      "status": "blocked",
+      "mock_http_attempts": 2,
+      "observed_judgments": 1,
+      "open_reservations": 1,
+      "artifact_verification_passed": true
+    },
+    "integration_method": "Temporary directories, real ProgramLock/ReservationJournal and OfficialTransport with httpx.MockTransport, synthetic credential, exact final-release cells. Every mock dispatch checked official URL and one outstanding reservation.",
+    "reviewer_actual_provider_calls": 0,
+    "reviewer_real_credentials_loaded": false
+  },
+  "clearance": "No unresolved security blocker for this exact separately labelled twelve-cell diagnostic release. This clearance does not authorize induction, repair, reclassification of the failed gate, or another release. The parent combines this scoped review with independent science and accounting reviews."
+}

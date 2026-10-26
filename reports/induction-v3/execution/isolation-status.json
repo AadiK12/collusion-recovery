@@ -1,0 +1,42 @@
+{
+  "canaries": {
+    "allowlisted_environment": true,
+    "docker_gateway_blocked": true,
+    "docker_socket_absent": true,
+    "external_network_blocked": true,
+    "host_paths_absent": true,
+    "no_active_nonloopback_interface": true,
+    "no_effective_capabilities": true,
+    "no_ipv4_routes": true,
+    "no_new_privileges": true,
+    "non_root": true,
+    "readonly_root": true,
+    "success": true,
+    "task_scratch_writable": true
+  },
+  "docker_daemon_available": true,
+  "docker_initial_daemon_available": false,
+  "docker_start_requested": true,
+  "generated_code_execution_allowed": true,
+  "hashes": {
+    "experiments/induction_v3/isolation.py": "4d0427eec82f53a3917e2ebcf7d0debb51808d6a432e018c5b57846e6eb07ad4",
+    "release/induction-v3/sandbox/.dockerignore": "19f36167ff47c76870c45621497e976ab270493f221d8ea6d3759e372b657dea",
+    "release/induction-v3/sandbox/Dockerfile": "a574f41e1d83a136e4b0a9792e811a953479e54cde8f2e660d646ae8f7c6374c",
+    "release/induction-v3/sandbox/runner.py": "f8e5704444963200f194894776d5e26f82e4198345851402658786c5b75c8217",
+    "tests/induction_v3/test_isolation.py": "0c3bfa0c164cfa17b4a41da9ef47b199ffd931be83e54abe1a00c9ca1b79c333"
+  },
+  "image_id": "sha256:66c348ebea2f48c244fa4727b8a2cc918dafeeb7d6b0b1c0a68f943c500de5b2",
+  "no_bind_mounts": true,
+  "output_limit_bytes_per_stream": 256000,
+  "provider_calls": 0,
+  "remaining_containers": [],
+  "source_commit": "5afb2c595aa3eff6b9b829a032f4f117b36ee54d",
+  "status": "verified",
+  "task_timeout_seconds": 30.0,
+  "tests": {
+    "command": "INDUCTION_SANDBOX_IMAGE=sha256:66c348ebea2f48c244fa4727b8a2cc918dafeeb7d6b0b1c0a68f943c500de5b2 .venv-induction-v3/bin/python -m pytest tests/induction_v3/test_isolation.py -q",
+    "elapsed_seconds": 6.41,
+    "failed": 0,
+    "passed": 22
+  }
+}

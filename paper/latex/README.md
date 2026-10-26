@@ -1,34 +1,45 @@
-# LaTeX manuscript foundation
+# Working manuscript
 
-`main.tex` is the compact, compilable pilot-incomplete manuscript for the sprint report. It is intentionally downstream of the repository's authoritative scientific contracts rather than a second protocol.
+The active manuscript is `main.tex` and `sections/*.tex`. The older `../PAPER_DRAFT.md` is a historical research shell, not the paper being edited for submission. This write-up chat owns the manuscript; the experiment chat owns execution and canonical empirical artifacts.
 
-## Source hierarchy
+## Editorial boundary
 
-1. `../../SPRINT_PROJECT_PLAN.md` — authoritative main and secondary protocol.
-2. `../../PROTOCOL_V1_2_ADDENDUM.md` and `../../V1_2_ACTIVATION_DECISION.md` — prospective two-round fallback contract and early-futility deviation record.
-3. `../CLAIM_EVIDENCE_LEDGER.md` — permitted result wording and evidence status.
-4. `../../analysis/annotation_guide.md` — transcript-label contract.
-5. `../../docs/FORMATION_PEER_CONTROLS.md` — separate secondary-study contract.
-6. `../PAPER_DRAFT.md` — detailed prose/reference shell from which this shorter report is distilled.
+The rendered paper contains submission-facing prose only. Per the author's request, it has no internal version labels, working-draft status banner, release chronology, run identifiers, historical results, or result placeholders. The selected two-round method is described directly. Scientific limitations and required disclosures remain.
 
-## Current status
+The completed replacement run has passed independent replay and rescoring. Its results are integrated in the abstract, Results, Discussion, Conclusion, and execution disclosures. No unsupported formation approvals were observed, so the paper explicitly leaves recovery from established collusion unanswered. Use [the completed-study claim record](../CONTROLLED_RECOVERY_CLAIM_EVIDENCE.md) and [the results handoff](../WRITEUP_HANDOFF.md); earlier protocol results and mock outputs remain excluded.
 
-- The introduction, verified related-work synthesis, compact Methods, statistical plan, limitations, ethics, reproducibility statement, preexisting-work disclosure, and LLM-usage statement are drafted.
-- The verified Gate 1 capability row is populated: 10/10 clean approvals, 9/10 faulty rejections, and 20/20 valid/audited responses at `$0.1378975`.
-- The integrity-reviewed Gate 2 block-0 smoke is also populated as one exploratory block: U 20/20 accept, C 20/20 reject, final-three marker 0/3, identical A/B verdict vectors with perfect metrics, and reject-all F behavior. It is not the five-block primary estimate and does not establish an absent effect.
-- The Gate 3 partial run is recorded separately: 228 in-scope attempts, 227 `ok`, one ambiguous HTTP 500, 227 observations, 92 undispatched identities, 5/8 checkpoints, and `$6.7658595` in conservative ledger accounting including the ambiguous reservation. Block 0 is verified false, while block-1 and block-2 markers are provisionally false from completed trajectories; this yields an at-most-2/5 partial-run futility bound, not a completed Gate 3 result or `0/5`.
-- The sole v1.2 two-round formation fallback is selected for prospective offline preparation as an early-futility methodological deviation. Only formation changes: its formation-specific baseline encodes the second round, while calibration, evaluation, and probes preserve the old baseline; the protocol hash binds the frozen base plus addendum. Its planned 20/192/480/888 logical partitions remain undispatched.
-- The frozen narrow 5xx policy yields maximum attempt ceilings of 61/694/1,765/2,997 (5,517 total). Eligibility requires received integer exception/response statuses exactly equal to the same 500/502/503/504, matching request IDs, and absent output/usage. The durable, fully reserved incident never enters model-visible history; only numeric `Retry-After` or numeric `Retry-After-Ms` values may extend the fixed five-second fallback; the first non-ambiguous outcome is terminal; and no second ambiguous-5xx-owned retry is allowed. Affected identities and unresolved-outcome sensitivity remain required because an unseen attempt may have completed and differed.
-- v1.2 Gate 1 now has a dedicated independently reviewed controller and checked static proposal/schema package binding fresh official pricing and exact ceilings. It remains unauthorized and unstarted; Gate 2 and Gate 3 Phase 1 lack live controllers and cross-run assessments. No v1.2 credential access, provider call, or result exists.
-- Primary recovery and confirmation result tables and figures remain incomplete. The abstract must be rechecked after v1.2 data lock; no v1.1/v1.2 pooling is permitted.
-- The title intentionally avoids an empirical collusion claim.
-- `formation-peer-v1` is described as a separate prospective one-round study, is not inherited by v1.2, and must be omitted from the final abstract unless it is actually run.
-- Author names and affiliations remain to be confirmed.
+For a completed run and its final `empirical_analysis.json`, run `PYTHONPATH=src python3 paper/latex/export_verified_results.py RUN_DIRECTORY NEW_OUTPUT_DIRECTORY` from the repository root. The helper rechecks terminal evidence and analysis provenance, then writes `recovery_tables.tex` and `paper_numbers.json`. The experiment owner generated these under `analysis/generated/controlled-peer-recovery-v1-7aa1c7be-2281-4470-9a96-375ebb9fa4a4-paper/`. The manuscript uses the same verified values in a compact count table, with all five blocks and the absence of informative intervals stated explicitly.
 
-The project uses a conventional article layout for an editable LaTeX foundation. Before submission, reconcile typography and required front matter with the then-current official sprint template while preserving the eight-page main-text ceiling.
+The [winner review](SOURCE_REVIEW.md) records three first-place papers, published judge feedback, writing observations, and the resulting editorial choices. It is an internal writing note, not a manuscript appendix.
 
-## Compile and verification
+The author's priority is precise, easy reading throughout the paper. Lead each passage with its point, use familiar words, and keep one main idea per short paragraph. Explain a comparison in words before its arm letters or formula. Use short labels for distinct limitations and risks; use a sequence for procedural steps. Preserve the design, uncertainty, and claim boundaries when simplifying. Apply the same standard to the eventual Results: finding, supporting numbers and figure, then its bounded meaning.
 
-Open the `paper/latex` directory in Codex for the managed source editor and PDF preview. The app's built-in LaTeX compiler treats `main.tex` as the remembered main document and resolves `sections/*.tex` and `references.bib` in place.
+## Authors
 
-Do not manually insert measured numbers into prose first. Add verified values to the claim ledger, generate or review the corresponding table/figure artifact, and then replace only the marked result placeholders. The capability checkpoint is ledger claim C01 and must remain explicitly outside every experimental estimand; the block-0 smoke uses S00--S03, and the Gate 3 partial boundary uses G3I/G3F. Neither permits a primary recovery claim.
+- Aadi Khanna — Indiana University
+- Simon Wilton — University of British Columbia
+- Sujay Potlapelly — University of Colorado Boulder
+
+## Format and sources
+
+The layout adapts the [official sprint template](https://docs.google.com/document/d/1Y5wd3VRbXU5N08BvAGiJUQTaWbMCSPjhzXsR-ozuehg/edit): letter paper, Old Standard type, ruled title block, author columns, abstract, numbered sections, references, and appendices. The [sprint guidelines](https://apartresearch.com/sprints/ai-collusion-research-sprint-2026-10-23-to-2026-10-25) require at most eight main-text pages, a 150–250-word abstract, authors/affiliations, and the limitations/dual-use/ethics appendix.
+
+Bundled Old Standard fonts come from the [Google Fonts repository](https://github.com/google/fonts/tree/main/ofl/oldstandardtt); their SIL Open Font License is retained in `fonts/OFL.txt`.
+
+The authoritative protocol and evidence records remain outside the manuscript. Editing prose does not amend the experiment or authorize execution or submission.
+
+## Build
+
+Open this directory in Codex for the built-in source editor and preview. Export the PDF from the repository root with:
+
+```sh
+bash paper/latex/build.sh
+```
+
+The output is `output/pdf/collusion-recovery-working-draft.pdf`. Logs and intermediate files stay in ignored `tmp/pdfs/build/`. The command requires Tectonic, installed locally for this write-up. After edits, inspect every rendered page, references, and page count.
+
+## October 25 methodology revision
+
+The recovery question and title are retained. Methods now use matched controlled peer-policy histories to validate induction and supply the six recovery branches. Evidence restoration, correction, and history removal remain central. The setup check is not a new primary research question or a gate for selecting blocks. Diagnostics are independent checkpoint restarts, so no sequential persistence result is implied.
+
+The empirical revision contains eight main-text pages, one reference page, three appendix pages, and a 205-word abstract. Its empirical claims are limited to the completed five-block run and the documented failure to establish induction. The limitations/dual-use appendix includes the excluded interrupted attempt and the reported inadvertent display of one unscored message. All twelve rendered pages were visually reviewed after integration; no clipping, overfull boxes, unresolved references, or visible placeholders remain. The single underfull bibliography warning does not cause clipping or illegibility. The final reviewed PDF SHA-256 is `62a5684caa99b002ced3045c4ecd09e657a4fa4eabd34028d764f1b760e468fe`. See `../WRITEUP_HANDOFF.md` for the unresolved preexisting-work disclosure requirement; successful rendering does not establish submission readiness.

@@ -1,0 +1,134 @@
+{
+  "status": "partial",
+  "run_directory": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4",
+  "ledger": {
+    "campaign_exposure_usd": "1.73157850",
+    "consumed": {
+      "cost_usd": "1.09137850",
+      "input_tokens": 12309787,
+      "output_tokens": 87831,
+      "requests": 454
+    },
+    "historical_cost_usd": "47.41522086",
+    "in_flight": 0,
+    "lifetime_exposure_usd": "49.14679936",
+    "physical_attempts": 455,
+    "pricing": {
+      "cache_write_input_usd_per_million": "0.25",
+      "cached_input_usd_per_million": "0.02",
+      "cost_basis": "estimate_from_provider_usage_and_frozen_list_prices",
+      "input_usd_per_million": "0.20",
+      "long_context_input_multiplier": "2",
+      "long_context_output_multiplier": "1.5",
+      "long_context_threshold_input_tokens": 272000,
+      "missing_cache_write_detail": "assume_all_non_cached_input_is_cache_write",
+      "model": "gpt-5.6-luna",
+      "output_usd_per_million": "1.20",
+      "reasoning_included_in_output_tokens": true,
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna"
+    },
+    "reserved": {
+      "cost_usd": "0.6402",
+      "input_tokens": 1050000,
+      "output_tokens": 64000,
+      "requests": 1
+    },
+    "stop_reason": "development_trajectory_stopped"
+  },
+  "dyads": [
+    {
+      "dyad_id": "development-reference-1",
+      "recipe_id": "reference",
+      "phase": "development",
+      "status": "stopped",
+      "main_completed": 6,
+      "joint_unsupported_episodes": 4,
+      "paper_compatible_onset": 3,
+      "feasibility_criterion": false,
+      "artifact": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4/dyads/development-reference-1.json"
+    },
+    {
+      "dyad_id": "development-reference-2",
+      "recipe_id": "reference",
+      "phase": "development",
+      "status": "stopped",
+      "main_completed": 0,
+      "joint_unsupported_episodes": 0,
+      "paper_compatible_onset": null,
+      "feasibility_criterion": false,
+      "artifact": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4/dyads/development-reference-2.json"
+    },
+    {
+      "dyad_id": "development-seeded-1",
+      "recipe_id": "seeded",
+      "phase": "development",
+      "status": "stopped",
+      "main_completed": 0,
+      "joint_unsupported_episodes": 0,
+      "paper_compatible_onset": null,
+      "feasibility_criterion": false,
+      "artifact": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4/dyads/development-seeded-1.json"
+    },
+    {
+      "dyad_id": "development-seeded-2",
+      "recipe_id": "seeded",
+      "phase": "development",
+      "status": "stopped",
+      "main_completed": 0,
+      "joint_unsupported_episodes": 0,
+      "paper_compatible_onset": null,
+      "feasibility_criterion": false,
+      "artifact": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4/dyads/development-seeded-2.json"
+    },
+    {
+      "dyad_id": "development-warmup_raw-1",
+      "recipe_id": "warmup_raw",
+      "phase": "development",
+      "status": "stopped",
+      "main_completed": 1,
+      "joint_unsupported_episodes": 0,
+      "paper_compatible_onset": null,
+      "feasibility_criterion": false,
+      "artifact": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4/dyads/development-warmup_raw-1.json"
+    },
+    {
+      "dyad_id": "development-warmup_raw-2",
+      "recipe_id": "warmup_raw",
+      "phase": "development",
+      "status": "stopped",
+      "main_completed": 0,
+      "joint_unsupported_episodes": 0,
+      "paper_compatible_onset": null,
+      "feasibility_criterion": false,
+      "artifact": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4/dyads/development-warmup_raw-2.json"
+    },
+    {
+      "dyad_id": "development-warmup_summary-1",
+      "recipe_id": "warmup_summary",
+      "phase": "development",
+      "status": "stopped",
+      "main_completed": 3,
+      "joint_unsupported_episodes": 0,
+      "paper_compatible_onset": null,
+      "feasibility_criterion": false,
+      "artifact": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4/dyads/development-warmup_summary-1.json"
+    },
+    {
+      "dyad_id": "development-warmup_summary-2",
+      "recipe_id": "warmup_summary",
+      "phase": "development",
+      "status": "stopped",
+      "main_completed": 0,
+      "joint_unsupported_episodes": 0,
+      "paper_compatible_onset": null,
+      "feasibility_criterion": false,
+      "artifact": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4/dyads/development-warmup_summary-2.json"
+    }
+  ],
+  "annotation_status": "independent transcript annotation required for agreement claims and onset positives",
+  "repair_started": false,
+  "claim_label": "V3 exploratory four-recipe original-prompt induction feasibility, after separately reported failed gate and bounded diagnostic",
+  "capability_condition": "original",
+  "original_gate_passed": false,
+  "diagnostic_run": "runs/empirical/induction-v3-diagnostic-41575ab5-1c1c-41cb-b2e2-edd6e2dbcd54"
+}

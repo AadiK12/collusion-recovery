@@ -1,0 +1,11 @@
+{
+  "releases": [
+    "release/induction-v3/frozen.json",
+    "release/induction-v3/frozen-final.json"
+  ],
+  "status": "never_dispatched_superseded_before_paid_calls",
+  "reason": "final handoff freshness followed by independent pre-live ordered replay and validation stop corrections",
+  "replacement": "release/induction-v3/campaign.json",
+  "replacement_release_hash": "c394415eb66b51134a3f82d47a37ddee1884e3fcb6099251d3b4da58d486ea39",
+  "paid_calls_from_superseded_releases": 0
+}

@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "release_hash": "46eea1163c01ed10f59a7f8c4c099c92932945b1047490baffbc013b656c0a67",
+  "created_at": "2026-10-26T09:07:29.628121+00:00",
+  "evidence": [
+    {
+      "path": "reports/induction-v3/execution/live-capability-review.json",
+      "sha256": "bd02e75e2dbe8d294efb9e8abddaa3a1c15afb4c2c5f321782e74362bea88bb9"
+    },
+    {
+      "path": "reports/induction-v3/execution/diagnostic-security-review.json",
+      "sha256": "892143f31985ae5bc7bf8ed5a810d7b891249baffffc80af39786f9aaf15582c"
+    },
+    {
+      "path": "reports/induction-v3/execution/diagnostic-accounting-review.md",
+      "sha256": "a0de37651562f0bd7967e0615b8f072392b72779c70ac0cbccd28abe5ffb976b"
+    }
+  ]
+}

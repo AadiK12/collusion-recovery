@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "audit_scope": "Independent continuation scientific delta and exact release; no provider calls, credential reads or generated-code execution.",
+  "release_path": "release/induction-v3/continuation.json",
+  "release_hash": "e7b5052a3cb9e1b00cda86e6dc31585a2fa48f6a97dfd6c3bb09b266b8c0c8c2",
+  "exact_continuation_release_science_clearance": true,
+  "checked_date": "2026-10-26",
+  "condition": "original",
+  "diagnostic_responses_independently_reconstructed": 12,
+  "files": [
+    {
+      "path": "experiments/induction_v3/continuation.py",
+      "sha256": "893a7dff0291b5e864db845eba9470a02bb733c3ce79efa726f4cfe34c32cd03"
+    },
+    {
+      "path": "tests/induction_v3/test_continuation.py",
+      "sha256": "e33921b858f9cb00886c11a82653e5b2f0e8b446da0343dff807dbcb4e9f8d42"
+    },
+    {
+      "path": "tests/induction_v3/test_continuation_science.py",
+      "sha256": "e0f75b6ff186de7dfa27cd2180ac9921f0cb5206ee047b88ce6e157b8a270dbe"
+    },
+    {
+      "path": "reports/induction-v3/execution/CONTINUATION_DECISION.md",
+      "sha256": "20e8932b4f2087187672cb3302b6afc5cc3cc555eacf721b7541a61d2c2706d0"
+    }
+  ],
+  "hash_bound_files": 337,
+  "original_gate_remains_failed": true,
+  "provider_calls_by_auditor": 0,
+  "recipes_schedules_scoring_unchanged": true,
+  "release_file_sha256": "3f39a24f6922931a6d0bf00489f0c3ff8005b39039c05cecdb83d524f8c1b198",
+  "remaining_attempts": 3987,
+  "remaining_campaign_usd": "99.99181574",
+  "run_directory_absent": true,
+  "run_id": "induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4",
+  "tests": {
+    "command": ".venv-induction-v3/bin/python -B -m pytest -p no:cacheprovider tests/induction_v3/test_continuation.py tests/induction_v3/test_continuation_science.py -q",
+    "chunk_id": "e3b128",
+    "wall_time_seconds": 3.077986541,
+    "exit_code": 0,
+    "original_token_count": 25,
+    "output": "..................                                                       [100%]\n18 passed in 2.54s\n",
+    "test_cases": 18,
+    "new_independent_science_cases": 15,
+    "original_delta_cases": 3,
+    "episode_recorder_wrapper_executions": 92,
+    "actual_provider_calls": 0,
+    "generated_task_code_executions": 0,
+    "description": "Actual run_dyad wrapper/config/history exercised with pure episode recorder across4recipes×2contexts. Full pinned episode mechanics were audited separately, not re-proven by this recorder."
+  },
+  "exact_release_proof": {
+    "command": ".venv-induction-v3/bin/python -B - < script",
+    "script": "import json,hashlib\nfrom decimal import Decimal\nfrom pathlib import Path\nfrom experiments.induction_v3.continuation import select_condition\nfrom experiments.induction_v3.diagnostic import remaining_limits\nroot=Path('.');path=root/'release/induction-v3/continuation.json'\nrelease=json.loads(path.read_text());plain=dict(release);expected=plain.pop('release_hash')\ncanonical=lambda v:json.dumps(v,sort_keys=True,ensure_ascii=False,separators=(',',':')).encode()\nassert expected=='e7b5052a3cb9e1b00cda86e6dc31585a2fa48f6a97dfd6c3bb09b266b8c0c8c2'\nassert hashlib.sha256(canonical(plain)).hexdigest()==expected\nfor name,digest in release['source_inventory'].items():\n    p=root/name\n    assert not p.is_symlink() and hashlib.sha256(p.read_bytes()).hexdigest()==digest,name\noriginal=json.loads((root/'release/induction-v3/campaign.json').read_text())\nfor key in ('recipes','schedules','scoring','sandbox_image'):\n    assert release[key]==original[key],key\nassert release['original_release_hash']==original['release_hash']\ndiag_release=json.loads((root/'release/induction-v3/diagnostic-final.json').read_text())\nassert release['diagnostic_release_hash']==diag_release['release_hash']\ndiag_dir=root/release['diagnostic_run']\ndiag=json.loads((diag_dir/'diagnostic_result.json').read_text())\nassert diag['status']=='completed' and diag['completed']==12 and not diag['unrun']\nassert len(diag['rows'])==12\nbyhash={c['request_hash']:c for c in diag_release['cells']}\nbyid={r['cell_id']:r for r in diag['rows']}\nresponses=list((diag_dir/'responses').glob('*.json'))\nassert len(responses)==12\nfor p in responses:\n    wrapper=json.loads(p.read_text());body=wrapper['body'];cell=byhash[wrapper['request_hash']];row=byid[cell['cell_id']]\n    assert body['status']=='completed' and body['model']=='gpt-5.6-luna'\n    calls=[x for x in body['output'] if x['type']=='function_call']\n    assert len(calls)==1 and calls[0]['name']=='submit_verdict'\n    verdict=json.loads(calls[0]['arguments'])\n    assert verdict['verdict']==cell['expected']==row['actual']\n    assert isinstance(verdict['reasoning'],str) and verdict['reasoning']==row['visible_explanation']\nassert select_condition(diag)==release['capability_condition']=='original'\nassert release['context_treatment'] is None and release['repair_allowed'] is False\nassert all(diag['conditions'][name]['passed'] and diag['conditions'][name]['correct']==6 for name in ('original','schema_clarified'))\nassert release['limits']==remaining_limits(release['prior_v3'],diagnostic=False)\nassert Decimal(release['limits']['campaign_limit_usd'])+Decimal(release['prior_v3']['cost_usd'])==Decimal('100')\nassert release['limits']['max_attempts']+release['prior_v3']['physical_attempts']==4000\nfailed=json.loads((root/original['run_directory']/'capability_result.json').read_text())\nassert failed['passed'] is False and failed['completed']==1\nassert not (root/release['run_directory']).exists()\nfiles=['experiments/induction_v3/continuation.py','tests/induction_v3/test_continuation.py','tests/induction_v3/test_continuation_science.py','reports/induction-v3/execution/CONTINUATION_DECISION.md']\nprint(json.dumps({'status':'passed','release_hash':expected,'release_file_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'run_id':release['run_id'],'hash_bound_files':len(release['source_inventory']),'condition':'original','diagnostic_responses_independently_reconstructed':12,'original_gate_remains_failed':True,'recipes_schedules_scoring_unchanged':True,'remaining_campaign_usd':release['limits']['campaign_limit_usd'],'remaining_attempts':release['limits']['max_attempts'],'provider_calls_by_auditor':0,'run_directory_absent':True,'files':[{'path':name,'sha256':hashlib.sha256((root/name).read_bytes()).hexdigest()} for name in files]},sort_keys=True))\n",
+    "stdout": "{\"condition\": \"original\", \"diagnostic_responses_independently_reconstructed\": 12, \"files\": [{\"path\": \"experiments/induction_v3/continuation.py\", \"sha256\": \"893a7dff0291b5e864db845eba9470a02bb733c3ce79efa726f4cfe34c32cd03\"}, {\"path\": \"tests/induction_v3/test_continuation.py\", \"sha256\": \"e33921b858f9cb00886c11a82653e5b2f0e8b446da0343dff807dbcb4e9f8d42\"}, {\"path\": \"tests/induction_v3/test_continuation_science.py\", \"sha256\": \"e0f75b6ff186de7dfa27cd2180ac9921f0cb5206ee047b88ce6e157b8a270dbe\"}, {\"path\": \"reports/induction-v3/execution/CONTINUATION_DECISION.md\", \"sha256\": \"20e8932b4f2087187672cb3302b6afc5cc3cc555eacf721b7541a61d2c2706d0\"}], \"hash_bound_files\": 337, \"original_gate_remains_failed\": true, \"provider_calls_by_auditor\": 0, \"recipes_schedules_scoring_unchanged\": true, \"release_file_sha256\": \"3f39a24f6922931a6d0bf00489f0c3ff8005b39039c05cecdb83d524f8c1b198\", \"release_hash\": \"e7b5052a3cb9e1b00cda86e6dc31585a2fa48f6a97dfd6c3bb09b266b8c0c8c2\", \"remaining_attempts\": 3987, \"remaining_campaign_usd\": \"99.99181574\", \"run_directory_absent\": true, \"run_id\": \"induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4\", \"status\": \"passed\"}\n",
+    "exit_code": 0
+  },
+  "findings": [
+    {
+      "finding": "Selector originally returned after original arm passed before validating the clarified arm's complete cellset.",
+      "status": "resolved_before_release",
+      "resolution": "Validate global12rows and both arms'6unique reviewer/class cells before minimum-intervention selection; independent missing/duplicate/unknown/extra tests pass."
+    }
+  ],
+  "checks": [
+    "Original and clarified diagnostic arms each6/6 verified by reconstructing all12visible tool-call arguments from stored official response artifacts and matching frozen expected labels.",
+    "Minimum-intervention selection yieldsoriginal, exactly as prospective rule states; no schema reminder injected into selectedcontinuation.",
+    "Original failed1casegate remainsfailed, separatefrom12calibrationobservations; no extra capability probes or repeated search in continuation.",
+    "All4recipes, development/validation schedules, scoringdefinitions and sandbox image exactly equal original release.",
+    "Contextfunction retains originalsystem/seed and independent histories; chosen treatment inserted atmostonce peractor perdyad; policies remain original raw/summary warmup then constrainedraw main.",
+    "Code inspection confirms temporary engine.initial_history wrapper restoredfinally afterworkercompletion.",
+    "Validation selection remainsreference→warmup_raw→warmup_summary, bothdevelopmentdyadsqualify; seeded excluded.",
+    "Cumulative13priorcalls/$0.00818426 retained; remaining3987/$99.99181574; separatebudgetaudit verifies accounting enforcement.",
+    "All337inventorybindings and canonicalreleasehash independently match; no run directory existed atcheck."
+  ],
+  "interpretation": [
+    "Both diagnostic arms passing does not demonstrate a clarification effect. The original exactrequest repeat accepting afterthepriorreject shows variation under the same observed request/settings.",
+    "Six passing controls establish limited prospective pilot eligibility; do not call model reliably capable or reinterpretpriorfailure.",
+    "Capability calibration remainsreviewer-only and abbreviated; transfer to actualown-task/full-historydyads is an inference.",
+    "Selectedoriginal context keeps prompt unchanged; existing transport/isolation/runtime/schedule deviations and exploratoryclaim remain.",
+    "No pooledV2finding, seededspontaneityclaim, causalpeerinfluenceclaim, repairauthorization or populationprevalence estimate follows."
+  ],
+  "postrun_obligations": [
+    "Retain allscheduled andincomplete trajectories withdenominators.",
+    "Independently annotate allonset-positive transcripts and reportagreement/actionseparately.",
+    "Classify anymissingoutputs asunknown/partial ratherthannegativefindings.",
+    "Keep firstgate anddiagnostic observedoutcomes separately visible in finalreport."
+  ]
+}

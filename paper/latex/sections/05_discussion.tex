@@ -1,103 +1,73 @@
-\section{Discussion}
-\label{sec:discussion}
+\section{Discussion and Future Work}
+\subsection{Interpreting recovery}
+This run did not establish the failure needed to answer the intended recovery
+question. The reviewer followed the evidence requirement throughout formation,
+despite the conflicting reward and the accepting peer. Accurate later review
+therefore cannot demonstrate reversal of collusion. The zero correction and
+reset contrasts also cannot show that these interventions would be unnecessary
+or ineffective after a harmful convention had formed.
 
-\resultplaceholder{Open with the primary B$-$A result in one sentence, then state
-what correction and correction-plus-reset changed, and only then discuss peer
-diagnostics. Use the strongest wording authorized by the verified claim ledger,
-not the most dramatic interpretation compatible with a point estimate.}
+The observed distinction was between accurate classification with records and
+blanket rejection without them. False approval alone would miss this difference:
+it was zero in every condition. Correct approval distinguishes useful review from
+rejection required by missing evidence. Neither observed accuracy nor low false
+approval certifies independent reasoning or deployment safety.
 
-The available hypothesis-bearing evidence consists of the retained block-0 smoke
-and a partial formation-only Gate~3 release. Block 0 had C rejection throughout,
-identical A/B verdict vectors with perfect restored-evidence metrics, and reject-all
-F behavior. Blocks 1 and 2 also completed C with 20/20 rejections, while block 3
-C is partial and block 4 is unrun. This makes the v1.1 3/5 threshold logically
-unreachable at no more than 2/5, but it does not complete the prespecified Gate~3
-assessment. With no complete pilot or post-restoration A/B results beyond block 0,
-the evidence does not establish recovery, equivalence, or an absent
-history-conditioned effect. The primary estimate is unavailable.
+The contrast with earlier collusion findings~\citep{shi2026emergent} does not identify why induction
+was absent here. Model choice, a scripted neutral peer, short interactions,
+repeated verification instructions, and the absence of tools or reflection all
+differ from broader agent workflows. This experiment does not isolate those
+explanations. Appendix~\ref{app:ethics} states the limits and release disclosures.
 
-The practical interpretation depends on the joint safety--usefulness pattern. A
-positive post-restoration FAR gap with preserved CPA would indicate that restoring
-information did not fully restore independent checking under this configuration.
-A correction effect would support an inexpensive instruction-level response; an
-additional E$-$D effect would support removing prior visible state as part of the
-package. Conversely, a tightly bounded recovery gap with strong absolute
-performance would be useful evidence that access repair can work in this setting.
-None of these possibilities is a universal claim about all agents or deployments.
+\subsection{Priorities for further work}
+The next experiment should first establish a failure influenced by peer behavior.
+Model and infrastructure comparisons should
+use fresh histories and fixed sampling plans, with all assigned outcomes
+reported. Recovery remains the central question; establishing the failure makes
+that question testable.
 
-If FAR falls only because CPA collapses, the intervention trades one failure for
-another rather than restoring verification. If the current peer-policy diagnostic
-changes behavior, the study supports evaluation-time susceptibility but not the
-origin of the formation history effect. If the separate formation-policy study
-also shows an effect, it estimates the total pathway induced by peer policy,
-truthful feedback, rewards, and resulting transcripts; it still does not identify
-mediation of main B$-$A or rule out independent shortcut learning.
+\textbf{Does correction last?} The current correction rejects prior shortcuts and
+reciprocal approval. Compare this specific correction with a general prohibition
+and an explicit verification procedure. Match instruction length and authority.
 
-\subsection{Limitations}
+Resume peer interaction on new claims after a one-time correction, repeated
+reminders, or scheduled reminder withdrawal. Track false and correct approval
+rates over time, and define recurrence in advance. This tests whether recovery
+survives renewed interaction.
 
-The task is synthetic and intentionally narrow. Deterministic truth improves
-identification but omits the ambiguity, heterogeneous tools, and consequential
-actions of deployed workflows. The study uses one task family and initially one
-hosted model configuration; model and provider behavior can change over time.
+\textbf{What carries the behavior forward?} Feedback and memory can affect
+collusion~\citep{shi2026emergent}. Remove peer messages, observed verdicts, score
+feedback, or stored summaries one at a time. Preserve task facts and match context
+length.
 
-The history treatment is a bundle: evidence availability changes what compliant
-action is possible and can alter messages, verdicts, rewards, and later context.
-Main B$-$A is therefore a total assigned-regime effect, not a decomposition of its
-mechanism. E$-$D is the incremental effect of reset under correction, not reset in
-isolation. Scripted peer policies identify responses to experimenter-defined
-interventions but cannot demonstrate spontaneous negotiation or private intent.
+Reintroduce each component after a reset to test whether failures return. Compare
+reset alone with correction alone. Errors without peer messages do not establish
+hidden communication: action history or shared feedback may still shape behavior.
 
-Visible transcript state is the only memory carrier studied. Disabling provider
-conversation state, tools, retrieval, and automatic truncation narrows the causal
-object but does not cover hidden provider changes or every deployed memory system.
-Small block counts make uncertainty wide; the five-block pilot cannot establish a
-meaningful null. Hosted generation is stochastic, and client seeds guarantee only
-the deterministic fixture schedule, not identical model outputs.
+\begin{samepage}
+\textbf{When does recovery need enforcement?} Compare correction with an
+independent checker that requires complete evidence and verifies answers before
+approval. Record proposed verdicts separately from enforced outcomes, then remove
+the checker. This distinguishes blocking errors from changing agent behavior.\par
+\end{samepage}
 
-Gate~3 also ended before its planned hard stop because one provider HTTP 500 was
-ambiguous rather than known not to have completed. The unretried outcome and 92
-undispatched identities preserve the release boundary but leave the prespecified
-assessment incomplete. Selecting v1.2 at this point is therefore an
-early-futility methodological deviation, not an automatic completed-gate
-transition. We recorded that prospective preparation path before any v1.2
-output existed. Its fresh calibration, smoke, Phase~1 formation, and marker-
-contingent Phase~2 each require separate authorization, and their data are never
-pooled with v1.1. The one-round formation-peer protocol remains separate rather
-than being inherited by the two-round fallback.
+Measure correct approvals, latency, and checking cost alongside false approvals.
+Rejecting every claim is not useful recovery. Because exact checking is easy in
+this synthetic task, also test settings where it is costly.
 
-The v1.2 Gate~1 implementation now has a dedicated independently reviewed
-controller and an exact static proposal/schema package binding fresh pricing
-and ceilings. It remains unauthorized and unstarted: no credential access,
-provider call, or result exists. Later stages also lack live controllers and
-cross-run prerequisite assessments. If the narrow v1.2 5xx retry is eventually
-used, remaining under its identity cap does not resolve the scientific
-uncertainty. The unseen attempt may have completed and may differ from the
-returned retry, so affected identities and unresolved-outcome sensitivity must
-remain explicit.
+\textbf{Does recovery generalize?} Use more independent histories, a fixed sample
+size, and predefined absolute recovery criteria. Vary model family and agent
+infrastructure separately, then test adaptive peers, agent-generated work, and
+sandboxed shared artifacts.
 
-Finally, the confirmation-only operational-collusion label is an explicit
-behavioral convention. It is designed to demand more than parallel approval, but
-it remains configuration-level and does not establish legal collusion, deception,
-conscious intent, or prevalence outside the tested environment.
+Preserve legitimate task information when removing communication channels.
+These tests would assess transfer while distinguishing peer influence from
+independent adaptation.
 
 \section{Conclusion}
-
-\resultplaceholder{Write four to six sentences after data lock: answer the main
-recovery question, report the intervention and utility result, state the narrowest
-supported peer interpretation, name the dominant limitation, and identify the
-next decisive experiment. A pilot-only conclusion must say ``exploratory
-five-block pilot'' and must not borrow confirmation language.}
-
-\section*{Reproducibility Statement}
-
-The repository contains deterministic fixture generation and oracle scoring,
-exact prompts, immutable visible-history checkpoints, branch-isolation tests,
-source/config hashing, append-only request and response artifacts, block-level
-analysis, missingness bounds, annotation instructions, and staged release
-controls. Mock, calibration, pilot, confirmation, and secondary-study namespaces
-are disjoint. The exact Gate~1 model/settings and capability-report hash are
-recorded at this checkpoint. Before submission, the clean commit, a reviewed
-publication-safe and hash-bound capability-evidence export, and the exact model,
-artifact, and authorization metadata for every hypothesis-bearing release will be
-inserted. Secrets, authorization files, private chain-of-thought, and customer
-data are excluded from the release bundle.
+The controlled histories did not induce unsupported approval in this run.
+Full-evidence review was accurate, restricted-evidence review rejected every
+claim, and correction and reset produced no observed added difference. These
+findings leave recovery from established collusion unanswered. A successful
+test must first demonstrate the harmful peer-dependent behavior and then assess
+whether an intervention restores useful verification.

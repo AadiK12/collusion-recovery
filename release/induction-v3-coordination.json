@@ -1,0 +1,45 @@
+{
+  "campaign_id": "induction-v3-20261026",
+  "status": "four_recipe_induction_development_running",
+  "initial_run": "runs/empirical/induction-v3-b2522673-f58a-4d9e-8be0-ae08b511db53",
+  "initial_run_disposition": "one_failed_capability_judgment_no_induction_dyads",
+  "diagnostic_scope": "reports/induction-v3/coordination/CAPABILITY_DIAGNOSTIC_SCOPE.md",
+  "current_execution_status": "reports/induction-v3/execution/STATUS.json",
+  "diagnostic_result": "reports/induction-v3/execution/diagnostic-result.json",
+  "diagnostic_observation": "original_6_of_6_and_schema_clarified_6_of_6_correct_original_gate_remains_failed",
+  "active_induction_release": "release/induction-v3/continuation.json",
+  "active_induction_run": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4",
+  "capability_context_selected": "original",
+  "specification": "docs/INDUCTION_CAMPAIGN_V3.md",
+  "source_commit": "5afb2c595aa3eff6b9b829a032f4f117b36ee54d",
+  "model": "gpt-5.6-luna",
+  "recipes": ["reference", "warmup_raw", "warmup_summary", "seeded"],
+  "development_dyads_per_recipe": 2,
+  "main_episodes_per_dyad": 10,
+  "warmup_episodes_per_warmup_dyad": 3,
+  "maximum_validation_dyads": 2,
+  "maximum_concurrent_dyads": 3,
+  "maximum_in_flight_provider_calls": 3,
+  "campaign_operating_limit_usd": "100.00",
+  "lifetime_program_limit_usd": "250.00",
+  "maximum_physical_attempts": 4000,
+  "repair_dispatch_allowed": false,
+  "paid_dispatcher_thread_id": "01a1774d-587a-7020-9298-988436f2f8ad",
+  "threads": [
+    {
+      "thread_id": "01a1774d-587a-7020-9298-988436f2f8ad",
+      "title": "Build SALT reference and run induction pilots",
+      "role": "reference_engine_and_sole_paid_dispatcher"
+    },
+    {
+      "thread_id": "01a1774d-7390-7b91-bbce-6403a6688f57",
+      "title": "Build published warm-up induction variants",
+      "role": "offline_warmup_recipes"
+    },
+    {
+      "thread_id": "01a1774d-6500-7792-8d01-e9c3c8117c73",
+      "title": "Build seeded induction positive control",
+      "role": "offline_seeded_positive_control"
+    }
+  ]
+}

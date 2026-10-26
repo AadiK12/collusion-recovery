@@ -1,5 +1,7 @@
 # Claim-to-evidence ledger
 
+**Current completed-study evidence:** use [CONTROLLED_RECOVERY_CLAIM_EVIDENCE.md](CONTROLLED_RECOVERY_CLAIM_EVIDENCE.md) for the controlled-history recovery report. The rules, arm meanings, and empty claim rows below are preserved historical material for earlier plans; they do not supply or redefine the completed study's estimates.
+
 Status: **pilot-incomplete template with Gate 1 capability, Gate 2 block-0 smoke, the Gate 3 partial-run boundary, and the prospective v1.2 preparation decision recorded**. This ledger is the gate between analysis artifacts and paper prose. A claim may enter the paper only after its row has immutable evidence, a checked estimator, explicit uncertainty, and an approved wording level. No v1.2 model output, five-block pilot, formal Gate 3 assessment, primary recovery estimate, or confirmation claim is populated.
 
 ## Non-negotiable rules

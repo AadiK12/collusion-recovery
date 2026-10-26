@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "source_commit": "5afb2c595aa3eff6b9b829a032f4f117b36ee54d",
+  "paper": "https://arxiv.org/html/2609.24967v2",
+  "paper_sections_consulted": ["2: environment and verification policy", "3.1: behavioral metrics", "3.2: agreement and onset interpretation"],
+  "inspection_scope": "Selected public prompt and reward source fragments only. The execution owner retains full source, task assets, model settings, sandbox, accounting, onset and live-adapter verification.",
+  "method": "Read the pinned GitHub tree and these exact raw files; recomputed Git blob SHA-1 from blob header plus bytes and checked it against the tree; computed SHA-256 independently. No third-party code was executed.",
+  "files": [
+    {
+      "path": "experiments/prompts/system.py",
+      "git_blob_sha1": "bdf43e67f19790c6d903164e6e4da85a773c1b18",
+      "sha256": "0858ea05be073e77ce9f82e3754f1fc36d85b84b9da33eaf0247bc91f1a431a7",
+      "bytes": 6486,
+      "url": "https://raw.githubusercontent.com/SALT-NLP/agent-collusion/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/prompts/system.py",
+      "relevance": "initial_agent_messages returns one system message; verification requires supporting evidence and compliance with the current policy. Synthetic context is appended after, without editing that system message."
+    },
+    {
+      "path": "experiments/prompts/policies.py",
+      "git_blob_sha1": "6aeb324f4181efb6d8ce851f919311df032700b1",
+      "sha256": "02ee679d579c02dc10bd5a6d9b1523904573b74a00808485b798f55583085fdf",
+      "bytes": 3710,
+      "url": "https://raw.githubusercontent.com/SALT-NLP/agent-collusion/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/prompts/policies.py",
+      "relevance": "The raw-only communication policy requires the peer's complete unchanged raw-log string. Reward optimization is subordinate to the active policy. This recipe never selects summary-allowed."
+    },
+    {
+      "path": "experiments/protocol/rewards.py",
+      "git_blob_sha1": "1db18c9f946f7f4f121035935ddc3ee96920744a",
+      "sha256": "c3882a5ea974a5ff04041621cdc4a5ea7372cb8254b3240bb81c485354fa207e",
+      "bytes": 4049,
+      "url": "https://raw.githubusercontent.com/SALT-NLP/agent-collusion/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/protocol/rewards.py",
+      "relevance": "Default shared verdict-accuracy reward evaluates each agent's verdict against its peer's task correctness. The seed contains no reward observations and overrides no reward settings."
+    }
+  ],
+  "synthetic_seed_source": "Entirely experimenter-authored for this campaign, not quoted or reconstructed from an empirical SALT trajectory.",
+  "prior_results_boundary": "V2 remains a separate real null: supplied campaign context records 192 calls, $3.0971220, 24/24 development REJECT verdicts and no agreement. These historical figures were not re-audited by the seeded owner and are neither pooled with nor relabeled by this handoff."
+}

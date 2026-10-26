@@ -1,0 +1,249 @@
+{
+  "schema_version": 1,
+  "status": "ready",
+  "scope": "offline_recipe_preparation_complete",
+  "campaign_id": "induction-v3-20261026",
+  "owner": "warmup",
+  "created_at_utc": "2026-10-26 08:35:10 UTC",
+  "recipe_ids": [
+    "warmup_raw",
+    "warmup_summary"
+  ],
+  "recipes": [
+    {
+      "recipe_id": "warmup_raw",
+      "path": "experiments/induction_v3/variants/warmup/warmup_raw.json",
+      "sha256": "c38541300687a1f6d2acc0953dc77ad429814b430063abc7bc28f557b2aa7b09",
+      "development_dyads": 2,
+      "warmup_episodes_per_dyad": 3,
+      "main_episodes_per_dyad": 10
+    },
+    {
+      "recipe_id": "warmup_summary",
+      "path": "experiments/induction_v3/variants/warmup/warmup_summary.json",
+      "sha256": "dbf41584889525238daacdba8a470455b4aff1fa25f2ab49a8d11e323ba1abb8",
+      "development_dyads": 2,
+      "warmup_episodes_per_dyad": 3,
+      "main_episodes_per_dyad": 10
+    }
+  ],
+  "source_commit": "5afb2c595aa3eff6b9b829a032f4f117b36ee54d",
+  "source_citations": [
+    "https://arxiv.org/html/2609.24967v2#A8.SS2",
+    "https://arxiv.org/html/2609.24967v2#S4.SS2",
+    "https://arxiv.org/html/2609.24967v2#A2.SS1",
+    "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/README.md#L89-L105",
+    "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/prompts/policies.py#L13-L43",
+    "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/runner.py#L583-L716"
+  ],
+  "files": [
+    {
+      "path": "experiments/induction_v3/variants/warmup/contract.py",
+      "sha256": "139e1b0ee79b368c4bac58e4d52bd6a9783d55c0c1db2c6ccfb9c556de6771a3",
+      "bytes": 4592
+    },
+    {
+      "path": "experiments/induction_v3/variants/warmup/warmup_raw.json",
+      "sha256": "c38541300687a1f6d2acc0953dc77ad429814b430063abc7bc28f557b2aa7b09",
+      "bytes": 1971
+    },
+    {
+      "path": "experiments/induction_v3/variants/warmup/warmup_summary.json",
+      "sha256": "dbf41584889525238daacdba8a470455b4aff1fa25f2ab49a8d11e323ba1abb8",
+      "bytes": 1976
+    },
+    {
+      "path": "reports/induction-v3/warmup/CONTRACT.json",
+      "sha256": "5a28e6d8a2a73a3125eb1f64d29563a8a2c71a2bdc7f1014bc5703e3f3e2c7d3",
+      "bytes": 5011
+    },
+    {
+      "path": "reports/induction-v3/warmup/INTERFACE_NOTE.md",
+      "sha256": "34b07d066c6a77eef70e3a7c3ccb1bc17867b7560671491123f418e70dbab5d9",
+      "bytes": 1041
+    },
+    {
+      "path": "reports/induction-v3/warmup/SOURCE_INDEX.json",
+      "sha256": "70b91ddf20832bb5554d7c0081910cfde3abf44a2eb1a5271d9777a29d0ebc28",
+      "bytes": 4835
+    },
+    {
+      "path": "reports/induction-v3/warmup/SOURCE_MAPPING.md",
+      "sha256": "7cf879f65cbcde7caa2ceacf42ebf9ec3076bbcb41b9d4b27e7ed50f7bc63ff6",
+      "bytes": 8734
+    },
+    {
+      "path": "reports/induction-v3/warmup/SYNTHETIC_FIXTURE.json",
+      "sha256": "a5b577fc627aa59b181a8a9495e053a0e0b88bf3d941358e2bb1d84a588526a2",
+      "bytes": 1805
+    },
+    {
+      "path": "reports/induction-v3/warmup/TEST_EVIDENCE.json",
+      "sha256": "5273c6f2e55f654743cca3974515c5f98a02634a553875ced5817082a05c6182",
+      "bytes": 3119
+    },
+    {
+      "path": "tests/induction_v3/test_warmup_contract.py",
+      "sha256": "c09738d6eedf9d3254fb2355ec19718647e34f2c0c6328f5e5df2f912541b455",
+      "bytes": 12453
+    }
+  ],
+  "manifest_hash_note": "READY.json excludes its own hash; the execution release must hash this complete manifest when freezing the handoff.",
+  "source_files_verified": [
+    {
+      "path": "vendor/salt_v3/README.md",
+      "git_blob_sha1": "438f814986e259d02b8440e197290ca1b04b0176",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/README.md",
+      "sha256": "3c53f7b648aa4944d796b5e51f082c75d33eb389a3fb4a61807358a1eab9e004"
+    },
+    {
+      "path": "vendor/salt_v3/LICENSE",
+      "git_blob_sha1": "abcd58fe0e09bcd8e887141be41c83ef907a45db",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/LICENSE",
+      "sha256": "ca802461525577bcacfca6cc9d8e6701b7c59e45655ec11e02b6d54613af2971"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/episode_schedules.py",
+      "git_blob_sha1": "34e99fb8aa2ba3ae00cfb669ce83453d0b369149",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/episode_schedules.py",
+      "sha256": "ad58b36834a18566d26cdf4e819ca2f97f18bc3b4d3e20a2fe12e613ff9319e7"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/prompts/policies.py",
+      "git_blob_sha1": "6aeb324f4181efb6d8ce851f919311df032700b1",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/prompts/policies.py",
+      "sha256": "02ee679d579c02dc10bd5a6d9b1523904573b74a00808485b798f55583085fdf"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/prompts/system.py",
+      "git_blob_sha1": "bdf43e67f19790c6d903164e6e4da85a773c1b18",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/prompts/system.py",
+      "sha256": "0858ea05be073e77ce9f82e3754f1fc36d85b84b9da33eaf0247bc91f1a431a7"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/prompts/tasks.py",
+      "git_blob_sha1": "242f57e2e38e3ed60d667ceafd7b5d48c60b1e90",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/prompts/tasks.py",
+      "sha256": "5cb755f7d9e5b95b29629b1327b95c252d06a2a618dfd8cc7c682bc3a0ba755e"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/memory/cross_episode.py",
+      "git_blob_sha1": "24fc84f757bd9f78ea412ef0f7ec8021e3a6a300",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/memory/cross_episode.py",
+      "sha256": "96bfd844abbc46634785a76a96bb6f651c24bc81db48b69704aa703673cc61f7"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/memory/messages.py",
+      "git_blob_sha1": "13fd95a6162bc56e0ea6eaf34f355ca2b71150db",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/memory/messages.py",
+      "sha256": "a302dd02cc77c07ff3a80fae9ce09a6886ffffaea576a908f5f5805b8476296e"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/runner.py",
+      "git_blob_sha1": "8e8c4a2f0d04ac498a1d08aab6ef4b6bd631ec53",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/runner.py",
+      "sha256": "356c525bb888e29ff42c6d7e251bcfbc309ee70aa069e79917ad5e2998e33591"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/episode_runner.py",
+      "git_blob_sha1": "f4972f10e15e5a5d7a1efa30e7c7fac7be3f65ed",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/episode_runner.py",
+      "sha256": "146b56782620b8b60f45138626d75424076446b009e5d54751295d4167b6eeca"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/models.py",
+      "git_blob_sha1": "776ca067a63efeae9730993f0621f1cfeb64d295",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/models.py",
+      "sha256": "eaf9ffb654210a6b7b29b3ab8ca87e40de7e45a0f2a3536be5a566ec0ef8a893"
+    },
+    {
+      "path": "vendor/salt_v3/experiments/protocol/messaging.py",
+      "git_blob_sha1": "6225c5e1ecb0ce8c12ee096f1a7e8c695ff3f0eb",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/experiments/protocol/messaging.py",
+      "sha256": "ed01f5c54802443bd1daba8d210fabd176fad0c924840c07f2b6820ed092a71f"
+    },
+    {
+      "path": "vendor/salt_v3/task/task_sequences_50x10/rep001_sampled_manifest.json",
+      "git_blob_sha1": "19174f27ae686231a7229ee85740d97e282229b6",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/task/task_sequences_50x10/rep001_sampled_manifest.json",
+      "sha256": "bd924c571792d2b267faec4eb35fdf771b5055dff420d7bd73ce5cb9945089d3"
+    },
+    {
+      "path": "vendor/salt_v3/task/task_sequences_50x10/rep002_sampled_manifest.json",
+      "git_blob_sha1": "f4f04da2bbcf6fc95d4bdcb9a07a85d5da64b9a4",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/task/task_sequences_50x10/rep002_sampled_manifest.json",
+      "sha256": "c5977a7baeafebb4e1dcb6d61a42bcec4ec9670fd593e9afc3e725ab349cc80b"
+    },
+    {
+      "path": "vendor/salt_v3/task/task_sequences_50x3+50x10/rep001_sampled_manifest.json",
+      "git_blob_sha1": "6521335c86fff351c2be58b1737e68d1bc5a722c",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/task/task_sequences_50x3+50x10/rep001_sampled_manifest.json",
+      "sha256": "e30b1a9a3abb3fa69836106588e7de97e94bd0215d26bc800a95524757c692c4"
+    },
+    {
+      "path": "vendor/salt_v3/task/task_sequences_50x3+50x10/rep002_sampled_manifest.json",
+      "git_blob_sha1": "e020cfa5019a9d72b53ad9bdbf1b9136282733c7",
+      "url": "https://github.com/SALT-NLP/agent-collusion/blob/5afb2c595aa3eff6b9b829a032f4f117b36ee54d/task/task_sequences_50x3+50x10/rep002_sampled_manifest.json",
+      "sha256": "f32285b4bf491b1ca612d2022562f8eae7ef0ecc2c6715953e2c1f959d810fc3"
+    }
+  ],
+  "interface_observed": {
+    "path": "reports/induction-v3/execution/INTERFACE.md",
+    "sha256": "98777e3c320e662b1e20ad128874ba67a05484e5cb6568d9138c3f504247e450"
+  },
+  "tests": {
+    "command": "python3 -B -m unittest discover -s tests/induction_v3 -p 'test_warmup*.py' -v",
+    "exit_code": 0,
+    "tests_run": 9,
+    "tests_passed": 9,
+    "evidence_path": "reports/induction-v3/warmup/TEST_EVIDENCE.json",
+    "evidence_sha256": "5273c6f2e55f654743cca3974515c5f98a02634a553875ced5817082a05c6182",
+    "independent_review": "pass",
+    "adapter_smoke": "Both recipes accepted by the observed execution schedule validator; source policy/throttle mappings preserved. No live engine was imported."
+  },
+  "transition_assertions": {
+    "original_system_preserved": true,
+    "current_main_policy": "raw_only",
+    "main_message_char_limit": 200,
+    "full_role_labelled_history_retained": true,
+    "historical_summary_policy_retained_as_history": true,
+    "supported_opaque_replay_fields_preserved": true,
+    "fixtures_are_synthetic": true
+  },
+  "deviations": [
+    {
+      "id": "pilot_size",
+      "description": "Two development dyads per recipe instead of the paper's 50 trajectories."
+    },
+    {
+      "id": "warmup_model_extension",
+      "description": "Published warm-up ablations used two Gemini models; this applies their mechanism to the campaign reference's gpt-5.6-luna/high."
+    },
+    {
+      "id": "runtime_adaptation",
+      "description": "Execution owner must declare endpoint, sandbox, decoding, retry and context-overflow behavior in the frozen release. Source evicts oldest completed episodes on context overflow; stopping instead is a deviation. No engine or provider fidelity is established by these offline tests."
+    }
+  ],
+  "unresolved_recipe_incompatibilities": [],
+  "resolved_interface_findings": [
+    {
+      "finding": "Initial provisional interface uncapped summary warm-up",
+      "resolution": "Execution interface now correctly specifies 200 characters. warmup_summary.json has always retained the published cap."
+    }
+  ],
+  "interpretation_limits_path": "reports/induction-v3/warmup/CONTRACT.json",
+  "measurements": "Use the reference common frozen scorer; exclude three warm-up episodes from main onset/feasibility/accuracy denominators and report warm-up outcomes separately. Preserve incomplete scheduled trajectories.",
+  "synthetic_fixture_path": "reports/induction-v3/warmup/SYNTHETIC_FIXTURE.json",
+  "live": {
+    "provider_calls": 0,
+    "model_route_checks": 0,
+    "credentials_loaded": false,
+    "experimental_outcomes": 0,
+    "spend_usd": "0",
+    "dispatch_owner": "reference/execution chat",
+    "repair_experiment_authorized_by_handoff": false
+  },
+  "blocking_issues": [],
+  "execution_release_prerequisites": "Dispatcher validates hashes and adapter; freezes matched task schedules, model/settings and common metrics; passes source, capability, sandbox, accounting and concurrency gates under the existing shared budget before calls. This readiness artifact is not a standalone execution release.",
+  "completion": "Warm-up recipe ownership finished; no indefinite polling or live dispatch from this chat."
+}

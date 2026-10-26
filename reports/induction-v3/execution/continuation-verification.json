@@ -1,0 +1,45 @@
+{
+  "schema": "induction_v3_accounting_v1",
+  "run_id": "induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4",
+  "journal_valid": true,
+  "manifest_consistent": true,
+  "event_count": 923,
+  "source_inventory_verified": true,
+  "historical_inventory_rechecked_under_lock": true,
+  "requires_restart_stop": false,
+  "stopped": true,
+  "ledger": {
+    "consumed": {
+      "requests": 454,
+      "input_tokens": 12309787,
+      "output_tokens": 87831,
+      "cost_usd": "1.09137850"
+    },
+    "reserved": {
+      "requests": 1,
+      "input_tokens": 1050000,
+      "output_tokens": 64000,
+      "cost_usd": "0.6402"
+    },
+    "physical_attempts": 455,
+    "in_flight": 0,
+    "campaign_exposure_usd": "1.73157850",
+    "historical_cost_usd": "47.41522086",
+    "lifetime_exposure_usd": "49.14679936",
+    "stop_reason": "development_trajectory_stopped",
+    "pricing": {
+      "model": "gpt-5.6-luna",
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+      "input_usd_per_million": "0.20",
+      "cached_input_usd_per_million": "0.02",
+      "cache_write_input_usd_per_million": "0.25",
+      "output_usd_per_million": "1.20",
+      "long_context_threshold_input_tokens": 272000,
+      "long_context_input_multiplier": "2",
+      "long_context_output_multiplier": "1.5",
+      "reasoning_included_in_output_tokens": true,
+      "missing_cache_write_detail": "assume_all_non_cached_input_is_cache_write",
+      "cost_basis": "estimate_from_provider_usage_and_frozen_list_prices"
+    }
+  }
+}

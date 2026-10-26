@@ -1,0 +1,117 @@
+{
+  "capability_fixture_check": "All six cases contain actual 5-passed pytest evidence; missing-raw cases omit the raw-log string from provider messages; zero paid calls.",
+  "credentials_loaded": false,
+  "findings": [
+    {
+      "description": "Concurrent identical request hashes reused a fixed atomic-write temporary path.",
+      "id": "SEC-001",
+      "priority": 1,
+      "status": "fixed_and_verified",
+      "verification": "60 same-path writes with 3 workers; valid artifact and no temporary residue"
+    },
+    {
+      "description": "Variant READY validation does not bind each path to its paired hash and ignores listed nonrecipe evidence files.",
+      "id": "SEC-002",
+      "priority": 1,
+      "status": "fixed_and_verified",
+      "verification": "Independent malformed-handoff checks reject mismatched paired hashes and missing nonrecipe evidence; correct exact pairs accepted. All bindings plus READY added to frozen source inventory."
+    },
+    {
+      "description": "A false capability result returns before comparison and verify_run artifacts are published.",
+      "id": "SEC-003",
+      "priority": 2,
+      "status": "fixed_and_verified",
+      "verification": "Real zero-call ReservationJournal in temporary root with mocked provider/sandbox: blocked CLI path publishes comparison and verification artifacts; two scheduled dyads remain not_started."
+    },
+    {
+      "description": "Capability gate counts matching verdict despite missing or wrong-type required reasoning field.",
+      "id": "SEC-004",
+      "priority": 2,
+      "status": "fixed_and_verified",
+      "verification": "Missing or nonstring reasoning fails after one mocked response; six schema-valid matching responses pass."
+    }
+  ],
+  "notes": "Scoped security and integration review passed for exact final campaign release/hash and source_hashes. No provider calls or credentials used by reviewer. Final combined audit remains execution-owner responsibility.",
+  "open_blocking_findings": [],
+  "post_parent_review_verification": {
+    "credentials_loaded": false,
+    "ordered_provider_replay": "Exact output item sequence preserved across 22 actual pinned-engine canned turns including persisted private reflections.",
+    "provider_calls": 0,
+    "queue_order": "Source inspected: development schedules outer, recipes inner; at most 3 dyads/calls unchanged.",
+    "reflection_tool_call": "Accounted stop prevents orphan tool call replay; focused transport suite 10 passed.",
+    "validation_failure": "Real zero-call journal integration proves stop before sibling exit, next dispatch rejected, and partial verified artifacts."
+  },
+  "provider_calls": 0,
+  "release_binding": {
+    "clearance_scope": "security review; separate scientific/accounting release audit remains execution-owner responsibility",
+    "frozen_files_verified": 292,
+    "handoff_file_counts": {
+      "seeded": 11,
+      "warmup": 26
+    },
+    "paid_launch_cleared": true,
+    "path": "release/induction-v3/campaign.json",
+    "recipe_ids": [
+      "reference",
+      "warmup_raw",
+      "warmup_summary",
+      "seeded"
+    ],
+    "release_file_sha256": "44335ab1d031ec9592dbc6854c41ba2fc7ba9d82c000429abfc34af4f7d4fa9e",
+    "release_hash": "c394415eb66b51134a3f82d47a37ddee1884e3fcb6099251d3b4da58d486ea39",
+    "run_existed_at_review": false,
+    "run_id": "induction-v3-b2522673-f58a-4d9e-8be0-ae08b511db53",
+    "runtime_versions_verified": {
+      "httpx": "0.28.1",
+      "litellm": "1.94.1",
+      "openai": "2.52.0",
+      "pytest": "9.1.1",
+      "python": "3.13.7",
+      "python-dotenv": "1.2.2"
+    },
+    "source_drift": [],
+    "status": "passed_exact_release_security_review"
+  },
+  "release_hash": "c394415eb66b51134a3f82d47a37ddee1884e3fcb6099251d3b4da58d486ea39",
+  "release_integration_still_required": false,
+  "reviewed_at_utc": "2026-10-26T08:51:17.554900+00:00",
+  "sandbox_tests_failed": 0,
+  "sandbox_tests_passed": 22,
+  "scope": [
+    "cli.py",
+    "capability.py",
+    "engine.py",
+    "transport.py",
+    "upstream.py",
+    "common.py",
+    "pinned tool dispatch and path resolution",
+    "Docker task runner integration"
+  ],
+  "source_hashes": {
+    "experiments/induction_v3/capability.py": "f1fc71d42f51b475e8333f6ee42f5a10f75c90d12903f0a5548a57e0f5c8113f",
+    "experiments/induction_v3/cli.py": "5678f08ee081ee8ac05f13def23d60c8c7a669871a3e5946e1c77a5ac07a1737",
+    "experiments/induction_v3/common.py": "1975241fe02a4389c6c4fc3555aabe7f660c2afb57fd86ade9466a7fa48208e8",
+    "experiments/induction_v3/engine.py": "894c9cacff6fc3defbc9ca39a5c1ebe9d43dda4b83d1762f1b129e778c9e9312",
+    "experiments/induction_v3/isolation.py": "4d0427eec82f53a3917e2ebcf7d0debb51808d6a432e018c5b57846e6eb07ad4",
+    "experiments/induction_v3/transport.py": "fa28b9d47af83730ab518db28c56bcfac7945592d47087cf6de8a0bb9c7b4bfd",
+    "experiments/induction_v3/upstream.py": "fd422cadd0556c992ead5db473e51e55e38aec4c8971561f2b8aa1b5a0997d24",
+    "release/induction-v3/sandbox/Dockerfile": "a574f41e1d83a136e4b0a9792e811a953479e54cde8f2e660d646ae8f7c6374c",
+    "release/induction-v3/sandbox/runner.py": "f8e5704444963200f194894776d5e26f82e4198345851402658786c5b75c8217",
+    "tests/induction_v3/test_isolation.py": "0c3bfa0c164cfa17b4a41da9ef47b199ffd931be83e54abe1a00c9ca1b79c333",
+    "tests/induction_v3/test_transport.py": "cbd41c7c7f6e8fc6fa5c774301f7c5ec75bfd4d8912d0bd99045dc208f4e0900"
+  },
+  "status": "passed_scoped_security_review",
+  "superseded_release_checks": [
+    {
+      "drifted_paths": [
+        "reports/induction-v3/seeded/READY.json"
+      ],
+      "paid_launch_cleared": false,
+      "path": "release/induction-v3/frozen.json",
+      "release_hash": "8cb7e0f2fe71135da6be6ab46b7687921ea37782a942c7348f64e632f1c83143",
+      "run_id": "induction-v3-44902489-8cb6-4cce-afbf-eb8a228cc370",
+      "status": "blocked_source_drift"
+    }
+  ],
+  "upstream_import_connection_attempts": 0
+}

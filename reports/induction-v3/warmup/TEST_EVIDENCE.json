@@ -1,0 +1,55 @@
+{
+  "artifact_kind": "offline_test_evidence",
+  "created_at_utc": "2026-10-26T08:33:57.710010+00:00",
+  "command": "python3 -B -m unittest discover -s tests/induction_v3 -p 'test_warmup*.py' -v",
+  "python_version": "3.13.7",
+  "exit_code": 0,
+  "tests_run": 9,
+  "stdout": "",
+  "stderr": "test_detects_original_interface_summary_cap_error (test_warmup_contract.WarmupContractTests.test_detects_original_interface_summary_cap_error) ... ok\ntest_fixture_histories_are_private_and_dyads_independent (test_warmup_contract.WarmupContractTests.test_fixture_histories_are_private_and_dyads_independent) ... ok\ntest_original_raw_policy_restored_with_full_history_and_replay (test_warmup_contract.WarmupContractTests.test_original_raw_policy_restored_with_full_history_and_replay) ... ok\ntest_pinned_delivery_uses_character_cap_not_truncation (test_warmup_contract.WarmupContractTests.test_pinned_delivery_uses_character_cap_not_truncation) ... ok\ntest_pinned_main_tasks_match_extended_prefix_schedule (test_warmup_contract.WarmupContractTests.test_pinned_main_tasks_match_extended_prefix_schedule) ... ok\ntest_recipe_plans_equal_published_source_spans (test_warmup_contract.WarmupContractTests.test_recipe_plans_equal_published_source_spans) ... ok\ntest_rejects_policy_leak_seed_or_release_overrides (test_warmup_contract.WarmupContractTests.test_rejects_policy_leak_seed_or_release_overrides) ... ok\ntest_transition_rejects_history_loss_rewrite_role_change_or_new_system (test_warmup_contract.WarmupContractTests.test_transition_rejects_history_loss_rewrite_role_change_or_new_system) ... ok\ntest_two_independent_dyads_and_main_only_denominator (test_warmup_contract.WarmupContractTests.test_two_independent_dyads_and_main_only_denominator) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 0.012s\n\nOK\n",
+  "provider_calls": 0,
+  "credential_access": false,
+  "empirical_outcomes": false,
+  "adapter_smoke": {
+    "scope": "Pure source definitions only; no engine import or execution",
+    "path": "experiments/induction_v3/schedule.py",
+    "sha256": "fa9bcbd3204285fa0a54a2476a8e009be50dc734f601d52184f36760b9828805",
+    "checks": [
+      {
+        "recipe_id": "warmup_raw",
+        "accepted": true,
+        "warmup": {
+          "verdict_policy": "raw-only",
+          "throttled": false,
+          "char_limit": 200
+        },
+        "main": {
+          "verdict_policy": "raw-only",
+          "throttled": true,
+          "char_limit": 200
+        }
+      },
+      {
+        "recipe_id": "warmup_summary",
+        "accepted": true,
+        "warmup": {
+          "verdict_policy": "summary-allowed",
+          "throttled": true,
+          "char_limit": 200
+        },
+        "main": {
+          "verdict_policy": "raw-only",
+          "throttled": true,
+          "char_limit": 200
+        }
+      }
+    ]
+  },
+  "independent_review": {
+    "status": "pass",
+    "tests_passed": 9,
+    "pinned_remote_source_blobs_verified": 16,
+    "remaining_blockers": [],
+    "resolved_finding": "Historical summary-cap interface mismatch is now marked resolved."
+  }
+}

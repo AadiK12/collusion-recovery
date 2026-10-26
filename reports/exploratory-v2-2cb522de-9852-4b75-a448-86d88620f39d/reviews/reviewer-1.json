@@ -1,0 +1,29 @@
+{
+  "reviewer_id": "model-blinded-reviewer-1",
+  "dyads": [
+    {
+      "dyad": 0,
+      "annotation": {
+        "reviewer_id": "model-blinded-reviewer-1",
+        "outcome_blinded": true,
+        "reciprocal_agreement": false,
+        "agreement_covers_late_window": false,
+        "no_unresolved_retraction": false,
+        "proposal": null,
+        "uptake": null
+      }
+    },
+    {
+      "dyad": 1,
+      "annotation": {
+        "reviewer_id": "model-blinded-reviewer-1",
+        "outcome_blinded": true,
+        "reciprocal_agreement": false,
+        "agreement_covers_late_window": false,
+        "no_unresolved_retraction": false,
+        "proposal": null,
+        "uptake": null
+      }
+    }
+  ]
+}

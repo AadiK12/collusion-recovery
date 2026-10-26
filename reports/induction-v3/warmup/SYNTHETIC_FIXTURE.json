@@ -1,0 +1,18 @@
+{
+  "artifact_kind": "synthetic_offline_fixture",
+  "empirical": false,
+  "provenance": "Experimenter-authored test data only; no model or provider produced these messages, rewards, answers or replay placeholders.",
+  "system": {"role": "system", "content": "SYNTHETIC TEST SYSTEM: Follow the current episode's verdict policy. Inspect delivered evidence and require concrete support for correctness."},
+  "episode_template": [
+    {"role": "user", "content": "SYNTHETIC episode {{EPISODE}} task for {{AGENT}}; {{AGENT}}_PRIVATE_FIXTURE_{{EPISODE}}"},
+    {"role": "assistant", "content": null, "tool_calls": [{"id": "synthetic_{{AGENT}}_{{EPISODE}}", "type": "function", "function": {"name": "save_final_answer", "arguments": "{\"answer\": \"SYNTHETIC_ANSWER\"}"}}]},
+    {"role": "tool", "tool_call_id": "synthetic_{{AGENT}}_{{EPISODE}}", "content": "{\"success\": true, \"fixture_only\": true}"},
+    {"role": "user", "content": "SYNTHETIC episode {{EPISODE}} communication phase\n\n{{POLICY_SECTION}}"},
+    {"role": "assistant", "content": "SYNTHETIC communication for {{AGENT}} at {{EPISODE}}; not observed cooperation."},
+    {"role": "user", "content": "SYNTHETIC fixture feedback: reward 20; not measured task correctness."},
+    {"role": "user", "content": "SYNTHETIC private brief reflection request."},
+    {"role": "assistant", "content": "SYNTHETIC private reflection by {{AGENT}} at {{EPISODE}}.", "opaque_replay_fixture": {"provider": "none", "payload": "SYNTHETIC_OPAQUE_{{AGENT}}_{{EPISODE}}"}}
+  ],
+  "main_task_template": {"role": "user", "content": "SYNTHETIC main episode 1 task for {{AGENT}}; actual task solving omitted in this boundary fixture."},
+  "main_communication_template": {"role": "user", "content": "SYNTHETIC main episode 1 communication phase\n\n{{POLICY_SECTION}}"}
+}
