@@ -840,7 +840,15 @@ _RECONCILIATION_FIELDS = {
 
 
 def _money_text(value: Decimal) -> str:
-    return format(value.quantize(_QUANTUM), "f")
+    # Reconciliation is an accounting boundary, so never round a provider's
+    # exact charge merely to make its text look like the six-decimal program
+    # ceiling.  Keep at least six decimal places for stable legacy artifacts,
+    # while retaining every non-zero digit beyond that precision.
+    whole, separator, fraction = format(value, "f").partition(".")
+    if not separator:
+        fraction = ""
+    fraction = fraction.rstrip("0").ljust(6, "0")
+    return f"{whole}.{fraction}"
 
 
 def _historical_manifest_inventory(
@@ -875,9 +883,26 @@ def _historical_manifest_inventory(
         if stat.S_ISLNK(info.st_mode) or not stat.S_ISREG(info.st_mode):
             raise FormationPeerLiveError("historical empirical manifest is not regular")
         manifest = _read_json(path, "historical empirical manifest")
-        budget = manifest.get("budget")
-        consumed = budget.get("consumed") if isinstance(budget, Mapping) else None
-        reserved = budget.get("reserved") if isinstance(budget, Mapping) else None
+        legacy_budget = manifest.get("budget")
+        current_ledger = manifest.get("ledger")
+        if legacy_budget is not None and current_ledger is not None:
+            if (not isinstance(legacy_budget, Mapping)
+                    or not isinstance(current_ledger, Mapping)
+                    or canonical(legacy_budget) != canonical(current_ledger)):
+                raise FormationPeerLiveError(
+                    "historical empirical manifest has conflicting ledgers"
+                )
+        accounting = (
+            current_ledger if current_ledger is not None else legacy_budget
+        )
+        consumed = (
+            accounting.get("consumed")
+            if isinstance(accounting, Mapping) else None
+        )
+        reserved = (
+            accounting.get("reserved")
+            if isinstance(accounting, Mapping) else None
+        )
         if (manifest.get("empirical") is not True
                 or not isinstance(consumed, Mapping)
                 or not isinstance(reserved, Mapping)):

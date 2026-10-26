@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from decimal import Decimal
 import json
 from pathlib import Path
 import socket
@@ -54,17 +55,79 @@ class ProjectionAndAuthorizationTests(unittest.TestCase):
             "hypothesis_scored_decisions": 340,
             "checkpoints": 10,
         })
-        self.assertEqual(
-            self.reconciliation["historical_program_spend_usd"], "14.549712"
+        historical = Decimal(
+            self.reconciliation["historical_program_spend_usd"]
         )
+        remainder = Decimal(self.proposal["exact_caps"]["max_cost_usd"])
+        self.assertEqual(historical + remainder, live.PROGRAM_CEILING_USD)
         self.assertEqual(
-            self.proposal["exact_caps"]["max_cost_usd"], "235.450288"
+            self.proposal["exact_caps"]["max_cost_usd"],
+            self.reconciliation["verified_program_remainder_usd"],
         )
         self.assertFalse(self.proposal["authorization"]["completion_guaranteed"])
         self.assertTrue(
             self.proposal["authorization"][
                 "conservative_envelope_exceeds_operational_cap"
             ]
+        )
+
+    def test_current_ledger_manifest_preserves_exact_submicrodollar_spend(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            fake_root = Path(temporary) / "repo"
+            fake_runs = fake_root / "runs" / "empirical"
+            legacy = fake_runs / "a-legacy" / "manifest.json"
+            current = fake_runs / "b-current" / "manifest.json"
+            zero_reservation = {
+                "cost_usd": "0",
+                "requests": 0,
+                "input_tokens": 0,
+                "output_tokens": 0,
+            }
+            live._atomic_json(legacy, {
+                "empirical": True,
+                "run_id": "legacy-run",
+                "status": "completed_stage",
+                "budget": {
+                    "consumed": {"cost_usd": "14.549712"},
+                    "reserved": zero_reservation,
+                },
+            })
+            live._atomic_json(current, {
+                "artifact_type": "controlled_peer_recovery_run_manifest_v1",
+                "empirical": True,
+                "run_id": "current-run",
+                "status": "stopped_provider_failure",
+                "ledger": {
+                    "consumed": {"cost_usd": "11.1951037"},
+                    "reserved": zero_reservation,
+                },
+            })
+            held = {"state_hash": "held-for-test"}
+            with (
+                mock.patch.object(live, "ROOT", fake_root),
+                mock.patch.object(live, "RUNS_ROOT", fake_runs),
+                mock.patch.object(
+                    live, "_held_original_extension_state", return_value=held
+                ),
+            ):
+                reconciliation = live.complete_budget_reconciliation(
+                    verified_at=live.PRICING_CONTRACT["reverified_at"]
+                )
+
+        self.assertEqual(
+            [row["consumed_cost_usd"] for row in reconciliation["historical_runs"]],
+            ["14.549712", "11.1951037"],
+        )
+        self.assertEqual(
+            reconciliation["historical_program_spend_usd"], "25.7448157"
+        )
+        self.assertEqual(
+            reconciliation["verified_program_remainder_usd"], "224.2551843"
+        )
+        self.assertEqual(
+            Decimal(reconciliation["historical_program_spend_usd"])
+            + Decimal(reconciliation["verified_program_remainder_usd"]),
+            live.PROGRAM_CEILING_USD,
         )
 
     def _scope_evidence(self):
