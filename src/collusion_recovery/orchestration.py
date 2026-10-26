@@ -133,6 +133,17 @@ V1_2_GATE3_PHASE1_CONTROLLER_ID = "gate3_formation_phase1_v1_2"
 V1_2_GATE3_PHASE1_RUN_ID = "e93c4f9a-5118-446e-8935-4724e164222c"
 V1_2_GATE3_PHASE2_CONTROLLER_ID = "gate3_remaining_phase2_v1_2"
 V1_2_GATE3_PHASE2_RUN_ID = "0bf185b9-ed8e-43b7-a20e-f8014e02f039"
+# Prospective one-release pilot identity.  This binds the complete 1,580-request
+# scientific schedule without making it executable: the generic executor below
+# rejects this run until a dedicated master controller exists and is reviewed.
+V1_2_UNIFIED_PILOT_CONTROLLER_ID = "unified_pilot_v1_2"
+V1_2_UNIFIED_PILOT_RUN_ID = "8c2d9470-8a24-4ee6-98ce-0aeabc439fe0"
+V1_2_UNIFIED_PILOT_REQUEST_ORDER_HASH = (
+    "78a89d8f541d3c00bd8411a8ac23f612a503ebe12c663e4d80cdbac42fec2757"
+)
+V1_2_UNIFIED_PILOT_STAGE_PARTITION_HASH = (
+    "69632142a0f8c2d143914b09cc2f4b5dd05d208b0f258fbb00b033a2880a15cc"
+)
 # This capability is fake-only for the exact Gate 1 release.  It exists solely
 # so lower-level offline retry tests can exercise the generic engine.  The live
 # path has no importable capability: it is accepted only from the actual loaded
@@ -148,6 +159,10 @@ V1_2_GATE2_NAMESPACE = (
     "fallback-two-round/v1.2/pilot/"
     f"gate2-{V1_2_GATE2_RUN_ID}"
 )
+V1_2_UNIFIED_PILOT_NAMESPACE = (
+    "fallback-two-round/v1.2/pilot/"
+    f"unified-{V1_2_UNIFIED_PILOT_RUN_ID}"
+)
 DEDICATED_EXECUTION_CONTROLLERS = MappingProxyType({
     GATE1_CALIBRATION_RUN_ID: GATE1_CALIBRATION_CONTROLLER_ID,
     GATE2_SUCCESSOR_RUN_ID: GATE2_SUCCESSOR_CONTROLLER_ID,
@@ -155,6 +170,7 @@ DEDICATED_EXECUTION_CONTROLLERS = MappingProxyType({
     V1_2_GATE1_RUN_ID: V1_2_GATE1_CONTROLLER_ID,
     V1_2_GATE2_RUN_ID: V1_2_GATE2_CONTROLLER_ID,
     V1_2_GATE3_PHASE1_RUN_ID: V1_2_GATE3_PHASE1_CONTROLLER_ID,
+    V1_2_UNIFIED_PILOT_RUN_ID: V1_2_UNIFIED_PILOT_CONTROLLER_ID,
 })
 GATE_FOR_STAGE = {
     "smoke": "calibration",
@@ -1170,6 +1186,119 @@ def build_v1_2_gate3_phase1_plan(config: LiveConfig) -> RunPlan:
     return plan
 
 
+def build_v1_2_unified_pilot_plan(config: LiveConfig) -> RunPlan:
+    """Build the complete prospective v1.2 pilot under one fresh identity.
+
+    The returned plan preserves every scientific partition and checkpoint in
+    the staged protocol.  It is an offline contract only; :class:`StagedExecutor`
+    rejects this run id until a separately reviewed master controller exists.
+    """
+    if (config.run_id != V1_2_UNIFIED_PILOT_RUN_ID
+            or config.protocol_version != "v1.2"
+            or config.source != "empirical-live"
+            or config.run_type != "pilot"
+            or config.stage != "probes"
+            or config.blocks != 5
+            or config.split != V1_2_UNIFIED_PILOT_NAMESPACE
+            or config.seed_namespace != V1_2_UNIFIED_PILOT_NAMESPACE
+            or config.calibration_namespace != V1_2_CALIBRATION_NAMESPACE):
+        raise ValueError(
+            "the unified v1.2 pilot requires its exact fresh five-block "
+            "empirical configuration"
+        )
+
+    designs = [
+        block_design(config.seed_namespace, block, config.protocol_version)
+        for block in range(config.blocks)
+    ]
+    builder = _PlanBuilder(config)
+
+    # Gate 1: fresh isolated capability calibration.
+    for fixture_index in range(20):
+        builder.add(
+            "calibration", "calibration", "verdict",
+            {"fixture_index": fixture_index, "role": "reviewer",
+             "fixture_namespace": config.calibration_namespace},
+        )
+
+    # Gate 2: block-0 U/C formation followed by the A/B/F smoke arms.
+    builder.formation(0, "smoke", designs[0])
+    builder.evaluations(0, "smoke", designs[0], ("A", "B", "F"))
+
+    # Gate 3 phase 1: the other four U/C formation histories.  The resulting
+    # ten checkpoints are later consumed by the phase-2 evaluation/probe work.
+    for block in range(1, config.blocks):
+        builder.formation(block, "formation", designs[block])
+
+    # Gate 3 phase 2: block-0 C/D/E, every arm in blocks 1--4, then probes.
+    builder.evaluations(0, "remaining_arms", designs[0], ("C", "D", "E"))
+    for block in range(1, config.blocks):
+        builder.evaluations(
+            block, "remaining_arms", designs[block], tuple(ARMS)
+        )
+    for block, design in enumerate(designs):
+        builder.probes(block, design)
+
+    plan = RunPlan(
+        config.run_id, config.source, config.run_type, config.split,
+        config.protocol_version, _protocol_hash(config.protocol_version),
+        digest(config.to_dict()),
+        _frozen_mapping(build_fixture_inventory(config, designs)),
+        _implementation_hash(), tuple(builder.requests), tuple(builder.checkpoints),
+    )
+    expected_counts = {
+        "logical_requests": 1580,
+        "by_stage": {
+            "calibration": 20,
+            "smoke": 192,
+            "formation": 480,
+            "remaining_arms": 648,
+            "probes": 240,
+        },
+        "by_phase": {
+            "calibration": 20,
+            "formation": 600,
+            "evaluation": 720,
+            "probe": 240,
+        },
+        "checkpoints": 10,
+    }
+    expected_checkpoints = {
+        (block, history)
+        for block in range(5)
+        for history in ("U", "C")
+    }
+    stage_positions = [STAGE_ORDER.index(request.stage) for request in plan.requests]
+    request_order_hash = digest([
+        request.identity for request in plan.requests
+    ])
+    stage_partition_hash = digest([
+        {
+            "stage": stage,
+            "identities": [
+                request.identity
+                for request in plan.requests
+                if request.stage == stage
+            ],
+        }
+        for stage in STAGE_ORDER
+        if any(request.stage == stage for request in plan.requests)
+    ])
+    if (plan.planned_counts() != expected_counts
+            or sum(request.action == "message" for request in plan.requests) != 760
+            or sum(request.action == "verdict" for request in plan.requests) != 820
+            or {(checkpoint.block, checkpoint.history)
+                for checkpoint in plan.checkpoints} != expected_checkpoints
+            or any(len(checkpoint.contributors) != 60
+                   for checkpoint in plan.checkpoints)
+            or stage_positions != sorted(stage_positions)
+            or request_order_hash != V1_2_UNIFIED_PILOT_REQUEST_ORDER_HASH
+            or stage_partition_hash
+            != V1_2_UNIFIED_PILOT_STAGE_PARTITION_HASH):
+        raise ValueError("the unified v1.2 pilot plan has drifted")
+    return plan
+
+
 def build_request_plan(config: LiveConfig) -> RunPlan:
     """Build the immutable, explicitly versioned pilot/confirmation schedule.
 
@@ -1182,6 +1311,7 @@ def build_request_plan(config: LiveConfig) -> RunPlan:
         V1_2_GATE1_RUN_ID,
         V1_2_GATE2_RUN_ID,
         V1_2_GATE3_PHASE1_RUN_ID,
+        V1_2_UNIFIED_PILOT_RUN_ID,
     }
     if (config.source == "empirical-live"
             and config.protocol_version == "v1.2"
@@ -1201,6 +1331,8 @@ def build_request_plan(config: LiveConfig) -> RunPlan:
         return build_v1_2_gate2_smoke_plan(config)
     if config.run_id == V1_2_GATE3_PHASE1_RUN_ID:
         return build_v1_2_gate3_phase1_plan(config)
+    if config.run_id == V1_2_UNIFIED_PILOT_RUN_ID:
+        return build_v1_2_unified_pilot_plan(config)
     if config.run_type not in {"pilot", "confirmation"}:
         raise ValueError("the v1 request planner supports pilot or confirmation runs")
     builder = _PlanBuilder(config)
@@ -1552,6 +1684,7 @@ class DurableRun:
                 V1_2_GATE1_CONTROLLER_ID,
                 V1_2_GATE2_CONTROLLER_ID,
                 V1_2_GATE3_PHASE1_CONTROLLER_ID,
+                V1_2_UNIFIED_PILOT_CONTROLLER_ID,
         }:
             raise ResumeError("execution controller is unknown or malformed")
         from .stage2_release_state import (
@@ -2453,6 +2586,13 @@ class StagedExecutor:
                  dedicated_controller: str | None = None,
                  _dedicated_capability: object | None = None):
         required_controller = DEDICATED_EXECUTION_CONTROLLERS.get(run.config.run_id)
+        if (getattr(run.config, "source", None) == "empirical-live"
+                and getattr(run.config, "protocol_version", None) == "v1.2"
+                and run.config.run_id == V1_2_UNIFIED_PILOT_RUN_ID):
+            raise AuthorizationRequiredError(
+                "the unified v1.2 pilot plan is non-dispatchable until a "
+                "dedicated live master controller is implemented and reviewed"
+            )
         if (getattr(run.config, "source", None) == "empirical-live"
                 and getattr(run.config, "protocol_version", None) == "v1.2"
                 and run.config.run_id not in {
