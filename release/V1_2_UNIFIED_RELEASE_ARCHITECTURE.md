@@ -19,12 +19,31 @@ same authorization only when the earlier frozen evidence conditions pass.
 - The cumulative operational hard cap is **$250.000000**. It is reserved before
   every physical dispatch, survives resumes, and never resets at a stage
   boundary. It is a source constant, not a CLI option or environment setting.
-- A separate **$29,190.226320** absolute theoretical envelope assumes every one
-  of 5,517 attempts consumes the model's full available context and the most
+- The preferred experiment-specific envelope is an exact rendered shape sum.
+  It includes all 1,580 initial attempts, all 760 possible message-overlength
+  retry shapes, and the 17 most expensive distinct logical identities allowed
+  by the per-stage ambiguous-5xx policy: **2,357 potentially billable shapes**.
+  The other 3,160 transport-retry slots remain in the physical-dispatch ceiling
+  but contribute no tokens or cost because they represent known-not-completed
+  attempts whose reservations must be released.
+- The current internal renderer produces a strict shape-sum reservation ceiling
+  of **$5,032.461128**: $1.344343 calibration, $614.038465 smoke,
+  $1,003.969050 remaining formation, and $3,413.109270 completion. Independent
+  reconciliation confirmed this value and traced the earlier **$5,032.537796**
+  surrogate to obsolete namespace/fixture inputs. The canonical aggregate is
+  1,022,983,098 input tokens and 9,654,272 output tokens, with a maximum
+  per-request input bound of 776,741 tokens. This ceiling does not authorize
+  spend and is not an actual-spend forecast.
+- A separate **$29,190.226320** coarse context-window stress bound assumes every
+  one of 5,517 attempts consumes the model's full available context and the most
   expensive applicable token categories. It is deliberately extreme,
-  non-predictive, and grants no spending authority.
-- A final proposal cannot issue authorization unless the sum of the exact
-  rendered stage reservation ceilings fits within the $250 operational cap.
+  non-predictive, and is not the budget decision envelope.
+- The $250 cap intentionally need not cover the complete worst-case shape sum.
+  Issuance instead requires independently verified ledger semantics: before
+  every dispatch, cumulative reconciled actual spend plus that request's strict
+  reservation must fit under $250. If not, the controller durably terminates as
+  `budget_limited` before dispatch. That is a safe, non-complete pilot outcome;
+  neither authorization nor the cap guarantees all 1,580 requests will run.
 
 ## Conditional release sequence
 
@@ -60,11 +79,14 @@ record.
 
 ## Exact work remaining before any live execution
 
-1. Render the canonical unified plan into four exact stage inventories,
-   including request/wire hashes and conservative per-request token bounds.
-2. Compute each stage's aggregate token and strict reservation ceilings from
-   those rendered shapes; verify their cumulative projected cost is at most
-   $250.
+1. Freeze and independently audit the reconciled 1,580-request inventory,
+   exact shape selection, and projection hashes against the canonical
+   $5,032.461128 aggregate.
+2. Prove in the live controller that one cumulative ledger survives every stage
+   and resume, reconciles actual spend, reserves the next request before
+   dispatch, and records a durable non-complete `budget_limited` terminal when
+   the $250 cap cannot cover the next request. Any cap change must occur in
+   reviewed source and force fresh proposal and authorization hashes.
 3. Implement the dedicated live master controller and durable one-run state
    machine. The generic executor must remain unable to start this run.
 4. Bind automatic calibration assessment, the exhaustive outcome-blind smoke
@@ -87,6 +109,7 @@ record.
    credential access, client construction, networking, or spend.
 
 The current chat approval expresses the owner's desired approval model, but it
-cannot bind artifacts that do not yet exist. No credential access, provider
-client, network call, paid call, run directory, or v1.2 model observation is
-created by this architecture work.
+cannot bind the unresolved final proposal and therefore cannot yet be consumed
+as live authority. No credential access, provider client, network call, paid
+call, run directory, or v1.2 model observation is created by this architecture
+work.

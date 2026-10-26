@@ -2586,19 +2586,63 @@ class StagedExecutor:
                  dedicated_controller: str | None = None,
                  _dedicated_capability: object | None = None):
         required_controller = DEDICATED_EXECUTION_CONTROLLERS.get(run.config.run_id)
+        unified_master_fake_wrapper = False
         if (getattr(run.config, "source", None) == "empirical-live"
                 and getattr(run.config, "protocol_version", None) == "v1.2"
                 and run.config.run_id == V1_2_UNIFIED_PILOT_RUN_ID):
-            raise AuthorizationRequiredError(
-                "the unified v1.2 pilot plan is non-dispatchable until a "
-                "dedicated live master controller is implemented and reviewed"
+            modes = [
+                event for event in run.events
+                if event.get("kind") == "v1_2_master_execution_mode_binding"
+            ]
+            mode_pair = (
+                (modes[0].get("mode"), modes[0].get("executor_provenance"))
+                if len(modes) == 1 else None
             )
+            exact_wrapper_identity = (
+                type(self).__module__
+                == "collusion_recovery.v1_2_master_controller"
+                and type(self).__qualname__ == "V12MasterExecutor"
+            )
+            master_module = sys.modules.get(
+                "collusion_recovery.v1_2_master_controller"
+            )
+            master_entrypoint = getattr(master_module, "run_v1_2_master", None)
+            master_fake_factory = getattr(
+                master_module, "build_fake_v1_2_master_executor_for_test", None
+            )
+            exact_empirical_wrapper = (
+                exact_wrapper_identity
+                and mode_pair == (
+                    "empirical_live",
+                    "official_openai_client_from_run_v1_2_master",
+                )
+                and getattr(master_entrypoint, "__code__", None)
+                is sys._getframe(1).f_code
+            )
+            exact_fake_wrapper = (
+                exact_wrapper_identity
+                and mode_pair == (
+                    "fake_transport_test",
+                    "explicit_offline_fake_master_factory",
+                )
+                and getattr(master_fake_factory, "__code__", None)
+                is sys._getframe(1).f_code
+            )
+            unified_master_fake_wrapper = exact_fake_wrapper
+            if not (exact_empirical_wrapper or exact_fake_wrapper):
+                raise AuthorizationRequiredError(
+                    "the unified v1.2 pilot is non-dispatchable without the exact "
+                    "dedicated master controller wrapper; controller strings, imported "
+                    "capabilities, subclasses, and caller-supplied empirical providers "
+                    "are insufficient"
+                )
         if (getattr(run.config, "source", None) == "empirical-live"
                 and getattr(run.config, "protocol_version", None) == "v1.2"
                 and run.config.run_id not in {
                     V1_2_GATE1_RUN_ID,
                     V1_2_GATE2_RUN_ID,
                     V1_2_GATE3_PHASE1_RUN_ID,
+                    V1_2_UNIFIED_PILOT_RUN_ID,
                 }):
             raise AuthorizationRequiredError(
                 "empirical v1.2 execution requires a fixed staged-release run id")
@@ -2763,7 +2807,14 @@ class StagedExecutor:
                 raise OrchestrationError(
                     "empirical-live requires the canonical scientific request factory")
             transport = getattr(provider, "transport", None)
-            if not isinstance(transport, OpenAISDKTransport):
+            offline_master_transport = (
+                unified_master_fake_wrapper
+                and type(transport).__module__
+                == "collusion_recovery.v1_2_master_controller"
+                and type(transport).__qualname__ == "_OfflineScriptedTransport"
+            )
+            if (not isinstance(transport, OpenAISDKTransport)
+                    and not offline_master_transport):
                 raise OrchestrationError(
                     "empirical-live requires the explicit official SDK transport wrapper")
             metadata = json.loads(canonical(transport.audit_metadata))
@@ -2863,10 +2914,12 @@ class StagedExecutor:
             and evidence.get("usage_absent") is True
         )
 
-    def _v1_2_5xx_identity_cap(self) -> int:
+    def _v1_2_5xx_identity_cap(
+            self, spec: ScheduledRequest | None = None) -> int:
         return max(1, math.ceil(len(self.run.plan.requests) / 100))
 
-    def _v1_2_5xx_affected_identities(self) -> list[str]:
+    def _v1_2_5xx_affected_identities(
+            self, spec: ScheduledRequest | None = None) -> list[str]:
         identities: list[str] = []
         for row in self.run.result_events():
             identity = row.get("identity")
@@ -2900,10 +2953,10 @@ class StagedExecutor:
         delay = self._v1_2_5xx_delay(results[-1])
         if delay > 60:
             return "paused_ambiguous_5xx_retry_after_exceeded", None
-        affected = self._v1_2_5xx_affected_identities()
+        affected = self._v1_2_5xx_affected_identities(spec)
         if spec.identity not in affected:
             raise ResumeError("eligible ambiguous HTTP-5xx identity is absent from its audit")
-        if affected.index(spec.identity) + 1 > self._v1_2_5xx_identity_cap():
+        if affected.index(spec.identity) + 1 > self._v1_2_5xx_identity_cap(spec):
             return "paused_ambiguous_5xx_release_cap", None
         return "retry", delay
 
@@ -2934,7 +2987,7 @@ class StagedExecutor:
         failed = results[-1]
         provider = failed["provider_result"]
         evidence = provider["transport_evidence"]
-        affected = self._v1_2_5xx_affected_identities()
+        affected = self._v1_2_5xx_affected_identities(spec)
         existing = [
             event for event in self.run.events
             if event.get("kind") == "ambiguous_5xx_retry_scheduled"
@@ -2961,7 +3014,7 @@ class StagedExecutor:
                 "wire_payload_hash": failed.get("wire_payload_hash"),
                 "retry_index": 1,
                 "per_identity_retry_cap": 1,
-                "release_affected_identity_cap": self._v1_2_5xx_identity_cap(),
+                "release_affected_identity_cap": self._v1_2_5xx_identity_cap(spec),
                 "release_affected_identity_index": affected.index(spec.identity) + 1,
                 "delay_seconds": delay,
                 "retry_policy_hash": V1_2_AMBIGUOUS_5XX_RETRY_POLICY_HASH,
@@ -2989,7 +3042,7 @@ class StagedExecutor:
             wire_payload_hash=failed.get("wire_payload_hash"),
             retry_index=1,
             per_identity_retry_cap=1,
-            release_affected_identity_cap=self._v1_2_5xx_identity_cap(),
+            release_affected_identity_cap=self._v1_2_5xx_identity_cap(spec),
             release_affected_identity_index=affected.index(spec.identity) + 1,
             delay_seconds=delay,
             retry_policy_hash=V1_2_AMBIGUOUS_5XX_RETRY_POLICY_HASH,

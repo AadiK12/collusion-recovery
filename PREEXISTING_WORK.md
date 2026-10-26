@@ -49,4 +49,26 @@ Codex assisted with planning, implementation, tests, and documentation. The subm
 - Recorded a separate exploratory five-block secondary pilot allocation: 56 logical calls per block, 280 added calls, and 1,660 combined with the main v1.1 pilot's 1,380. Counts exclude transport preflight, retries, and separate release overhead and are not dollar budgets or dispatch authority. All assigned secondary blocks remain in analysis, without main-marker selection or favorable-effect gates. The later v1.2 compatibility decision keeps this one-round design separate rather than extending it into the main fallback.
 - At its own checkpoint, the methodology reconciliation changed context documents only, added no secondary live integration, and made no API call. The later main-only release pass updated the pricing timestamp, Gate 1 proposal/schema bindings, and frozen test clocks needed to validate that new timestamp; it still made no API call and did not add formation-peer-v1 to the live inventory. Future secondary live work requires its own reviewed controller, inventory, bindings, and authorization.
 
-A hypothesis-bearing live-model experiment has progressed through block 0 and part of blocks 1–3 formation, but no complete five-block pilot, formal Gate 3 assessment, confirmation run, or primary recovery result exists. The local credential was used only by explicitly authorized Stage 2, Gate 1, Gate 2, and Gate 3 Phase 1 controllers and remained in the ignored owner-only `.env.local`; it was not written to tracked files, manifests, journals, payloads, or reports. All four authorizations are consumed. The remaining 888 v1.1 main-pilot requests have no authority. On October 24, the project prospectively selected the sole v1.2 fallback for offline preparation as an early-futility methodological decision/deviation; its 20-request calibration, 192-request smoke, 480-request Phase 1, and 888-request Phase 2 require fresh separate review and authorization, and v1.1 observations may not be pooled with them. The secondary substudy remains one-round and offline. Before Gate 4 or confirmation, `pilot_freeze_assessment` must be hardened to audit authoritative raw pilot requests and responses. Add subsequent work as dated entries; do not retroactively describe the pre-sprint preparation above as sprint work.
+### October 25, 2026
+
+- Consolidated the prospective v1.2 operational design into one exact,
+  short-lived, owner-approved, single-use master authorization bound to one run,
+  one namespace, and the ordered `20 + 192 + 480 + 888 = 1,580` logical-request
+  pilot. This supersedes the earlier v1.2-only four-authorization wording; it
+  does not alter the v1.1 protocol or executed v1.1 records.
+- Preserved internal fail-closed gates: the frozen calibration pass releases
+  smoke, an exhaustive outcome-blind automatic smoke-integrity audit releases
+  Phase 1, and the unchanged 3/5 C-history marker releases Phase 2. Human
+  transcript and claim review remains required after the run and before
+  publication.
+- Retained non-fungible per-stage attempt ceilings of
+  `61 / 694 / 1,765 / 2,997` (`5,517` total). Recorded the exact
+  `$5,032.461128` shape-sum reservation envelope as a theoretical projection,
+  not expected spend or authority, and selected a `$250.000000` cumulative
+  actual-spend-plus-next-reservation live hard stop that may yield
+  `budget_limited` non-completion.
+- Kept Gate 4, confirmation, publication, formation-peer, and every secondary
+  study outside the master scope. At this checkpoint no exact master
+  authorization had been claimed and no v1.2 provider call had been made.
+
+A hypothesis-bearing live-model experiment has progressed through block 0 and part of blocks 1–3 formation, but no complete five-block pilot, formal Gate 3 assessment, confirmation run, or primary recovery result exists. The local credential was used only by explicitly authorized Stage 2, Gate 1, Gate 2, and Gate 3 Phase 1 controllers and remained in the ignored owner-only `.env.local`; it was not written to tracked files, manifests, journals, payloads, or reports. All four historical v1.1-lineage authorizations are consumed. The remaining 888 v1.1 main-pilot requests have no authority. On October 24, the project prospectively selected the sole v1.2 fallback as an early-futility methodological decision/deviation; on October 25, its 20-request calibration, 192-request smoke, 480-request Phase 1, and conditional 888-request Phase 2 were consolidated under one prospective master authorization and one run/namespace. No exact master authorization has been claimed and no v1.2 call has been made; v1.1 observations may not be pooled with v1.2. The secondary substudy remains one-round and offline. Before Gate 4 or confirmation, `pilot_freeze_assessment` must be hardened to audit authoritative raw pilot requests and responses. Add subsequent work as dated entries; do not retroactively describe the pre-sprint preparation above as sprint work.

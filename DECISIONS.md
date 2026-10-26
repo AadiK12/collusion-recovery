@@ -150,3 +150,45 @@ authorization and records no new empirical evidence.
 7. **Freeze one narrow v1.2 transport exception:** Permit one runner-owned retry only after a response was received and the SDK exception and response statuses are integers exactly equal to the same HTTP 500/502/503/504, the provider and allowlisted header request IDs match, and the response contains neither output nor usage. Retain the first attempt's full reservation and durable transport record but never expose it in the model-visible attempt list or history. Require identical wire bytes, set SDK `max_retries=0`, and accept only numeric delta-seconds `Retry-After` or numeric `Retry-After-Ms` values to extend the 5--60-second delay. The first non-ambiguous returned outcome is terminal; refusals and invalid responses remain missing/invalid. Never allow a second ambiguous-5xx-owned retry for that identity; every other ambiguity hard-stops. Cap affected identities at `max(1, ceil(N/100))`: 1/2/5/9 for Gate 1/Gate 2/Phase 1/Phase 2. The corresponding dispatch-attempt ceilings are 61/694/1,765/2,997, or 5,517 across the four releases, while nominal logical counts remain 20/192/480/888. The unseen attempt may have completed and differed from the retry, so affected identities and sensitivity bounds remain mandatory even within the cap. Exact token, context, pricing, and cost ceilings still require rendered release-specific projections and prospective binding.
 8. **Resolve secondary compatibility conservatively:** `formation-peer-v1` remains one-round, separately namespaced, and offline. It is not converted to two rounds, included in v1.2 counts, or covered by any main authorization. Any changed secondary protocol requires a new prospective version and lineage.
 9. **Keep empirical state empty while preparing the release:** This decision permits source, test, contract, pricing-verification, and documentation work only. It does not permit reading a credential, constructing a provider client, making a network or paid call, generating an authorization, or claiming a v1.2 result. The Gate 1 gaps identified on October 24 were subsequently closed offline: the dedicated controller was implemented and independently audited, current official pricing and exact ceilings were bound, and the static proposal and authorization schema were rendered. Those artifacts create no authority. A fresh external one-use authorization bound to the exact package is still required before the 20-request v1.2 capability calibration can become the first live step; it hard-stops before smoke. Gate 2 and Gate 3 Phase 1 live controllers and cross-run assessments remain unimplemented.
+
+## October 25, 2026 — protocol v1.2 unified master-release amendment
+
+This prospective governance amendment supersedes the October 24 v1.2-only
+wording that required four separate human authorizations. It does not modify the
+frozen v1.1 protocol, reinterpret any v1.1 observation, or make historical
+separate-release records inaccurate.
+
+1. **Use one exact authority and one lineage:** Bind one short-lived,
+   owner-approved, single-use master authorization to one static proposal, one
+   run, one namespace, and the entire ordered v1.2 pilot. The authorization is
+   consumed on first dispatch and cannot be replayed, renewed, or expanded.
+2. **Keep the internal stages conditional:** The ordered inventory is `20 + 192
+   + 480 + 888 = 1,580` logical requests. Calibration releases smoke only after
+   the frozen capability pass. Smoke releases Phase 1 only after an exhaustive,
+   deterministic, outcome-blind automatic integrity audit. Phase 1 releases
+   Phase 2 only after at least three of five C histories meet the frozen marker.
+   A failed or indeterminate gate cancels every later dispatch.
+3. **Retain non-fungible ceilings:** The maximum dispatch-attempt ceilings are
+   `61 / 694 / 1,765 / 2,997`, totaling `5,517`. Unused request, attempt, token,
+   or cost capacity in one stage cannot be borrowed by another.
+4. **Separate projection from authority:** The exact complete-plan shape-sum
+   reservation envelope is `$5,032.461128`. It is a theoretical worst-case
+   calculation, not expected spend and not an authorized operating budget. The
+   live release instead stops before any request for which cumulative actual
+   settled spend plus the next complete reservation would exceed
+   `$250.000000`; the terminal state may therefore be `budget_limited` before
+   scientific completion.
+5. **Move human review without removing it:** Human transcript and claim review
+   remains mandatory after the run and before publication. It is no longer a
+   mid-run smoke-release decision. Publication itself is not authorized by the
+   master release.
+6. **Exclude later scope:** Gate 4, confirmation, publication,
+   `formation-peer-v1`, and every secondary study require separate future
+   decisions and authority. A 3/5 marker failure after 692 logical requests is
+   the completed v1.2 feasibility result; it is not permission to tune, resume,
+   or start v1.3.
+7. **Do not overstate readiness:** Exact final source, protocol, proposal,
+   controller, run, namespace, and authorization hashes must come from the
+   independently verified static master package. They are not asserted here.
+   No exact v1.2 master authorization has been claimed and no v1.2 provider call
+   has been made.

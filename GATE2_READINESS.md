@@ -302,22 +302,34 @@ The exact evidence anchors and archive pointer are recorded in
 requests remain unauthorized and undispatched. No approval permits retry or
 continuation.
 
-The sole v1.2 fallback has been selected for prospective offline preparation and
-is disclosed as an early-futility methodological decision/deviation because no
-completed Gate 3 trigger artifact exists. Fresh v1.2 calibration, smoke, Phase 1,
-and Phase 2 releases each require their own prerequisite evidence,
-implementation review, proposal, caps, and authorization. No v1.1 observation,
+The sole v1.2 fallback has been selected prospectively and is disclosed as an
+early-futility methodological decision/deviation because no completed Gate 3
+trigger artifact exists. The October 25 governance amendment supersedes the
+earlier v1.2 four-authorization plan: one exact, short-lived, owner-approved,
+single-use master authorization binds one run/namespace and the complete ordered
+`20 + 192 + 480 + 888 = 1,580` logical-request pilot. No v1.1 observation,
 decision, proposal, or authority carries forward or may be pooled with v1.2.
 
 The v1.2 change is formation-only: `baseline_v1_2.txt` supplies the two-round
 formation interface, while calibration, evaluation, and probes retain the
 original baseline. Its canonical protocol hash binds the frozen base protocol
-and addendum together. Gate 1 now has a dedicated independently reviewed
-controller and checked static proposal/schema package binding freshly verified
-official pricing and exact ceilings. It remains unauthorized and unstarted:
-there is no v1.2 authorization, credential access, provider call, or result.
-Gate 2 and Gate 3 Phase 1 are plan projections whose live controllers and
-cross-run prerequisite assessments are not implemented.
+and addendum together. Within the one master run, calibration releases smoke
+only on the frozen capability pass; the smoke releases Phase 1 only after an
+exhaustive, deterministic, outcome-blind automatic integrity audit; and Phase 1
+releases Phase 2 only if at least three of five C histories meet the frozen
+marker. Human transcript and claim review remains mandatory after the run and
+before publication, not as a mid-run dispatch gate.
+
+The four internal slices keep non-fungible attempt ceilings of
+`61 / 694 / 1,765 / 2,997`, totaling `5,517`. The `$5,032.461128` shape-sum
+reservation envelope is a theoretical worst-case projection, not expected spend
+or authority. Live dispatch instead stops before any request that would put
+cumulative actual settled spend plus the next full reservation above
+`$250.000000`, yielding a durable `budget_limited` non-completion if necessary.
+Gate 4, confirmation, publication, formation-peer, and every secondary study
+remain excluded. Exact final hashes and readiness claims must come from the
+independently verified master package. No exact v1.2 master authorization has
+been claimed and no v1.2 provider call or result exists.
 
 The projected retry path applies only when received exception and response
 statuses are integers exactly equal to the same 500/502/503/504, request IDs

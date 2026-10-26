@@ -1,6 +1,6 @@
 # Protocol v1.2 addendum — two-round formation fallback
 
-Status: **prospectively selected for offline preparation on October 24, 2026; no v1.2 empirical release is authorized or underway.**
+Status: **prospectively selected and consolidated into one conditional master-release design on October 25, 2026; no exact master authorization has been claimed and no v1.2 provider call has been made.**
 
 This addendum versions the sole fallback already specified in
 [`SPRINT_PROJECT_PLAN.md`](SPRINT_PROJECT_PLAN.md). It does not rewrite the
@@ -59,12 +59,15 @@ There is no v1.3 tuning path.
 ## 2. Fresh lineage and namespaces
 
 All v1.2 packets, schedules, request identities, checkpoints, seeds, runs,
-proposals, decisions, and authorizations are fresh. The namespace roots are:
+proposals, decisions, and authorizations are fresh. The complete pilot uses one
+new run and one new namespace below `fallback-two-round/v1.2/pilot`; calibration,
+smoke, Phase 1, and Phase 2 remain distinguishable by immutable stage and request
+identities inside that run. A possible later confirmation remains a different
+future lineage:
 
 | Purpose | Namespace root |
 | --- | --- |
-| Capability calibration | `fallback-two-round/v1.2/calibration` |
-| Five-block pilot | `fallback-two-round/v1.2/pilot` |
+| Unified conditional pilot, including calibration | a fresh descendant of `fallback-two-round/v1.2/pilot` bound in the final proposal |
 | Possible later confirmation | `fallback-two-round/v1.2/confirm` |
 
 Any stage-specific subnamespace must be a descendant of the relevant root and
@@ -80,13 +83,13 @@ The complete v1.2 pilot contains 1,580 nominal logical requests, including its
 fresh calibration. Counts exclude transport preflight, transport attempts that
 are not new logical observations, and any separately versioned secondary study.
 
-| Release boundary | Exact content | New logical requests | Cumulative v1.2 logical requests | Required stop |
+| Internal release slice | Exact content | New logical requests | Cumulative v1.2 logical requests | Automatic boundary |
 | --- | --- | ---: | ---: | --- |
 | Offline foundation | Implementation, fixtures, dependency/visibility tests, inventory, and contract inspection | 0 | 0 | No credentials, client construction, network, or provider calls |
-| Gate 1 | 20 isolated full-evidence capability reviews | 20 | 20 | Stop before formation or smoke |
-| Gate 2 block-0 smoke | Block 0 U/C formation: `2 × 10 × 6 = 120`; A/B/F evaluation: `3 × 6 × 4 = 72` | 192 | 212 | Stop before blocks 1--4 |
-| Gate 3 Phase 1 | Blocks 1--4 U/C formation only: `4 × 2 × 10 × 6 = 480` | 480 | 692 | Stop for the five-block formation-feasibility decision |
-| Gate 3 Phase 2 | Block-0 C/D/E plus probes: `72 + 48 = 120`; blocks 1--4 A--F plus probes: `576 + 192 = 768` | 888 | **1,580** | Complete pilot; stop before Gate 4 or confirmation |
+| Gate 1 | 20 isolated full-evidence capability reviews | 20 | 20 | Continue only if the frozen capability rule passes |
+| Gate 2 block-0 smoke | Block 0 U/C formation: `2 × 10 × 6 = 120`; A/B/F evaluation: `3 × 6 × 4 = 72` | 192 | 212 | Continue only if the exhaustive outcome-blind automatic integrity audit passes |
+| Gate 3 Phase 1 | Blocks 1--4 U/C formation only: `4 × 2 × 10 × 6 = 480` | 480 | 692 | Continue only if at least three of five C histories meet the frozen marker |
+| Gate 3 Phase 2 | Block-0 C/D/E plus probes: `72 + 48 = 120`; blocks 1--4 A--F plus probes: `576 + 192 = 768` | 888 | **1,580** | Complete pilot; hard-stop before Gate 4, confirmation, or any secondary study |
 
 Across the complete five-block pilot, formation contributes 600 logical
 requests, the six main arms contribute 720, the evaluation-time peer probes
@@ -103,32 +106,44 @@ peer probes. Thus 20 and 43 blocks would contain 6,240 and 13,416 requests,
 respectively. These are planning counts, not authorization or a commitment to a
 confirmation sample size.
 
-## 4. Release and authorization sequence
+## 4. Unified release and authorization sequence
 
-Each empirical boundary requires its own exact, short-lived, owner-approved,
-single-use contract. Authority never carries forward merely because the prior
-stage passed.
+This section is the prospective October 25 governance amendment. It supersedes
+the earlier v1.2 plan for four separate human authorizations; it does not alter
+the frozen v1.1 protocol or any completed v1.1 release. The complete v1.2 pilot
+is governed by one exact, short-lived, owner-approved, single-use master
+authorization bound to one static proposal, one run, one namespace, the full
+ordered 1,580-request plan, all stage ceilings, the source and protocol hashes,
+model/settings, pricing, and the cumulative operational hard stop. The proposal
+and schema are not themselves authority. The authorization is atomically
+claimed before credential access or client construction and cannot be renewed,
+replayed for another run, or expanded.
 
-1. Gate 1 may be proposed only after the offline implementation and inventory
-   pass review. Its authorization covers exactly 20 calibration requests and
-   hard-stops before smoke.
-2. Gate 2 may be proposed only after an immutable v1.2 Gate 1 pass is verified.
-   Its authorization covers exactly the 192-request block-0 smoke and hard-stops
-   before blocks 1--4.
-3. Gate 3 Phase 1 may be proposed only after the v1.2 smoke passes its mechanical
-   and human integrity review. Its authorization covers exactly the 480 U/C
-   formation requests for blocks 1--4 and hard-stops before any formation
-   decision or evaluation arm.
-4. Gate 3 Phase 2 may be proposed only after a read-only assessment establishes
-   that at least three of five v1.2 C histories meet the unchanged marker. Its
-   authorization covers exactly the remaining 888 pilot requests and no later
-   stage.
-5. Gate 4 and confirmation remain separate future decisions with fresh source,
-   protocol, raw-evidence, model, setting, pricing, budget, and sample-size
-   bindings.
+The master authorization conditionally covers the following automatic sequence:
 
-No existing v1.1 or Stage 2 approval, nonce, receipt, proposal, or passed gate
-authorizes any v1.2 call.
+1. Dispatch the 20-request capability calibration. If the frozen capability
+   rule fails or cannot be established, stop with no smoke dispatch.
+2. If calibration passes, dispatch the 192-request block-0 smoke. Before any
+   later request, reconstruct and verify every scheduled smoke identity, exact
+   request and wire payload, raw response, visibility/timing invariant,
+   checkpoint, provider identity, retry, scope, authorization, and budget event.
+   This audit is exhaustive, deterministic, outcome-blind, and automatic. Any
+   failed or indeterminate check stops the run.
+3. If the smoke audit passes, dispatch the 480 Phase 1 U/C formation requests.
+   Compute the unchanged marker across all five C histories, including block 0.
+4. Dispatch the remaining 888 Phase 2 requests only if at least three of five C
+   histories qualify. Otherwise stop after 692 logical requests and record the
+   completed feasibility boundary; this is not an incomplete execution error.
+5. After Phase 2 or any earlier gate/budget stop, dispatch nothing else. Human
+   transcript and claim review is mandatory after the run and before any
+   publication claim, but it is not a mid-run dispatch gate.
+
+The four slice budgets and attempt ceilings are non-fungible: unused capacity in
+one slice cannot be borrowed by another. Gate 4, confirmation, publication,
+formation-peer, and every secondary study are excluded. Any of those actions
+requires a later, separately frozen decision and authority. No existing v1.1 or
+Stage 2 approval, nonce, receipt, proposal, or passed gate authorizes a v1.2
+call.
 
 ## 5. Frozen v1.2 transport-recovery policy
 
@@ -190,16 +205,22 @@ v1.2 stage envelopes are:
 | Gate 2 block-0 smoke | 192 | 2 | 694 |
 | Gate 3 Phase 1 | 480 | 5 | 1,765 |
 | Gate 3 Phase 2 | 888 | 9 | 2,997 |
-| **Four-release pilot total** | **1,580** | **17** | **5,517** |
+| **Unified master-release total** | **1,580** | **17** | **5,517** |
 
 The attempt ceilings include the established message-format and
 known-not-completed transport attempt surfaces plus this bounded v1.2 exception;
-they do not change the 20/192/480/888 logical-request inventory. Before any
-stage is reviewable for authorization, its rendered prompt projection,
-per-request and aggregate token/context ceilings, current official pricing,
-and exact cost ceiling must still be computed, reviewed, and bound in that
-stage's release contract. This frozen policy is a safety contract, not
-permission to dispatch.
+they do not change the 20/192/480/888 logical-request inventory. Before the
+master release is reviewable for authorization, its rendered prompt
+projection, per-request and aggregate token/context ceilings, current official
+pricing, and exact costs must be computed, reviewed, and bound in the master
+contract. The exact shape-sum reservation envelope for the complete plan is
+`$5,032.461128`. It is a deliberately extreme theoretical envelope, not expected
+spend and not spending authority. Live execution instead has a `$250.000000`
+cumulative hard stop over actual settled spend plus the next request's complete
+reservation. If that check cannot admit the next request, execution stops before
+dispatch with a durable `budget_limited` non-completion. The `$250.000000` cap
+does not borrow across the non-fungible per-stage attempt or token ceilings.
+This frozen policy is a safety contract, not permission to dispatch.
 
 ## 6. Formation-peer compatibility decision
 
@@ -215,15 +236,13 @@ selected here.
 
 ## 7. Current evidentiary status
 
-This document remains the offline scientific contract. The v1.2 Gate 1 release
-package now includes a dedicated independently reviewed controller, the exact
-20-request prompt/context projection, freshly verified official pricing and
-token/cost ceilings, a static proposal, and a static external-authorization
-schema. Those artifacts are preparation, not authority or empirical evidence:
-no v1.2 authorization exists, no credential has been accessed, and no v1.2
-provider call has been made. Gate 2 and Gate 3 Phase 1 still have projected plans
-only; their live controllers and cross-run prerequisite assessments are not
-implemented.
+This document remains the offline scientific contract. The unified master
+release is being finalized and independently reviewed against the complete
+1,580-request plan and conditional gate sequence. Exact run, namespace, source,
+proposal, and contract hashes belong in the final static proposal and must not be
+inferred from this prose. Preparation is not authority or empirical evidence:
+no exact v1.2 master authorization has been claimed, no v1.2 provider call has
+been made, and all v1.2 result fields remain empty.
 
 Nothing here contains a v1.2 model observation, populates a result row, or
 authorizes credential access, provider-client construction, networking,

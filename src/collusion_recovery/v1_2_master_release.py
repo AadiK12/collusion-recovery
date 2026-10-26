@@ -6,8 +6,9 @@ dispatch a request.  It defines the proposal, human-authorisation, and
 single-use receipt primitives that a future dedicated controller must consume.
 
 One approval covers the complete 1,580-request pilot, but later slices remain
-conditional.  Calibration, smoke integrity (including the frozen human review),
-and the five-block formation decision still stop later dispatch when they fail.
+conditional.  Calibration, the exhaustive outcome-blind smoke audit, and the
+five-block formation decision still stop later dispatch when they fail.  Human
+transcript and claim review occurs post-run, before publication or confirmation.
 The cumulative operational cost cap is never reset at a stage boundary.
 """
 
@@ -55,6 +56,15 @@ MASTER_RUN_ID = V1_2_UNIFIED_PILOT_RUN_ID
 MASTER_NAMESPACE = V1_2_UNIFIED_PILOT_NAMESPACE
 MASTER_RUN_DIRECTORY = f"runs/empirical/v1.2-unified-pilot-{MASTER_RUN_ID}"
 MASTER_CONTROLLER_IMPLEMENTED = False
+MASTER_CUMULATIVE_BUDGET_LEDGER_IMPLEMENTED = False
+
+# Duplicated deliberately rather than importing the smoke-audit implementation:
+# this proposal/authentication module must remain provider-free.  The integration
+# tests assert byte-for-byte agreement with the audit module's public constants.
+SOURCE_SMOKE_AUDIT_CONTRACT_VERSION = "v2"
+SOURCE_SMOKE_AUDIT_CONTRACT_HASH = (
+    "f91d195fa0743a4d8d7961a179303c3ebfdcf60a3a52a76439b3be7b3eee285f"
+)
 
 # This value is deliberately source-bound.  It is not accepted from a CLI,
 # environment variable, authorisation file, or runtime call.  Before a final
@@ -68,8 +78,12 @@ PRICING_MAX_AGE_SECONDS = 24 * 60 * 60
 MAX_JSON_BYTES = 8 * 1024 * 1024
 
 MASTER_PROPOSAL_DRAFT_PATH = ROOT / "configs/v1_2_unified_master_proposal.draft.json"
+MASTER_PROPOSAL_PATH = ROOT / "configs/v1_2_unified_master_proposal.json"
 MASTER_AUTHORIZATION_SCHEMA_PATH = (
     ROOT / "release/V1_2_UNIFIED_HUMAN_AUTHORIZATION_SCHEMA.json"
+)
+MASTER_PROJECTION_AUDIT_ATTESTATION_PATH = (
+    ROOT / "release/V1_2_UNIFIED_PROJECTION_AUDIT_ATTESTATION.json"
 )
 PRIOR_GATE1_PROPOSAL_PATH = ROOT / "configs/gate1_v1_2_calibration_proposal.json"
 PRIOR_GATE1_SCHEMA_PATH = ROOT / "release/GATE1_V1_2_HUMAN_AUTHORIZATION_SCHEMA.json"
@@ -144,7 +158,9 @@ HUMAN_ACKNOWLEDGEMENT = (
     "$250.000000 cumulative operational hard cap. I understand that later "
     "slices release automatically under the same authorization only after their "
     "frozen scientific and exhaustive outcome-blind mechanical integrity gates "
-    "pass, that a failed gate hard-stops all remaining dispatch, that human "
+    "pass, that a failed gate hard-stops all remaining dispatch, that the "
+    "cumulative budget may stop the run before all 1,580 requests and such a "
+    "budget-limited run is not a completed pilot, that human "
     "transcript and claim audit remains mandatory before publication or "
     "confirmation, and that no confirmation or secondary study is authorized."
 )
@@ -177,7 +193,8 @@ _AUTH_FIELDS = {
     "approved_scope",
     "approved_operational_cost_hard_cap_usd",
     "approved_projected_stage_caps_hash",
-    "approved_absolute_theoretical_envelope_hash",
+    "approved_exact_shape_sum_reservation_envelope_hash",
+    "approved_coarse_context_window_stress_envelope_hash",
     "approved_stage_bindings_hash",
     "approved_source_contract_hash",
     "approved_protocol_hash",
@@ -188,6 +205,34 @@ _AUTH_FIELDS = {
     "allow_paid_calls",
     "human_acknowledgement",
     "authorization_hash",
+}
+
+_PROJECTION_AUDIT_ATTESTATION_FIELDS = {
+    "artifact_type",
+    "audit_result",
+    "independent_audit_passed",
+    "audited_by",
+    "audited_at",
+    "projection_hash",
+    "projection_algorithm_version",
+    "implementation_hash",
+    "plan_hash",
+    "request_order_hash",
+    "stage_partition_hash",
+    "stage_inventory_hashes",
+    "projected_stage_caps_hash",
+    "projected_strict_reservation_ceiling_usd",
+    "attested_checks",
+    "attestation_hash",
+}
+
+_REQUIRED_PROJECTION_AUDIT_CHECKS = {
+    "complete_1580_identity_inventory_reconstructed": True,
+    "request_order_and_stage_partition_reconstructed": True,
+    "request_and_retry_shapes_recomputed": True,
+    "token_and_cost_sums_recomputed": True,
+    "nonfungible_stage_caps_reconciled": True,
+    "no_dispatch_no_credential_no_network_confirmed": True,
 }
 
 
@@ -253,9 +298,19 @@ def _source_contract() -> dict[str, Any]:
         "exhaustive_smoke_audit_module": {
             "path": "src/collusion_recovery/v1_2_smoke_audit.py",
             "sha256": file_hash(ROOT / "src/collusion_recovery/v1_2_smoke_audit.py"),
+            "contract_version": SOURCE_SMOKE_AUDIT_CONTRACT_VERSION,
+            "contract_hash": SOURCE_SMOKE_AUDIT_CONTRACT_HASH,
+            "required_api": "require_v1_2_smoke_integrity",
+            "required_pass_fields": {
+                "automatic_checks_passed": True,
+                "later_stage_release_permitted": True,
+            },
         },
         "implementation_hash": current_implementation_hash(),
         "master_controller_implemented": MASTER_CONTROLLER_IMPLEMENTED,
+        "cumulative_budget_ledger_implemented": (
+            MASTER_CUMULATIVE_BUDGET_LEDGER_IMPLEMENTED
+        ),
         "unified_request_order_hash": V1_2_UNIFIED_PILOT_REQUEST_ORDER_HASH,
         "unified_stage_partition_hash": V1_2_UNIFIED_PILOT_STAGE_PARTITION_HASH,
         "protocol": {
@@ -275,8 +330,8 @@ def _protocol_hash(source_contract: Mapping[str, Any]) -> str:
     })
 
 
-def absolute_theoretical_cost_envelope() -> dict[str, Any]:
-    """Return a non-authorizing, deliberately extreme pricing envelope.
+def coarse_context_window_cost_envelope() -> dict[str, Any]:
+    """Return a non-authorizing, deliberately extreme stress envelope.
 
     It assumes every one of the 5,517 maximum dispatch attempts consumes the
     largest possible request under the model context limit, all input is billed
@@ -306,7 +361,7 @@ def absolute_theoretical_cost_envelope() -> dict[str, Any]:
     total = per_attempt * Decimal(TOTAL_DISPATCH_ATTEMPT_CEILING)
     quantum = Decimal("0.000001")
     body = {
-        "kind": "absolute_theoretical_non_authorizing_envelope",
+        "kind": "coarse_context_window_stress_envelope",
         "assumption": (
             "every permitted physical attempt simultaneously saturates the model "
             "context window and the most expensive applicable token categories"
@@ -319,6 +374,82 @@ def absolute_theoretical_cost_envelope() -> dict[str, Any]:
         "maximum_cost_usd": str(total.quantize(quantum, rounding=ROUND_CEILING)),
         "authorizes_spend": False,
         "pricing_contract_hash": digest(dict(pricing)),
+    }
+    return {**body, "envelope_hash": digest(body)}
+
+
+# Backward-compatible name for offline callers.  The master proposal labels this
+# value as a coarse stress bound; the rendered shape sum below is the preferred
+# experiment-specific reservation envelope.
+def absolute_theoretical_cost_envelope() -> dict[str, Any]:
+    return coarse_context_window_cost_envelope()
+
+
+def exact_shape_sum_reservation_envelope(
+    projected_caps: Mapping[str, Any],
+    *,
+    independently_audited: bool,
+) -> dict[str, Any]:
+    """Bind the rendered per-shape ceiling used for the operational decision.
+
+    ``projected_caps`` is the already-validated aggregate returned by
+    ``validate_unified_stage_caps``.  Unlike the coarse context-window stress
+    bound, this value sums every rendered initial, overlength-retry, and bounded
+    ambiguous-5xx shape.  Known-not-completed transport retry slots remain in
+    the dispatch ceiling but contribute no tokens or cost because their
+    reservations must be released.
+    """
+
+    if type(independently_audited) is not bool:
+        raise V12MasterReleaseError("shape-sum audit state must be boolean")
+    if not isinstance(projected_caps, Mapping):
+        raise V12MasterReleaseError("shape-sum envelope needs projected caps")
+    required = {
+        "protocol_version",
+        "logical_requests",
+        "dispatch_attempts",
+        "max_total_input_tokens",
+        "max_total_output_tokens",
+        "max_input_tokens_per_request",
+        "max_output_tokens_per_request",
+        "max_in_flight",
+        "max_cost_usd",
+        "conditional_release_order",
+        "stage_caps",
+    }
+    if set(projected_caps) != required:
+        raise V12MasterReleaseError("shape-sum aggregate has an unexpected shape")
+    cost = _exact_positive_decimal(
+        projected_caps["max_cost_usd"], "shape-sum reservation ceiling"
+    )
+    operational = _exact_positive_decimal(
+        SOURCE_BOUND_OPERATIONAL_COST_HARD_CAP_USD, "operational cap"
+    )
+    body = {
+        "kind": "exact_rendered_shape_sum_reservation_envelope",
+        "method": (
+            "sum each rendered initial-attempt and message-overlength-retry "
+            "reservation plus the most expensive distinct logical identities "
+            "allowed by each stage's ambiguous-5xx policy"
+        ),
+        "known_not_completed_transport_retry_accounting": (
+            "counted in maximum dispatch attempts; zero tokens and cost after "
+            "mandatory reservation release"
+        ),
+        "logical_requests": projected_caps["logical_requests"],
+        "maximum_dispatch_attempts": projected_caps["dispatch_attempts"],
+        "max_total_input_tokens": projected_caps["max_total_input_tokens"],
+        "max_total_output_tokens": projected_caps["max_total_output_tokens"],
+        "maximum_cost_usd": str(cost),
+        "stage_costs_usd": {
+            stage: projected_caps["stage_caps"][stage]["max_cost_usd"]
+            for stage in RELEASE_ORDER
+        },
+        "projected_stage_caps_hash": digest(dict(projected_caps)),
+        "independent_audit_passed": independently_audited,
+        "operational_cap_covers_envelope": cost <= operational,
+        "authorizes_spend": False,
+        "pricing_contract_hash": digest(dict(SOURCE_PRICING_CONTRACT)),
     }
     return {**body, "envelope_hash": digest(body)}
 
@@ -414,6 +545,34 @@ def validate_stage_binding(value: Mapping[str, Any], stage: str) -> dict[str, An
     return rebuilt
 
 
+def _validate_executable_binding_lineage(
+    bindings: Mapping[str, Mapping[str, Any]],
+    *,
+    current_implementation: str,
+) -> None:
+    executable = [
+        row for row in bindings.values()
+        if row["status"] in {"ready", "projected_awaiting_independent_audit"}
+    ]
+    if not executable:
+        return
+    if any(row["controller_id"] != MASTER_CONTROLLER_ID for row in executable):
+        raise V12MasterReleaseError(
+            "executable stage binding names a non-master controller"
+        )
+    if any(
+        row["implementation_hash"] != current_implementation
+        for row in executable
+    ):
+        raise V12MasterReleaseError(
+            "executable stage binding differs from the complete current source"
+        )
+    if len({row["plan_hash"] for row in executable}) != 1:
+        raise V12MasterReleaseError(
+            "executable stage bindings do not share one immutable plan"
+        )
+
+
 def _read_json(path: Path, label: str) -> dict[str, Any]:
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
@@ -490,13 +649,17 @@ def build_v1_2_master_proposal(
         stage: validate_stage_binding(raw_bindings[stage], stage)
         for stage in RELEASE_ORDER
     }
+    current_hash = current_implementation_hash()
+    _validate_executable_binding_lineage(
+        bindings,
+        current_implementation=current_hash,
+    )
     all_ready = all(row["status"] == "ready" for row in bindings.values())
     all_projected = all(
         row["status"] in {"ready", "projected_awaiting_independent_audit"}
         for row in bindings.values()
     )
     projected_caps: dict[str, Any] | None = None
-    cap_error: str | None = None
     if all_projected:
         try:
             projected_caps = validate_unified_stage_caps({
@@ -504,32 +667,40 @@ def build_v1_2_master_proposal(
             })
         except UnifiedV12ContractError as exc:
             raise V12MasterReleaseError(str(exc)) from exc
-        projected_cost = _exact_positive_decimal(
-            projected_caps["max_cost_usd"], "projected stage cost"
-        )
-        operational = _exact_positive_decimal(
-            SOURCE_BOUND_OPERATIONAL_COST_HARD_CAP_USD,
-            "operational cost hard cap",
-        )
-        if projected_cost > operational:
-            cap_error = (
-                "rendered stage reservation ceilings exceed the source-bound "
-                "operational hard cap"
-            )
     source_contract = _source_contract()
+    if source_contract["implementation_hash"] != current_hash:
+        raise V12MasterReleaseError("source inventory changed during proposal build")
     execution_ready = (
-        all_ready and cap_error is None and MASTER_CONTROLLER_IMPLEMENTED
+        all_ready
+        and MASTER_CONTROLLER_IMPLEMENTED
+        and MASTER_CUMULATIVE_BUDGET_LEDGER_IMPLEMENTED
     )
     protocol_hash = _protocol_hash(source_contract)
-    theoretical = absolute_theoretical_cost_envelope()
+    coarse_stress_envelope = coarse_context_window_cost_envelope()
+    shape_sum_envelope = (
+        None
+        if projected_caps is None
+        else exact_shape_sum_reservation_envelope(
+            projected_caps,
+            independently_audited=all_ready,
+        )
+    )
     operational_cap = {
         "currency": "USD",
         "max_cost_usd": SOURCE_BOUND_OPERATIONAL_COST_HARD_CAP_USD,
         "enforcement": "reserve before every physical dispatch",
+        "reservation_decision": (
+            "cumulative reconciled actual spend plus the next request's strict "
+            "reservation must not exceed the hard cap"
+        ),
         "scope": "cumulative across the single master run and every stage",
         "resets_at_stage_boundary": False,
         "runtime_override_allowed": False,
-        "exhaustion_behavior": "hard stop before the next unaffordable dispatch",
+        "full_shape_sum_coverage_required_to_start": False,
+        "exhaustion_behavior": (
+            "durably stop as budget_limited before the next unaffordable dispatch"
+        ),
+        "budget_limited_terminal_is_completed_pilot": False,
     }
     scope = {
         "protocol_version": "v1.2",
@@ -547,6 +718,7 @@ def build_v1_2_master_proposal(
         "hard_stops_confirmation": True,
         "confirmation_authorized": False,
         "secondary_studies_authorized": False,
+        "completion_guaranteed_under_operational_cap": False,
     }
     body = {
         "artifact_type": "v1_2_unified_master_proposal_v1",
@@ -565,11 +737,27 @@ def build_v1_2_master_proposal(
         "controller": {
             "controller_id": MASTER_CONTROLLER_ID,
             "implemented": MASTER_CONTROLLER_IMPLEMENTED,
+            "cumulative_budget_ledger_implemented": (
+                MASTER_CUMULATIVE_BUDGET_LEDGER_IMPLEMENTED
+            ),
             "one_run": True,
             "automatic_conditional_release": True,
             "outcome_blind_exhaustive_smoke_audit": True,
             "post_run_human_audit_required_before_claims_or_confirmation": True,
             "caller_supplied_provider_or_executor_allowed": False,
+        },
+        "smoke_integrity_gate": {
+            "contract_version": SOURCE_SMOKE_AUDIT_CONTRACT_VERSION,
+            "contract_hash": SOURCE_SMOKE_AUDIT_CONTRACT_HASH,
+            "required_api": "require_v1_2_smoke_integrity",
+            "automatic_continuation_requires": {
+                "automatic_checks_passed": True,
+                "later_stage_release_permitted": True,
+            },
+            "outcome_blind": True,
+            "exhaustive": True,
+            "mid_run_human_approval_required": False,
+            "post_run_human_transcript_and_claim_audit_required": True,
         },
         "run": {
             "run_id": MASTER_RUN_ID,
@@ -587,7 +775,8 @@ def build_v1_2_master_proposal(
             None if projected_caps is None else digest(projected_caps)
         ),
         "operational_cost_hard_cap": operational_cap,
-        "absolute_theoretical_cost_envelope": theoretical,
+        "exact_shape_sum_reservation_envelope": shape_sum_envelope,
+        "coarse_context_window_stress_envelope": coarse_stress_envelope,
         "pricing_contract": json.loads(canonical(dict(SOURCE_PRICING_CONTRACT))),
         "pricing_contract_hash": digest(dict(SOURCE_PRICING_CONTRACT)),
         "transport": json.loads(canonical(dict(SOURCE_TRANSPORT_CONTRACT))),
@@ -609,13 +798,18 @@ def build_v1_2_master_proposal(
             "on_fewer_than_three_of_five_qualifying_c_histories": True,
             "after_complete_pilot_before_confirmation": True,
             "on_operational_cost_cap_exhaustion": True,
+            "budget_cap_stop_is_graceful_durable_and_non_complete": True,
             "on_post_run_human_transcript_or_claim_audit_failure": True,
         },
         "non_ready_reasons": ([
             f"{stage}: {bindings[stage]['status']}"
             for stage in RELEASE_ORDER
             if bindings[stage]["status"] != "ready"
-        ] + ([] if cap_error is None else [cap_error])),
+        ] + ([] if MASTER_CONTROLLER_IMPLEMENTED else [
+            "dedicated unified master controller is not implemented"
+        ]) + ([] if MASTER_CUMULATIVE_BUDGET_LEDGER_IMPLEMENTED else [
+            "cumulative actual-spend plus next-reservation ledger is not implemented"
+        ])),
         "external_authorization": {
             "required": True,
             "created": False,
@@ -679,13 +873,17 @@ def validate_v1_2_master_proposal(value: Mapping[str, Any]) -> dict[str, Any]:
         stage: validate_stage_binding(bindings[stage], stage)
         for stage in RELEASE_ORDER
     }
+    _validate_executable_binding_lineage(
+        normalized,
+        current_implementation=expected_source["implementation_hash"],
+    )
     if proposal.get("stage_bindings_hash") != digest(normalized):
         raise V12MasterReleaseError("master stage binding hash is invalid")
-    expected_theoretical = absolute_theoretical_cost_envelope()
-    if canonical(proposal.get("absolute_theoretical_cost_envelope")) != canonical(
-        expected_theoretical
+    expected_coarse = coarse_context_window_cost_envelope()
+    if canonical(proposal.get("coarse_context_window_stress_envelope")) != canonical(
+        expected_coarse
     ):
-        raise V12MasterReleaseError("master theoretical envelope differs from source")
+        raise V12MasterReleaseError("master coarse stress envelope differs from source")
     ready = all(row["status"] == "ready" for row in normalized.values())
     all_projected = all(
         row["status"] in {"ready", "projected_awaiting_independent_audit"}
@@ -702,22 +900,30 @@ def validate_v1_2_master_proposal(value: Mapping[str, Any]) -> dict[str, Any]:
             raise V12MasterReleaseError("master projected stage caps are invalid")
         if proposal.get("projected_stage_caps_hash") != digest(projected):
             raise V12MasterReleaseError("master projected stage cap hash is invalid")
-        projected_cost = _exact_positive_decimal(
-            projected["max_cost_usd"], "projected stage cost"
+        expected_shape_sum = exact_shape_sum_reservation_envelope(
+            projected,
+            independently_audited=ready,
         )
-        operational = _exact_positive_decimal(
-            SOURCE_BOUND_OPERATIONAL_COST_HARD_CAP_USD, "operational cap"
-        )
+        if canonical(
+            proposal.get("exact_shape_sum_reservation_envelope")
+        ) != canonical(expected_shape_sum):
+            raise V12MasterReleaseError(
+                "master exact shape-sum envelope is invalid"
+            )
         executable = (
             ready
-            and projected_cost <= operational
             and MASTER_CONTROLLER_IMPLEMENTED
+            and MASTER_CUMULATIVE_BUDGET_LEDGER_IMPLEMENTED
         )
     else:
         if proposal.get("projected_stage_caps") is not None:
             raise V12MasterReleaseError("incomplete proposal carries projected caps")
         if proposal.get("projected_stage_caps_hash") is not None:
             raise V12MasterReleaseError("incomplete proposal carries a cap hash")
+        if proposal.get("exact_shape_sum_reservation_envelope") is not None:
+            raise V12MasterReleaseError(
+                "incomplete proposal carries a shape-sum envelope"
+            )
         executable = False
     if proposal.get("execution_ready") is not executable:
         raise V12MasterReleaseError("master execution readiness is inconsistent")
@@ -729,11 +935,313 @@ def validate_v1_2_master_proposal(value: Mapping[str, Any]) -> dict[str, Any]:
     return proposal
 
 
+def _current_unified_projection() -> dict[str, Any]:
+    """Rebuild and deeply validate the current no-dispatch projection."""
+
+    # Local import preserves this module's provider-free import surface while
+    # avoiding the projection module's deliberate dependency on release
+    # constants during module initialization.
+    from .v1_2_master_projection import (
+        build_unified_projection,
+        validate_unified_projection,
+    )
+
+    return validate_unified_projection(build_unified_projection())
+
+
+def _validate_projection_audit_attestation_against(
+    value: Mapping[str, Any],
+    projection: Mapping[str, Any],
+) -> dict[str, Any]:
+    if (not isinstance(value, Mapping)
+            or set(value) != _PROJECTION_AUDIT_ATTESTATION_FIELDS):
+        raise V12MasterReleaseError(
+            "projection audit attestation has an unexpected shape"
+        )
+    attestation = json.loads(canonical(dict(value)))
+    body = dict(attestation)
+    attestation_hash = body.pop("attestation_hash", None)
+    auditor = attestation.get("audited_by")
+    if (not isinstance(attestation_hash, str)
+            or re.fullmatch(r"[a-f0-9]{64}", attestation_hash) is None
+            or attestation_hash != digest(body)
+            or not isinstance(auditor, str)
+            or not auditor.strip()
+            or len(auditor) > 200):
+        raise V12MasterReleaseError(
+            "projection audit attestation identity is invalid"
+        )
+    _parse_timestamp(attestation.get("audited_at"), "projection audited_at")
+    exact = {
+        "artifact_type": "v1_2_unified_projection_independent_audit_v1",
+        "audit_result": "passed",
+        "independent_audit_passed": True,
+        "projection_hash": projection["projection_hash"],
+        "projection_algorithm_version": projection[
+            "projection_algorithm_version"
+        ],
+        "implementation_hash": projection["implementation_hash"],
+        "plan_hash": projection["plan_hash"],
+        "request_order_hash": projection["request_order_hash"],
+        "stage_partition_hash": projection["stage_partition_hash"],
+        "stage_inventory_hashes": projection["stage_inventory_hashes"],
+        "projected_stage_caps_hash": projection["projected_stage_caps_hash"],
+        "projected_strict_reservation_ceiling_usd": projection[
+            "projected_strict_reservation_ceiling_usd"
+        ],
+        "attested_checks": _REQUIRED_PROJECTION_AUDIT_CHECKS,
+    }
+    if any(
+        canonical(attestation.get(name)) != canonical(expected)
+        for name, expected in exact.items()
+    ):
+        raise V12MasterReleaseError(
+            "projection audit attestation differs from the current projection"
+        )
+    return attestation
+
+
+def complete_projection_audit_attestation(
+    externally_supplied_fields: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Bind explicit independent-auditor assertions to the current projection.
+
+    This is packaging only: it does not conduct the audit, infer a pass, render
+    release files, create an authorization, access a credential, or dispatch.
+    """
+
+    expected_external_fields = {
+        "audit_result",
+        "independent_audit_passed",
+        "audited_by",
+        "audited_at",
+        "attested_checks",
+    }
+    if (not isinstance(externally_supplied_fields, Mapping)
+            or set(externally_supplied_fields) != expected_external_fields):
+        raise V12MasterReleaseError(
+            "projection audit packaging requires exactly the external audit fields"
+        )
+    projection = _current_unified_projection()
+    attestation = json.loads(canonical(dict(externally_supplied_fields)))
+    attestation.update({
+        "artifact_type": "v1_2_unified_projection_independent_audit_v1",
+        "projection_hash": projection["projection_hash"],
+        "projection_algorithm_version": projection[
+            "projection_algorithm_version"
+        ],
+        "implementation_hash": projection["implementation_hash"],
+        "plan_hash": projection["plan_hash"],
+        "request_order_hash": projection["request_order_hash"],
+        "stage_partition_hash": projection["stage_partition_hash"],
+        "stage_inventory_hashes": projection["stage_inventory_hashes"],
+        "projected_stage_caps_hash": projection["projected_stage_caps_hash"],
+        "projected_strict_reservation_ceiling_usd": projection[
+            "projected_strict_reservation_ceiling_usd"
+        ],
+    })
+    attestation["attestation_hash"] = digest(attestation)
+    return _validate_projection_audit_attestation_against(
+        attestation, projection
+    )
+
+
+def validate_projection_audit_attestation(
+    value: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Validate an explicit audit pass against a fresh current projection."""
+
+    return _validate_projection_audit_attestation_against(
+        value, _current_unified_projection()
+    )
+
+
+def _ready_stage_bindings_from_projection_audit(
+    projection: Mapping[str, Any],
+    attestation: Mapping[str, Any],
+) -> dict[str, dict[str, Any]]:
+    evidence = {
+        "projection_hash": projection["projection_hash"],
+        "projection_algorithm_version": projection[
+            "projection_algorithm_version"
+        ],
+        "projection_audit_attestation_hash": attestation["attestation_hash"],
+        "audited_by": attestation["audited_by"],
+        "audited_at": attestation["audited_at"],
+        "independent_audit_passed": True,
+        "dispatch_permitted_by_binding_alone": False,
+    }
+    return {
+        stage: build_stage_binding(
+            stage,
+            status="ready",
+            controller_id=MASTER_CONTROLLER_ID,
+            plan_hash=projection["plan_hash"],
+            inventory_hash=projection["stage_inventories"][stage][
+                "inventory_hash"
+            ],
+            implementation_hash=projection["implementation_hash"],
+            exact_caps=projection["stage_inventories"][stage]["exact_caps"],
+            evidence=evidence,
+        )
+        for stage in RELEASE_ORDER
+    }
+
+
+def build_final_v1_2_master_artifacts(
+    projection_audit_attestation: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Build final keyless artifacts from one explicit independent audit pass."""
+
+    projection = _current_unified_projection()
+    attestation = _validate_projection_audit_attestation_against(
+        projection_audit_attestation, projection
+    )
+    bindings = _ready_stage_bindings_from_projection_audit(
+        projection, attestation
+    )
+    proposal = build_v1_2_master_proposal(bindings)
+    if (proposal.get("execution_ready") is not True
+            or proposal.get("authorization_issuance_enabled") is not True):
+        raise V12MasterReleaseError(
+            "controller and cumulative ledger require independent source audit "
+            "before final release rendering"
+        )
+    schema = authorization_schema(proposal)
+    return {
+        "projection_audit_attestation": attestation,
+        "proposal": proposal,
+        "authorization_schema": schema,
+    }
+
+
+def _atomic_release_json(path: Path, value: Mapping[str, Any]) -> None:
+    if path.parent.is_symlink():
+        raise V12MasterReleaseError("release output parent cannot be a symlink")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = (canonical(dict(value)) + "\n").encode("utf-8")
+    try:
+        details = path.lstat()
+    except FileNotFoundError:
+        details = None
+    except OSError as exc:
+        raise V12MasterReleaseError("release output path is unavailable") from exc
+    if details is not None:
+        if not stat.S_ISREG(details.st_mode):
+            raise V12MasterReleaseError(
+                "release output must be a regular file"
+            )
+        try:
+            if path.read_bytes() == payload:
+                return
+        except OSError as exc:
+            raise V12MasterReleaseError(
+                "existing release output cannot be verified"
+            ) from exc
+    temporary = path.parent / (
+        f".{path.name}.render-{os.getpid()}-{secrets.token_hex(16)}"
+    )
+    descriptor = os.open(
+        temporary,
+        os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0),
+        0o644,
+    )
+    closed = False
+    try:
+        view = memoryview(payload)
+        while view:
+            written = os.write(descriptor, view)
+            if written <= 0:
+                raise OSError("short release artifact write")
+            view = view[written:]
+        os.fsync(descriptor)
+        os.close(descriptor)
+        closed = True
+        os.replace(temporary, path)
+        _fsync_directory(path.parent)
+    except OSError as exc:
+        raise V12MasterReleaseError(
+            "release artifact could not be published atomically"
+        ) from exc
+    finally:
+        if not closed:
+            os.close(descriptor)
+        try:
+            temporary.unlink()
+        except FileNotFoundError:
+            pass
+
+
+def finalize_v1_2_master_release(
+    projection_audit_attestation: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Atomically render reviewed artifacts; never authorize or dispatch."""
+
+    artifacts = build_final_v1_2_master_artifacts(
+        projection_audit_attestation
+    )
+    # Publish the proposal last: neither the attestation nor schema is usable
+    # as authority on its own, and every authorization binds the proposal hash.
+    _atomic_release_json(
+        MASTER_PROJECTION_AUDIT_ATTESTATION_PATH,
+        artifacts["projection_audit_attestation"],
+    )
+    _atomic_release_json(
+        MASTER_AUTHORIZATION_SCHEMA_PATH,
+        artifacts["authorization_schema"],
+    )
+    _atomic_release_json(MASTER_PROPOSAL_PATH, artifacts["proposal"])
+    persisted_proposal = _read_json(
+        MASTER_PROPOSAL_PATH, "rendered master proposal"
+    )
+    persisted_schema = _read_json(
+        MASTER_AUTHORIZATION_SCHEMA_PATH,
+        "rendered master authorization schema",
+    )
+    persisted_attestation = _read_json(
+        MASTER_PROJECTION_AUDIT_ATTESTATION_PATH,
+        "rendered projection audit attestation",
+    )
+    if (canonical(persisted_proposal) != canonical(artifacts["proposal"])
+            or canonical(persisted_schema)
+            != canonical(artifacts["authorization_schema"])
+            or canonical(persisted_attestation)
+            != canonical(artifacts["projection_audit_attestation"])):
+        raise V12MasterReleaseError(
+            "rendered release artifacts differ from the audited build"
+        )
+    return {
+        "artifact_type": "v1_2_unified_master_release_render_result_v1",
+        "proposal_path": str(MASTER_PROPOSAL_PATH.relative_to(ROOT)),
+        "proposal_hash": artifacts["proposal"]["proposal_hash"],
+        "authorization_schema_path": str(
+            MASTER_AUTHORIZATION_SCHEMA_PATH.relative_to(ROOT)
+        ),
+        "authorization_schema_hash": digest(
+            artifacts["authorization_schema"]
+        ),
+        "projection_audit_attestation_path": str(
+            MASTER_PROJECTION_AUDIT_ATTESTATION_PATH.relative_to(ROOT)
+        ),
+        "projection_audit_attestation_hash": artifacts[
+            "projection_audit_attestation"
+        ]["attestation_hash"],
+        "authorization_created": False,
+        "credential_accessed": False,
+        "network_calls": 0,
+        "paid_calls": 0,
+        "dispatch_performed": False,
+    }
+
+
 def _require_final_proposal(proposal: Mapping[str, Any]) -> dict[str, Any]:
     value = validate_v1_2_master_proposal(proposal)
     if (value["execution_ready"] is not True
             or value["authorization_issuance_enabled"] is not True
-            or value["controller"]["implemented"] is not True):
+            or value["controller"]["implemented"] is not True
+            or value["controller"][
+                "cumulative_budget_ledger_implemented"
+            ] is not True):
         raise V12MasterReleaseError(
             "master draft cannot issue authorization or execute"
         )
@@ -782,8 +1290,15 @@ def authorization_schema(proposal: Mapping[str, Any]) -> dict[str, Any]:
             "approved_projected_stage_caps_hash": {
                 "const": proposal["projected_stage_caps_hash"]
             },
-            "approved_absolute_theoretical_envelope_hash": {
-                "const": proposal["absolute_theoretical_cost_envelope"]["envelope_hash"]
+            "approved_exact_shape_sum_reservation_envelope_hash": {
+                "const": proposal["exact_shape_sum_reservation_envelope"][
+                    "envelope_hash"
+                ]
+            },
+            "approved_coarse_context_window_stress_envelope_hash": {
+                "const": proposal["coarse_context_window_stress_envelope"][
+                    "envelope_hash"
+                ]
             },
             "approved_stage_bindings_hash": {
                 "const": proposal["stage_bindings_hash"]
@@ -820,8 +1335,11 @@ def _authorization_exact_fields(proposal: Mapping[str, Any]) -> dict[str, Any]:
             SOURCE_BOUND_OPERATIONAL_COST_HARD_CAP_USD
         ),
         "approved_projected_stage_caps_hash": proposal["projected_stage_caps_hash"],
-        "approved_absolute_theoretical_envelope_hash": proposal[
-            "absolute_theoretical_cost_envelope"
+        "approved_exact_shape_sum_reservation_envelope_hash": proposal[
+            "exact_shape_sum_reservation_envelope"
+        ]["envelope_hash"],
+        "approved_coarse_context_window_stress_envelope_hash": proposal[
+            "coarse_context_window_stress_envelope"
         ]["envelope_hash"],
         "approved_stage_bindings_hash": proposal["stage_bindings_hash"],
         "approved_source_contract_hash": proposal["source_contract_hash"],
@@ -995,6 +1513,9 @@ def build_authorization_receipt(
         "source_contract_hash": proposal["source_contract_hash"],
         "stage_bindings_hash": proposal["stage_bindings_hash"],
         "projected_stage_caps_hash": proposal["projected_stage_caps_hash"],
+        "exact_shape_sum_reservation_envelope_hash": proposal[
+            "exact_shape_sum_reservation_envelope"
+        ]["envelope_hash"],
         "operational_cost_hard_cap_usd": (
             SOURCE_BOUND_OPERATIONAL_COST_HARD_CAP_USD
         ),
@@ -1118,64 +1639,103 @@ def _receipt_path(directory: Path) -> Path:
     return directory / f"{MASTER_CONTROLLER_ID}--{MASTER_RUN_ID}.json"
 
 
-def claim_human_authorization_once(
+def claim_human_authorization_once_with_state(
     authorization: Mapping[str, Any],
     proposal: Mapping[str, Any],
-    *,
-    now: datetime | None = None,
-) -> dict[str, Any]:
-    """Atomically consume the full master authority before credential access."""
+) -> tuple[dict[str, Any], bool]:
+    """Return the exact receipt and whether this call created it exclusively.
 
-    current = _utc_now(now)
+    The boolean is security-relevant: only the invocation that wins the
+    exclusive receipt creation may create the canonical run directory.  An
+    existing receipt can resume an already-bound run, but can never recreate a
+    missing or deleted run under consumed authority.
+    """
+
+    current = _utc_now()
     proposal = _require_final_proposal(proposal)
     authorization = validate_human_authorization(authorization, proposal)
-    _validate_first_claim_window(authorization, proposal, now=current)
     registry = _validate_receipt_registry(AUTHORIZATION_RECEIPT_DIRECTORY)
-    registry.mkdir(parents=True, exist_ok=True, mode=0o700)
-    os.chmod(registry, 0o700)
     path = _receipt_path(registry)
-    receipt = build_authorization_receipt(
-        authorization, proposal, claimed_at=current
-    )
-    try:
-        _publish_exclusive_json(path, receipt)
-        return receipt
-    except FileExistsError:
+
+    def verified_existing() -> dict[str, Any]:
         existing = _read_owner_only_json(path, "master authorization receipt")
-        body = dict(existing)
-        receipt_hash = body.pop("receipt_hash", None)
-        if receipt_hash != digest(body):
-            raise V12MasterReleaseError("existing receipt self-hash is invalid")
-        immutable = {
-            key: value
-            for key, value in receipt.items()
-            if key not in {"claimed_at", "receipt_hash"}
-        }
-        if any(existing.get(key) != value for key, value in immutable.items()):
+        try:
+            claimed_at = _parse_timestamp(
+                existing.get("claimed_at"), "receipt claimed_at"
+            )
+            expected = build_authorization_receipt(
+                authorization, proposal, claimed_at=claimed_at
+            )
+        except (KeyError, TypeError, ValueError) as exc:
+            raise V12MasterReleaseError(
+                "existing master authorization receipt is malformed"
+            ) from exc
+        if canonical(existing) != canonical(expected):
             raise V12MasterReleaseError(
                 "master authorization was already claimed by a different release"
             )
         return existing
 
+    # Freshness governs the first consumption only.  Once an exact immutable
+    # receipt exists, a crash-safe resume may replay it after the 15-minute
+    # claim window without minting any new authority.
+    if path.exists():
+        return verified_existing(), False
+    _validate_first_claim_window(authorization, proposal, now=current)
+    receipt = build_authorization_receipt(
+        authorization, proposal, claimed_at=current
+    )
+    registry.mkdir(parents=True, exist_ok=True, mode=0o700)
+    os.chmod(registry, 0o700)
+    try:
+        _publish_exclusive_json(path, receipt)
+        return receipt, True
+    except FileExistsError:
+        return verified_existing(), False
+
+
+def claim_human_authorization_once(
+    authorization: Mapping[str, Any],
+    proposal: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Atomically consume the full master authority before credential access."""
+
+    receipt, _created = claim_human_authorization_once_with_state(
+        authorization, proposal
+    )
+    return receipt
+
 
 __all__ = [
     "AUTHORIZATION_RECEIPT_DIRECTORY",
     "HUMAN_ACKNOWLEDGEMENT",
+    "MASTER_CUMULATIVE_BUDGET_LEDGER_IMPLEMENTED",
     "MASTER_CONTROLLER_ID",
+    "MASTER_PROJECTION_AUDIT_ATTESTATION_PATH",
+    "MASTER_PROPOSAL_PATH",
     "MASTER_RUN_DIRECTORY",
     "MASTER_RUN_ID",
     "SOURCE_BOUND_OPERATIONAL_COST_HARD_CAP_USD",
+    "SOURCE_SMOKE_AUDIT_CONTRACT_HASH",
+    "SOURCE_SMOKE_AUDIT_CONTRACT_VERSION",
     "V12MasterReleaseError",
     "absolute_theoretical_cost_envelope",
     "authorization_schema",
     "build_authorization_receipt",
+    "build_final_v1_2_master_artifacts",
     "build_stage_binding",
     "build_v1_2_master_proposal",
     "claim_human_authorization_once",
+    "claim_human_authorization_once_with_state",
     "complete_human_authorization",
+    "complete_projection_audit_attestation",
+    "coarse_context_window_cost_envelope",
     "current_stage_bindings",
+    "exact_shape_sum_reservation_envelope",
+    "finalize_v1_2_master_release",
     "load_human_authorization",
     "validate_human_authorization",
+    "validate_projection_audit_attestation",
     "validate_stage_binding",
     "validate_v1_2_master_proposal",
 ]

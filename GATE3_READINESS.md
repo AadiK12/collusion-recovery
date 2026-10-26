@@ -56,6 +56,30 @@ The schema required a fresh, external, short-lived, owner-only, single-use autho
 
 ## Current authorization boundary
 
-No current authorization permits continuation, retry, assessment completion by dispatch, Phase 2, Gate 4, confirmation, the formation-peer secondary study, publication, or any claim of collusion or recovery. The project has selected prospective offline preparation of the sole allowed v1.2 fallback as an [early-futility methodological decision/deviation](V1_2_ACTIVATION_DECISION.md), because no completed Gate 3 trigger artifact exists. Its exact formation-only two-round contract is in [`PROTOCOL_V1_2_ADDENDUM.md`](PROTOCOL_V1_2_ADDENDUM.md); calibration, evaluation, and probes preserve the original baseline, and the v1.2 protocol hash binds the base protocol plus addendum. That contract freezes one narrow runner-owned HTTP-5xx recovery path, 1/2/5/9 affected-identity caps, and 61/694/1,765/2,997 stage attempt ceilings without changing the 20/192/480/888 logical counts. Eligibility requires received integer exception/response statuses exactly equal to the same 500/502/503/504, matching request IDs, and no output or usage. The incident stays durable and fully reserved but is excluded from model-visible history; only numeric `Retry-After` or numeric `Retry-After-Ms` values may extend the fixed five-second wait. The first non-ambiguous returned outcome is terminal, refusals/invalid responses remain missing/invalid, and no second ambiguous-5xx-owned retry is allowed. Because an unseen attempt may have completed and differed, future reports must disclose affected identities and sensitivity bounds even within the cap.
+No current authorization permits continuation or retry of this v1.1 run,
+assessment completion by dispatch, v1.1 Phase 2, Gate 4, confirmation, the
+formation-peer secondary study, publication, or any claim of collusion or
+recovery. The project selected the sole allowed v1.2 fallback prospectively as
+an [early-futility methodological decision/deviation](V1_2_ACTIVATION_DECISION.md)
+because no completed v1.1 Gate 3 trigger artifact exists. This does not
+retroactively alter, resume, or repair the v1.1 lineage.
 
-The v1.2 Gate 1 release package now contains a dedicated independently reviewed controller, exact prompt/context and fresh-pricing projections, bound token/cost caps, a static proposal, and a static authorization schema. It remains preparation rather than empirical evidence: no v1.2 authorization, credential access, provider call, or result exists. Gate 2 and Gate 3 Phase 1 still have projected plans only; their live controllers and cross-run prerequisite assessments are unimplemented. The policy does not retroactively authorize retrying the v1.1 incident or authorize any v1.2 call. Each fresh v1.2 stage still requires separate prerequisite evidence, review, and exact authorization. v1.1 and v1.2 observations must never be pooled, and the one-round formation-peer-v1 secondary protocol remains separate rather than being inherited by v1.2.
+The October 25 v1.2 governance amendment replaces the earlier plan for four
+separate v1.2 authorizations with one exact, short-lived, owner-approved,
+single-use master authorization bound to one run/namespace and the ordered
+`20 + 192 + 480 + 888 = 1,580` logical requests. Calibration, an exhaustive
+outcome-blind automatic smoke audit, and the unchanged 3/5 formation marker are
+still sequential fail-closed release conditions. Human transcript and claim
+review occurs after the run and before publication rather than between stages.
+
+The internal stage attempt ceilings are non-fungible at
+`61 / 694 / 1,765 / 2,997`, totaling `5,517`. The complete-plan
+`$5,032.461128` shape-sum reservation envelope is theoretical, not expected or
+authorized spend. Live execution instead stops before the next request if
+cumulative actual settled spend plus that request's full reservation would
+exceed `$250.000000`, and may therefore finish as `budget_limited`. Gate 4,
+confirmation, publication, formation-peer, and every secondary study are
+excluded. Exact final hashes belong in the independently verified static master
+proposal. No exact v1.2 master authorization has been claimed and no v1.2
+provider call or result exists. No v1.2 calls have run. v1.1 and v1.2
+observations must never be pooled.

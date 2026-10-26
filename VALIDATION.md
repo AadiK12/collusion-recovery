@@ -254,12 +254,17 @@ never reached. The Gate 3 authorization is consumed, and the 888 Phase 2 request
 remain unauthorized. The durable evidence and hashes are indexed in
 `GATE3_PARTIAL_RUN_REPORT.md`. The selected v1.2 preparation path is a
 prospectively recorded early-futility methodological decision/deviation because
-no completed Gate 3 trigger artifact exists; its calibration, smoke, and pilot
-releases each require fresh review and authorization and may not pool v1.1
-observations. Before Gate 4
+no completed Gate 3 trigger artifact exists. Its calibration, smoke, and pilot
+slices are governed by one prospective master authorization and may not pool
+v1.1 observations. Before Gate 4
 or confirmation, `pilot_freeze_assessment` still requires raw-audit hardening.
 
-## Protocol v1.2 prospective-preparation boundary
+## Historical October 24 protocol v1.2 preparation boundary
+
+This section records the superseded calibration-only preparation checkpoint.
+Its four-separate-authorization wording is retained as audit history and is not
+the current v1.2 release design. The October 25 unified amendment below governs
+future v1.2 execution.
 
 The project selected the sole two-round-formation fallback for offline
 preparation through [`V1_2_ACTIVATION_DECISION.md`](V1_2_ACTIVATION_DECISION.md)
@@ -300,7 +305,7 @@ ambiguous-5xx-owned retry is permitted, and every other ambiguity remains
 fail-stop. The affected-identity cap is
 `max(1, ceil(N/100))` per release. Therefore the checked Gate 1, Gate 2, Phase 1,
 and Phase 2 caps are 1/2/5/9 affected identities and 61/694/1,765/2,997 maximum
-dispatch attempts, totaling 5,517 attempts across the four separate releases.
+dispatch attempts, totaling 5,517 attempts across the then-planned four separate releases.
 The nominal logical counts remain 20/192/480/888. Passing the cap does not
 resolve the scientific ambiguity: the unseen attempt may have completed and
 differed from its retry. Any future report must list affected identities and
@@ -316,16 +321,47 @@ The namespace roots are `fallback-two-round/v1.2/calibration`,
 observation or gate artifact fills a v1.2 cell. The one-round
 `formation-peer-v1` study remains separate and is not inherited or counted.
 
-This checkpoint creates no authorization, accesses no credential, constructs no
-provider client, and makes no network or paid call. Gate 1 now has a dedicated
-live controller and a checked, execution-ready static proposal/schema package
-that binds fresh official pricing, rendered prompts and contexts, exact token
-and cost ceilings, inventory, source, model/settings, transport-policy hash, and
-budget. It still cannot dispatch without a fresh external one-use authorization
-bound to that exact package, and it hard-stops before smoke. Gate 2 and Gate 3
-Phase 1 remain plan projections; their live controllers and cross-run
-prerequisite assessments are not implemented and require separate future
-packages and approvals.
+This historical checkpoint created no authorization, accessed no credential,
+constructed no provider client, and made no network or paid call. Its
+calibration-only proposal is superseded for dispatch by the unified contract.
+
+## October 25 protocol v1.2 unified release validation target
+
+The current prospective design uses one exact, short-lived, owner-approved,
+single-use authorization, one run, one namespace, and one ordered plan with
+`20 + 192 + 480 + 888 = 1,580` logical requests. This changes v1.2 operational
+governance only; it does not change the v1.1 protocol or any historical v1.1
+release evidence.
+
+The unified package is valid only if offline verification establishes all of the
+following before authorization:
+
+- the 20-request calibration slice can release smoke only on the frozen
+  capability pass;
+- the 192-request smoke can release Phase 1 only after an exhaustive,
+  deterministic, outcome-blind automatic audit reconstructs every expected
+  identity, exact request and wire payload, raw response, visibility/timing
+  rule, checkpoint, provider identity, retry, scope, authorization, and budget
+  event;
+- the 480-request Phase 1 can release the remaining 888 requests only after at
+  least three of five C histories meet the frozen marker;
+- any failed or indeterminate gate stops every later dispatch, and a marker
+  failure after 692 requests is recorded as the completed feasibility boundary;
+- per-slice attempt ceilings are non-fungible at `61 / 694 / 1,765 / 2,997`,
+  totaling `5,517`;
+- the exact `$5,032.461128` shape-sum reservation envelope is labeled as a
+  theoretical worst-case projection rather than expected or authorized spend;
+- cumulative actual settled spend plus the next request's complete reservation
+  cannot exceed `$250.000000`; a request that does not fit is not dispatched and
+  produces a durable `budget_limited` non-completion; and
+- the master authority excludes Gate 4, confirmation, publication,
+  formation-peer, and every secondary study.
+
+Human transcript and claim review remains mandatory after the run and before
+publication, but it is not an intermediate smoke gate. Exact final hashes and a
+controller-complete claim belong only in the independently verified static
+proposal. At this documentation checkpoint, no exact v1.2 master authorization
+has been claimed and no v1.2 provider call has been made.
 
 ## October 24 formation-control methodology reconciliation
 

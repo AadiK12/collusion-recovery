@@ -1516,7 +1516,10 @@ def load_durable_and_rescore(directory, allow_incomplete=False):
     result is computed.  Oracle labels are regenerated from the frozen seed
     namespace and checked against the hashed fixture inventory.
     """
-    from .orchestration import DurableRun
+    from .orchestration import (
+        DurableRun,
+        V1_2_UNIFIED_PILOT_CONTROLLER_ID,
+    )
     from .staged_requests import ScientificRequestFactory
 
     run = DurableRun.inspect(directory)
@@ -1525,6 +1528,45 @@ def load_durable_and_rescore(directory, allow_incomplete=False):
     run_type = manifest.get("run_type")
     if source not in {"fake-live", "empirical-live"}:
         raise ValueError("Durable analysis accepts only fake-live or empirical-live runs")
+    if manifest.get("execution_controller") == V1_2_UNIFIED_PILOT_CONTROLLER_ID:
+        events = list(getattr(run, "events", ()))
+        prefix = events[:3]
+        modes = [
+            event for event in events
+            if event.get("kind") == "v1_2_master_execution_mode_binding"
+        ]
+        exact_mode_fields = {
+            "sequence", "previous_event_hash", "kind", "recorded_at",
+            "event_hash", "controller", "proposal_hash", "run_id", "mode",
+            "executor_provenance",
+        }
+        if (len(prefix) != 3
+                or [event.get("kind") for event in prefix] != [
+                    "v1_2_master_release_binding",
+                    "v1_2_master_authorization_claimed",
+                    "v1_2_master_execution_mode_binding",
+                ]
+                or len(modes) != 1
+                or modes[0] is not prefix[2]
+                or set(modes[0]) != exact_mode_fields
+                or modes[0].get("sequence") != 2
+                or modes[0].get("controller")
+                != V1_2_UNIFIED_PILOT_CONTROLLER_ID
+                or modes[0].get("run_id") != manifest.get("run_id")
+                or modes[0].get("proposal_hash")
+                != manifest.get("master_proposal_hash")
+                or modes[0].get("mode") != "empirical_live"
+                or modes[0].get("executor_provenance")
+                != "official_openai_client_from_run_v1_2_master"
+                or manifest.get("execution_mode") != "empirical_live"
+                or manifest.get("executor_provenance")
+                != "official_openai_client_from_run_v1_2_master"
+                or manifest.get("empirical_evidence") is not True
+                or manifest.get("status")
+                == "completed_fake_v1_2_pilot_offline_only"):
+            raise ValueError(
+                "Offline v1.2 master artifacts cannot be analyzed as empirical evidence"
+            )
     designs = tuple(block_design(run.config.seed_namespace, block,
                                  run.config.protocol_version)
                     for block in range(run.config.blocks))
@@ -1674,7 +1716,8 @@ def _manifest_provenance(manifest: Mapping[str, Any]) -> dict[str, Any]:
             "run_id", "source", "run_type", "split", "config_hash", "plan_hash",
             "protocol_version", "protocol_hash", "implementation_hash",
             "last_event_hash", "event_count", "artifact_hashes", "source_hashes",
-            "git",
+            "git", "execution_controller", "execution_mode",
+            "executor_provenance", "empirical_evidence",
         ) if key in manifest
     }
 

@@ -21,9 +21,10 @@ import json
 import math
 from typing import Any, Iterable, Mapping
 
-from .budget import BudgetLedger, BudgetStateError, DispatchReleaseLimits
+from .budget import BudgetLedger, DispatchReleaseLimits
 from .common import canonical, digest
 from .design import ARMS, ROLES, block_design
+from .gates import calibration_assessment
 from .orchestration import (
     OBSERVATION_STATUSES,
     STAGE_ORDER,
@@ -34,6 +35,7 @@ from .orchestration import (
     V1_2_UNIFIED_PILOT_REQUEST_ORDER_HASH,
     V1_2_UNIFIED_PILOT_RUN_ID,
     V1_2_UNIFIED_PILOT_STAGE_PARTITION_HASH,
+    DispatchAuthorizationArtifact,
     DurableRun,
     ExecutionContext,
     ScheduledRequest,
@@ -41,19 +43,37 @@ from .orchestration import (
     _valid_provider_identity,
     build_gate2_smoke_fixture_inventory,
     validate_canonical_plan,
+    validate_dispatch_authorization,
 )
 from .providers.openai import (
-    OpenAIResponsesProvider,
+    OpenAIResponsesProvider as _OpenAIResponsesProvider,
     provider_result_matches_raw_response,
 )
 from .staged_requests import ScientificRequestFactory
+from .v1_2_unified_contract import (
+    GATE1,
+    GATE2,
+    GATE3_PHASE1,
+    GATE3_PHASE2,
+    RELEASE_ORDER,
+    TOTAL_DISPATCH_ATTEMPT_CEILING,
+    validate_unified_stage_caps,
+)
 
 
 SMOKE_LOGICAL_REQUESTS = 192
 SMOKE_MAX_DISPATCH_ATTEMPTS = 694
 SMOKE_PHASE_COUNTS = {"formation": 120, "evaluation": 72}
 SMOKE_ACTION_COUNTS = {"message": 116, "verdict": 76}
-V1_2_SMOKE_AUDIT_CONTRACT_VERSION = "v1"
+V1_2_SMOKE_AUDIT_ASSESSMENT_TYPE = (
+    "v1_2_block_0_smoke_exhaustive_integrity_v1"
+)
+V1_2_SMOKE_INTEGRITY_GATE = "smoke_integrity"
+V1_2_SMOKE_INTEGRITY_DECIDED_BY = V1_2_SMOKE_AUDIT_ASSESSMENT_TYPE
+V1_2_SMOKE_INTEGRITY_NOTE = (
+    "Automatic exhaustive outcome-blind block-0 smoke integrity audit."
+)
+V1_2_SMOKE_AUDIT_CONTRACT_VERSION = "v2"
 V1_2_SMOKE_AUDIT_CONTRACT = {
     "contract_version": V1_2_SMOKE_AUDIT_CONTRACT_VERSION,
     "run_id": V1_2_UNIFIED_PILOT_RUN_ID,
@@ -61,11 +81,31 @@ V1_2_SMOKE_AUDIT_CONTRACT = {
     "namespace": V1_2_UNIFIED_PILOT_NAMESPACE,
     "protocol_version": "v1.2",
     "logical_requests": SMOKE_LOGICAL_REQUESTS,
-    "maximum_dispatch_attempts": SMOKE_MAX_DISPATCH_ATTEMPTS,
+    "maximum_smoke_dispatch_attempts": SMOKE_MAX_DISPATCH_ATTEMPTS,
+    "maximum_unified_dispatch_attempts": TOTAL_DISPATCH_ATTEMPT_CEILING,
     "phase_counts": SMOKE_PHASE_COUNTS,
     "action_counts": SMOKE_ACTION_COUNTS,
     "allowed_dispatch_through_stage": "smoke",
     "required_prior_gate": "calibration",
+    "required_prior_gate_identities": 20,
+    "authorization_policy": "one_initial_full_scope_authorization_no_renewal",
+    "master_release_prefix": {
+        "ordered_event_kinds": [
+            "v1_2_master_release_binding",
+            "v1_2_master_authorization_claimed",
+            "v1_2_master_execution_mode_binding",
+        ],
+        "exact_sequences": [0, 1, 2],
+        "execution_mode": "empirical_live",
+        "executor_provenance": (
+            "official_openai_client_from_run_v1_2_master"
+        ),
+    },
+    "budget_policy": {
+        "cumulative_ledger": "exact_manifest_replay",
+        "nonfungible_stage_ledgers": list(RELEASE_ORDER),
+        "future_stage_ledgers_at_smoke": "present_and_zero_consumption",
+    },
     "required_checkpoint_histories": ["C", "U"],
     "required_scientific_artifacts": {
         "checkpoint_snapshot": 2,
@@ -75,8 +115,36 @@ V1_2_SMOKE_AUDIT_CONTRACT = {
     "payload_policy": "all_attempts_exact_request_and_wire_reconstruction",
     "outcome_blind": True,
     "human_dispatch_review_required": False,
+    "post_run_human_transcript_and_claim_audit_required": True,
+    "durable_gate_event": {
+        "kind": "gate",
+        "gate": V1_2_SMOKE_INTEGRITY_GATE,
+        "passed": True,
+        "decided_by": V1_2_SMOKE_INTEGRITY_DECIDED_BY,
+        "note": V1_2_SMOKE_INTEGRITY_NOTE,
+        "evidence_fields": ["audit_report"],
+        "prerequisite_scope": "exact_plan_order_through_smoke",
+        "position": "sole_final_event",
+        "idempotent_reaudit": (
+            "recompute_exact_report_over_pre_event_journal_prefix"
+        ),
+    },
 }
 V1_2_SMOKE_AUDIT_CONTRACT_HASH = digest(V1_2_SMOKE_AUDIT_CONTRACT)
+__all__ = [
+    "SMOKE_LOGICAL_REQUESTS",
+    "SMOKE_MAX_DISPATCH_ATTEMPTS",
+    "V1_2_SMOKE_AUDIT_ASSESSMENT_TYPE",
+    "V1_2_SMOKE_AUDIT_CONTRACT",
+    "V1_2_SMOKE_AUDIT_CONTRACT_HASH",
+    "V1_2_SMOKE_AUDIT_CONTRACT_VERSION",
+    "V1_2_SMOKE_INTEGRITY_DECIDED_BY",
+    "V1_2_SMOKE_INTEGRITY_GATE",
+    "V1_2_SMOKE_INTEGRITY_NOTE",
+    "V12SmokeIntegrityError",
+    "audit_v1_2_smoke_integrity",
+    "require_v1_2_smoke_integrity",
+]
 _FINAL_STATUSES = frozenset(OBSERVATION_STATUSES)
 _RETRYABLE_INTERMEDIATE_STATUSES = frozenset({
     "overlength", "retryable_error", "ambiguous_timeout",
@@ -87,6 +155,32 @@ _PROVIDER_RESULT_FIELDS = frozenset({
     "usage", "timing", "ambiguous", "known_not_completed",
     "transport_evidence",
 })
+_MASTER_BINDING_EVENT = "v1_2_master_release_binding"
+_MASTER_CLAIM_EVENT = "v1_2_master_authorization_claimed"
+_MASTER_MODE_EVENT = "v1_2_master_execution_mode_binding"
+_MASTER_EMPIRICAL_MODE = "empirical_live"
+_MASTER_EMPIRICAL_PROVENANCE = "official_openai_client_from_run_v1_2_master"
+_MASTER_FAKE_MODE = "fake_transport_test"
+_MASTER_FAKE_PROVENANCE = "explicit_offline_fake_master_factory"
+_FAKE_SMOKE_AUDIT_ASSESSMENT_TYPE = (
+    "v1_2_block_0_smoke_exhaustive_offline_fake_integrity_v1"
+)
+_FAKE_SMOKE_AUDIT_CONTRACT_VERSION = "offline-fake-v1"
+_FAKE_SMOKE_AUDIT_CONTRACT_HASH = digest({
+    "contract_version": _FAKE_SMOKE_AUDIT_CONTRACT_VERSION,
+    "empirical_contract_hash": V1_2_SMOKE_AUDIT_CONTRACT_HASH,
+    "execution_mode": _MASTER_FAKE_MODE,
+    "executor_provenance": _MASTER_FAKE_PROVENANCE,
+    "empirical_evidence": False,
+    "purpose": "production-shaped offline controller testing only",
+})
+_MASTER_STAGE_FOR_PLAN_STAGE = {
+    "calibration": GATE1,
+    "smoke": GATE2,
+    "formation": GATE3_PHASE1,
+    "remaining_arms": GATE3_PHASE2,
+    "probes": GATE3_PHASE2,
+}
 
 
 class V12SmokeIntegrityError(RuntimeError):
@@ -327,6 +421,286 @@ def _events_by_kind(run: DurableRun, kind: str) -> list[Mapping[str, Any]]:
     return [event for event in run.events if event.get("kind") == kind]
 
 
+_DURABLE_SMOKE_GATE_FIELDS = frozenset({
+    "sequence",
+    "previous_event_hash",
+    "kind",
+    "recorded_at",
+    "gate",
+    "passed",
+    "decided_by",
+    "note",
+    "evidence",
+    "evidence_hash",
+    "prerequisite_identities",
+    "event_hash",
+})
+
+
+def _verify_smoke_boundary(
+        run: DurableRun, findings: _Findings) -> dict[str, Any]:
+    """Locate an optional crash-safe audit gate and freeze its input prefix."""
+    manifest = findings.capture("manifest_unreadable", lambda: run.manifest) or {}
+    findings.require(
+        manifest.get("status") == "completed_stage"
+        and manifest.get("completed_through_stage") == "smoke"
+        and manifest.get("completed_through_block") == 0
+        and manifest.get("stop_identity") is None,
+        "smoke_boundary_manifest_status_invalid",
+    )
+
+    gate_events = [event for event in run.events if event.get("kind") == "gate"]
+    findings.require(
+        all(event.get("gate") in {
+            "calibration", V1_2_SMOKE_INTEGRITY_GATE,
+        } for event in gate_events),
+        "later_or_unknown_gate_precedes_smoke_audit",
+    )
+    smoke_gates = [
+        event for event in gate_events
+        if event.get("gate") == V1_2_SMOKE_INTEGRITY_GATE
+    ]
+    if not smoke_gates:
+        return {
+            "event": None,
+            "journal_event_count": len(run.events),
+            "journal_tail": (
+                None if not run.events else run.events[-1].get("event_hash")
+            ),
+        }
+
+    findings.require(len(smoke_gates) == 1,
+                     "smoke_integrity_gate_not_exactly_once")
+    event = smoke_gates[0]
+    findings.require(
+        bool(run.events) and event is run.events[-1],
+        "smoke_integrity_gate_not_sole_final_event",
+    )
+    findings.require(set(event) == _DURABLE_SMOKE_GATE_FIELDS,
+                     "smoke_integrity_gate_schema_drift")
+    evidence = event.get("evidence")
+    findings.require(
+        event.get("kind") == "gate"
+        and event.get("gate") == V1_2_SMOKE_INTEGRITY_GATE
+        and event.get("passed") is True
+        and event.get("decided_by") == V1_2_SMOKE_INTEGRITY_DECIDED_BY
+        and event.get("note") == V1_2_SMOKE_INTEGRITY_NOTE,
+        "smoke_integrity_gate_fixed_fields_invalid",
+    )
+    findings.require(
+        isinstance(evidence, Mapping) and set(evidence) == {"audit_report"}
+        and isinstance(evidence.get("audit_report"), Mapping)
+        and event.get("evidence_hash") == digest(evidence),
+        "smoke_integrity_gate_evidence_invalid",
+    )
+    prerequisite_ids = [
+        spec.identity for spec in run.plan.requests
+        if STAGE_ORDER.index(spec.stage) <= STAGE_ORDER.index("smoke")
+    ]
+    findings.require(
+        event.get("prerequisite_identities") == prerequisite_ids,
+        "smoke_integrity_gate_prerequisites_invalid",
+    )
+    return {
+        "event": event,
+        "journal_event_count": event.get("sequence"),
+        "journal_tail": event.get("previous_event_hash"),
+    }
+
+
+def _verify_persisted_smoke_gate_report(
+        boundary: Mapping[str, Any], report: Mapping[str, Any],
+        findings: _Findings) -> None:
+    event = boundary.get("event")
+    if not isinstance(event, Mapping):
+        return
+    evidence = event.get("evidence")
+    stored = evidence.get("audit_report") if isinstance(evidence, Mapping) else None
+    findings.require(
+        isinstance(stored, Mapping)
+        and canonical(stored) == canonical(report)
+        and stored.get("report_hash") == digest({
+            key: value for key, value in stored.items() if key != "report_hash"
+        })
+        and stored.get("automatic_checks_passed") is True
+        and stored.get("later_stage_release_permitted") is True,
+        "persisted_smoke_integrity_report_mismatch",
+    )
+
+
+def _verify_authorization_lineage(
+        run: DurableRun, findings: _Findings, *,
+        expected_mode: str = _MASTER_EMPIRICAL_MODE,
+        expected_provenance: str = _MASTER_EMPIRICAL_PROVENANCE,
+        expected_empirical_evidence: bool = True,
+) -> dict[str, Any]:
+    """Revalidate the one-authorization ceiling without mutating the run."""
+    manifest = findings.capture("manifest_unreadable", lambda: run.manifest)
+    if not isinstance(manifest, Mapping):
+        return {"authorization_hash": None, "maximum_dispatch_attempts": None}
+    initial = manifest.get("initial_dispatch_authorization")
+    current = manifest.get("dispatch_authorization")
+    findings.require(
+        isinstance(initial, Mapping) and isinstance(current, Mapping)
+        and canonical(initial) == canonical(current),
+        "unified_one_authorization_lineage_invalid",
+    )
+    findings.require(
+        not _events_by_kind(run, "authorization_renewal"),
+        "unified_run_contains_authorization_renewal",
+    )
+    bindings = _events_by_kind(run, _MASTER_BINDING_EVENT)
+    claims = _events_by_kind(run, _MASTER_CLAIM_EVENT)
+    modes = _events_by_kind(run, _MASTER_MODE_EVENT)
+    master_prefix_valid = (
+        len(bindings) == len(claims) == len(modes) == 1
+        and [bindings[0].get("sequence"), claims[0].get("sequence"),
+             modes[0].get("sequence")] == [0, 1, 2]
+    )
+    findings.require(master_prefix_valid, "master_release_prefix_not_singular")
+    if master_prefix_valid:
+        binding, claim, mode = bindings[0], claims[0], modes[0]
+        journal_fields = {
+            "sequence", "previous_event_hash", "kind", "recorded_at",
+            "event_hash",
+        }
+        binding_fields = {
+            "controller", "run_id", "proposal_hash", "authorization_hash",
+            "receipt_hash", "source_contract_hash", "stage_bindings_hash",
+            "projected_stage_caps_hash", "projection_hash", "config_hash",
+            "plan_hash", "implementation_hash",
+            "dispatch_authorization_hash", "request_order_hash",
+            "stage_partition_hash", "operational_cost_hard_cap_usd",
+        }
+        claim_fields = {
+            "controller", "run_id", "proposal_hash", "authorization_hash",
+            "receipt_hash", "receipt_claimed_at", "binding_event_hash",
+        }
+        mode_fields = {
+            "controller", "proposal_hash", "run_id", "mode",
+            "executor_provenance",
+        }
+        findings.require(
+            set(binding) == journal_fields | binding_fields
+            and binding.get("controller")
+            == V1_2_UNIFIED_PILOT_CONTROLLER_ID
+            and binding.get("run_id") == V1_2_UNIFIED_PILOT_RUN_ID
+            and binding.get("proposal_hash")
+            == manifest.get("master_proposal_hash")
+            and binding.get("authorization_hash")
+            == manifest.get("master_authorization_hash")
+            and binding.get("receipt_hash")
+            == manifest.get("master_authorization_receipt_hash")
+            and binding.get("projected_stage_caps_hash")
+            == manifest.get("authorized_stage_caps_hash")
+            and binding.get("projection_hash")
+            == manifest.get("master_projection_hash")
+            and binding.get("config_hash") == digest(run.config.to_dict())
+            and binding.get("plan_hash") == run.plan.plan_hash
+            and binding.get("implementation_hash")
+            == run.plan.implementation_hash
+            and binding.get("request_order_hash")
+            == V1_2_UNIFIED_PILOT_REQUEST_ORDER_HASH
+            and binding.get("stage_partition_hash")
+            == V1_2_UNIFIED_PILOT_STAGE_PARTITION_HASH,
+            "master_release_binding_invalid",
+        )
+        findings.require(
+            set(claim) == journal_fields | claim_fields
+            and claim.get("controller") == V1_2_UNIFIED_PILOT_CONTROLLER_ID
+            and claim.get("run_id") == V1_2_UNIFIED_PILOT_RUN_ID
+            and claim.get("proposal_hash") == binding.get("proposal_hash")
+            and claim.get("authorization_hash")
+            == binding.get("authorization_hash")
+            and claim.get("receipt_hash") == binding.get("receipt_hash")
+            and claim.get("binding_event_hash") == binding.get("event_hash")
+            and manifest.get("master_authorization_claim_event_hash")
+            == claim.get("event_hash"),
+            "master_authorization_claim_invalid",
+        )
+        findings.require(
+            set(mode) == journal_fields | mode_fields
+            and mode.get("controller") == V1_2_UNIFIED_PILOT_CONTROLLER_ID
+            and mode.get("run_id") == V1_2_UNIFIED_PILOT_RUN_ID
+            and mode.get("proposal_hash") == binding.get("proposal_hash")
+            and mode.get("mode") == expected_mode
+            and mode.get("executor_provenance")
+            == expected_provenance
+            and manifest.get("execution_mode") == expected_mode
+            and manifest.get("executor_provenance")
+            == expected_provenance
+            and manifest.get("empirical_evidence")
+            is expected_empirical_evidence,
+            "master_execution_mode_invalid",
+        )
+    artifact = findings.capture(
+        "dispatch_authorization_invalid",
+        lambda: DispatchAuthorizationArtifact.from_mapping(current),
+    )
+    if artifact is None:
+        return {"authorization_hash": None, "maximum_dispatch_attempts": None}
+    findings.capture(
+        "dispatch_authorization_binding_invalid",
+        lambda: validate_dispatch_authorization(
+            run.config, run.plan, artifact, require_initial=True
+        ),
+    )
+    authorization_hash = digest(artifact.to_dict())
+    findings.require(
+        manifest.get("dispatch_authorization_hash") == authorization_hash,
+        "dispatch_authorization_hash_mismatch",
+    )
+    if master_prefix_valid:
+        binding = bindings[0]
+        findings.require(
+            binding.get("dispatch_authorization_hash") == authorization_hash
+            and binding.get("operational_cost_hard_cap_usd")
+            == manifest.get("authorized_budget_usd"),
+            "master_binding_authorization_ceiling_mismatch",
+        )
+    findings.require(
+        manifest.get("authorized_stage") == artifact.max_stage == "probes"
+        and manifest.get("authorized_max_block") == artifact.max_block == 4,
+        "unified_authorized_scope_mismatch",
+    )
+    findings.require(
+        manifest.get("authorized_budget_usd")
+        == artifact.approved_budget_usd
+        == str(run.config.authorization.approved_budget_usd),
+        "unified_authorized_budget_mismatch",
+    )
+    release = artifact.release_limits
+    findings.require(release is not None, "unified_release_limits_missing")
+    if release is not None:
+        limits = run.config.limits
+        findings.require(
+            release.max_dispatch_attempts == limits.max_requests
+            == TOTAL_DISPATCH_ATTEMPT_CEILING,
+            "unified_dispatch_attempt_ceiling_mismatch",
+        )
+        findings.require(
+            release.max_total_input_tokens == limits.max_total_input_tokens
+            and release.max_total_output_tokens == limits.max_total_output_tokens
+            and release.max_input_tokens_per_request
+            == limits.max_input_tokens_per_request
+            and release.max_output_tokens_per_request
+            == limits.max_output_tokens_per_request
+            and release.max_in_flight == limits.max_in_flight == 1,
+            "unified_release_and_config_limits_mismatch",
+        )
+        findings.require(
+            canonical(manifest.get("authorized_release_limits"))
+            == canonical(release.to_dict()),
+            "manifest_release_limits_mismatch",
+        )
+    return {
+        "authorization_hash": authorization_hash,
+        "maximum_dispatch_attempts": (
+            None if release is None else release.max_dispatch_attempts
+        ),
+    }
+
+
 def _reservation_result_indexes(run: DurableRun, findings: _Findings):
     reservations: dict[tuple[str, int], Mapping[str, Any]] = {}
     results: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
@@ -437,9 +811,7 @@ def _verify_calibration_gate(
 
     computed = findings.capture(
         "calibration_assessment_reconstruction_failed",
-        lambda: __import__(
-            "collusion_recovery.gates", fromlist=["calibration_assessment"]
-        ).calibration_assessment(run),
+        lambda: calibration_assessment(run),
     )
     if isinstance(computed, Mapping):
         findings.require(computed.get("passed") is True,
@@ -708,6 +1080,12 @@ def _verify_attempts(
                 continue
             if index == 0:
                 first_reservations[spec.identity] = reservation_event
+            else:
+                findings.require(
+                    rows[index - 1].get("sequence", -1)
+                    < reservation_event.get("sequence", -1),
+                    f"{item_prefix}_reserved_before_prior_attempt_completed",
+                )
             reservation = reservation_event.get("reservation")
             findings.require(
                 isinstance(reservation, Mapping)
@@ -750,7 +1128,7 @@ def _verify_attempts(
                     f"{item_prefix}_reservation_shape_mismatch",
                 )
                 _verify_round_visibility(spec, actual_request, findings)
-                expected_wire = OpenAIResponsesProvider.build_payload(expected_request)
+                expected_wire = _OpenAIResponsesProvider.build_payload(expected_request)
                 actual_wire = findings.capture(
                     f"{item_prefix}_wire_payload_unreadable",
                     lambda row=row: run.wire_payload(row.get("wire_payload_hash")),
@@ -1119,19 +1497,138 @@ def _verify_budget(
     return snapshot
 
 
-def audit_v1_2_smoke_integrity(run: DurableRun) -> dict[str, Any]:
+def _verify_nonfungible_stage_budgets(
+        run: DurableRun, findings: _Findings) -> dict[str, Any] | None:
+    """Replay the four source-bound ledgers; no slice may borrow another's cap."""
+    manifest = findings.capture("manifest_unreadable", lambda: run.manifest)
+    if not isinstance(manifest, Mapping):
+        return None
+    stage_caps = manifest.get("authorized_stage_caps")
+    aggregate = findings.capture(
+        "authorized_stage_caps_invalid",
+        lambda: validate_unified_stage_caps(stage_caps),
+    )
+    if not isinstance(aggregate, Mapping):
+        return None
+    findings.require(
+        manifest.get("authorized_stage_caps_hash") == digest(aggregate),
+        "authorized_stage_caps_hash_mismatch",
+    )
+    release_value = manifest.get("authorized_release_limits")
+    release = findings.capture(
+        "release_limits_invalid_for_stage_ledgers",
+        lambda: DispatchReleaseLimits.from_mapping(release_value),
+    )
+    if release is not None:
+        findings.require(
+            aggregate.get("dispatch_attempts") == release.max_dispatch_attempts
+            and aggregate.get("max_total_input_tokens")
+            == release.max_total_input_tokens
+            and aggregate.get("max_total_output_tokens")
+            == release.max_total_output_tokens
+            and aggregate.get("max_input_tokens_per_request")
+            == release.max_input_tokens_per_request
+            and aggregate.get("max_output_tokens_per_request")
+            == release.max_output_tokens_per_request
+            and aggregate.get("max_in_flight") == release.max_in_flight == 1,
+            "authorized_stage_caps_do_not_sum_to_unified_release",
+        )
+
+    records = run.budget_records()
+    planned_stage = {
+        spec.identity: _MASTER_STAGE_FOR_PLAN_STAGE.get(spec.stage)
+        for spec in run.plan.requests
+    }
+    findings.require(
+        all(stage in RELEASE_ORDER for stage in planned_stage.values()),
+        "master_plan_stage_has_no_nonfungible_ledger",
+    )
+    findings.require(
+        all(row.get("identity") in planned_stage for row in records),
+        "stage_budget_record_has_unknown_identity",
+    )
+    snapshots: dict[str, Any] = {}
+    for stage in RELEASE_ORDER:
+        cap = aggregate["stage_caps"][stage]
+        stage_release = findings.capture(
+            f"{stage}_release_cap_invalid",
+            lambda cap=cap: DispatchReleaseLimits.from_mapping({
+                "max_dispatch_attempts": cap["dispatch_attempts"],
+                "max_total_input_tokens": cap["max_total_input_tokens"],
+                "max_total_output_tokens": cap["max_total_output_tokens"],
+                "max_cost_usd": cap["max_cost_usd"],
+                "max_in_flight": cap["max_in_flight"],
+                "max_input_tokens_per_request": cap[
+                    "max_input_tokens_per_request"
+                ],
+                "max_output_tokens_per_request": cap[
+                    "max_output_tokens_per_request"
+                ],
+            }),
+        )
+        if stage_release is None:
+            continue
+        stage_records = [
+            row for row in records
+            if planned_stage.get(row.get("identity")) == stage
+        ]
+        ledger = findings.capture(
+            f"{stage}_budget_replay_failed",
+            lambda stage_records=stage_records,
+                   stage_release=stage_release,
+                   cap=cap: BudgetLedger.replay(
+                       run.config.limits,
+                       run.config.pricing,
+                       Decimal(str(cap["max_cost_usd"])),
+                       stage_records,
+                       stage_release,
+                   ),
+        )
+        if ledger is None:
+            continue
+        findings.require(
+            not ledger.active,
+            f"{stage}_budget_has_unresolved_reservation",
+        )
+        snapshots[stage] = ledger.snapshot()
+    findings.require(
+        set(snapshots) == set(RELEASE_ORDER)
+        and canonical(manifest.get("stage_budgets")) == canonical(snapshots),
+        "manifest_nonfungible_stage_budgets_mismatch",
+    )
+    return snapshots
+
+
+def _audit_v1_2_smoke_integrity(
+    run: DurableRun, *, fake_transport_test: bool,
+) -> dict[str, Any]:
     """Return a deterministic, exhaustive, read-only Gate-2 audit report.
 
-    A passing report is sufficient for the mechanical/human-integrity boundary:
-    no separate transcript spot-check is needed.  Scientific qualification is
-    deliberately out of scope; the later formation marker remains a separate
-    conditional gate.
+    A passing report is sufficient for the mid-run mechanical dispatch
+    boundary: no separate mid-run transcript spot-check is needed.  The human
+    transcript/claim audit remains mandatory post-run and before publication
+    or confirmation.  Scientific qualification is deliberately out of scope;
+    the later formation marker remains a separate conditional gate.
     """
     if not isinstance(run, DurableRun):
         raise TypeError("v1.2 smoke audit requires an opened DurableRun")
     findings = _Findings()
     _verify_journal_chain(run, findings)
+    boundary = _verify_smoke_boundary(run, findings)
     specs, inventory = _verify_plan_and_inventory(run, findings)
+    authorization = _verify_authorization_lineage(
+        run,
+        findings,
+        expected_mode=(
+            _MASTER_FAKE_MODE
+            if fake_transport_test else _MASTER_EMPIRICAL_MODE
+        ),
+        expected_provenance=(
+            _MASTER_FAKE_PROVENANCE
+            if fake_transport_test else _MASTER_EMPIRICAL_PROVENANCE
+        ),
+        expected_empirical_evidence=not fake_transport_test,
+    )
     reservations, results = _reservation_result_indexes(run, findings)
     calibration = _verify_calibration_gate(
         run, reservations, results, specs, findings
@@ -1167,6 +1664,7 @@ def audit_v1_2_smoke_integrity(run: DurableRun) -> dict[str, Any]:
         findings,
     )
     budget = _verify_budget(run, reservations, results, findings)
+    stage_budgets = _verify_nonfungible_stage_budgets(run, findings)
 
     smoke_ids = {spec.identity for spec in specs}
     smoke_reservations = {
@@ -1186,45 +1684,95 @@ def audit_v1_2_smoke_integrity(run: DurableRun) -> dict[str, Any]:
     )
 
     manifest = findings.capture("manifest_unreadable", lambda: run.manifest) or {}
-    report = {
-        "assessment_type": "v1_2_block_0_smoke_exhaustive_integrity_v1",
-        "audit_contract_version": V1_2_SMOKE_AUDIT_CONTRACT_VERSION,
-        "audit_contract_hash": V1_2_SMOKE_AUDIT_CONTRACT_HASH,
-        "outcome_blind": True,
-        "protocol_version": run.config.protocol_version,
-        "source": run.config.source,
-        "run_id": run.config.run_id,
-        "plan_hash": run.plan.plan_hash,
-        "fixture_inventory_hash": digest(inventory),
-        "journal_tail": manifest.get("last_event_hash"),
-        "journal_event_count": len(run.events),
-        "scope": {
-            "calibration": calibration,
-            "scheduled_smoke_identities": len(specs),
-            "completed_smoke_identities": len(attempt_audit["final_rows"]),
-            "smoke_dispatch_attempts": attempt_audit["total_attempts"],
-            "maximum_smoke_dispatch_attempts": SMOKE_MAX_DISPATCH_ATTEMPTS,
-            "out_of_scope_identities": out_of_scope,
-            "unused_reservations": unused_reservations,
-        },
-        "lineage": {
-            "request_payloads_verified": attempt_audit["payloads_verified"],
-            "wire_payloads_verified": attempt_audit["wires_verified"],
-            "raw_results_verified": attempt_audit["raw_results_verified"],
-            "provider_identity": manifest.get("observed_provider_identity"),
-            "retry_status_counts": attempt_audit["retry_status_counts"],
-            "final_status_counts": attempt_audit["final_status_counts"],
-            "ambiguous_5xx_identities": attempt_audit[
-                "ambiguous_5xx_identities"
-            ],
-        },
-        "budget": budget,
-        "human_review_required": False,
-        "later_stage_release_permitted": not findings.failures,
-        "failures": sorted(findings.failures),
-        "automatic_checks_passed": not findings.failures,
-    }
-    report["report_hash"] = digest(report)
+    def build_report() -> dict[str, Any]:
+        report = {
+            "assessment_type": (
+                _FAKE_SMOKE_AUDIT_ASSESSMENT_TYPE
+                if fake_transport_test else V1_2_SMOKE_AUDIT_ASSESSMENT_TYPE
+            ),
+            "audit_contract_version": (
+                _FAKE_SMOKE_AUDIT_CONTRACT_VERSION
+                if fake_transport_test else V1_2_SMOKE_AUDIT_CONTRACT_VERSION
+            ),
+            "audit_contract_hash": (
+                _FAKE_SMOKE_AUDIT_CONTRACT_HASH
+                if fake_transport_test else V1_2_SMOKE_AUDIT_CONTRACT_HASH
+            ),
+            "outcome_blind": True,
+            "protocol_version": run.config.protocol_version,
+            "source": run.config.source,
+            "run_id": run.config.run_id,
+            "plan_hash": run.plan.plan_hash,
+            "fixture_inventory_hash": digest(inventory),
+            "journal_tail": boundary["journal_tail"],
+            "journal_event_count": boundary["journal_event_count"],
+            "authorization": authorization,
+            "scope": {
+                "calibration": calibration,
+                "scheduled_smoke_identities": len(specs),
+                "completed_smoke_identities": len(attempt_audit["final_rows"]),
+                "smoke_dispatch_attempts": attempt_audit["total_attempts"],
+                "maximum_smoke_dispatch_attempts": SMOKE_MAX_DISPATCH_ATTEMPTS,
+                "out_of_scope_identities": out_of_scope,
+                "unused_reservations": unused_reservations,
+            },
+            "lineage": {
+                "request_payloads_verified": attempt_audit["payloads_verified"],
+                "wire_payloads_verified": attempt_audit["wires_verified"],
+                "raw_results_verified": attempt_audit["raw_results_verified"],
+                "provider_identity": manifest.get("observed_provider_identity"),
+                "retry_status_counts": attempt_audit["retry_status_counts"],
+                "final_status_counts": attempt_audit["final_status_counts"],
+                "ambiguous_5xx_identities": attempt_audit[
+                    "ambiguous_5xx_identities"
+                ],
+            },
+            "budget": budget,
+            "nonfungible_stage_budgets": stage_budgets,
+            "human_review_required": False,
+            "later_stage_release_permitted": not findings.failures,
+            "failures": sorted(findings.failures),
+            "automatic_checks_passed": not findings.failures,
+        }
+        if fake_transport_test:
+            report.update({
+                "execution_mode": _MASTER_FAKE_MODE,
+                "executor_provenance": _MASTER_FAKE_PROVENANCE,
+                "empirical_evidence": False,
+                "offline_test_only": True,
+            })
+        report["report_hash"] = digest(report)
+        return report
+
+    report = build_report()
+    failure_count = len(findings.failures)
+    _verify_persisted_smoke_gate_report(boundary, report, findings)
+    if len(findings.failures) != failure_count:
+        report = build_report()
+    return report
+
+
+def audit_v1_2_smoke_integrity(run: DurableRun) -> dict[str, Any]:
+    """Audit the empirical smoke boundary under the frozen public contract."""
+
+    return _audit_v1_2_smoke_integrity(run, fake_transport_test=False)
+
+
+def _require_v1_2_smoke_integrity_offline_fake(
+    run: DurableRun,
+) -> dict[str, Any]:
+    """Require the exhaustive smoke checks under fake-only provenance.
+
+    The report is conspicuously non-empirical and cannot satisfy the public
+    empirical audit contract or empirical master terminal verifier.
+    """
+
+    report = _audit_v1_2_smoke_integrity(run, fake_transport_test=True)
+    if not report["automatic_checks_passed"]:
+        raise V12SmokeIntegrityError(
+            "v1.2 offline-fake smoke integrity failed: "
+            + ", ".join(report["failures"])
+        )
     return report
 
 

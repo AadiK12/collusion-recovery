@@ -2,9 +2,9 @@
 
 Decision date: **October 24, 2026 (Pacific time)**
 
-Decision: **select the sole protocol v1.2 fallback for offline preparation only**
+Decision: **select the sole protocol v1.2 fallback and prepare one conditional master release**
 
-Empirical status: **no v1.2 authorization, credential access, provider client, network call, paid call, or model observation**
+Empirical status: **no exact v1.2 master authorization has been claimed and no v1.2 network call, paid call, or model observation exists**
 
 ## Decision
 
@@ -61,11 +61,14 @@ transition. The decision was recorded before any v1.2 model output exists.
   immutable and visible.
 - No v1.1 response, checkpoint, packet outcome, smoke decision, or capability
   decision is counted as v1.2 evidence.
-- v1.2 uses the fresh `fallback-two-round/v1.2/*` namespaces and repeats
-  capability calibration, block-0 smoke, blocks 1--4 formation, and—only after a
-  passing formation decision—the remaining pilot requests.
-- Gate 1, Gate 2, Gate 3 Phase 1, and Gate 3 Phase 2 require distinct prospective
-  contracts and authorizations. Passing one creates no authority for the next.
+- v1.2 uses one fresh run and one fresh descendant of
+  `fallback-two-round/v1.2/pilot`. It repeats capability calibration, block-0
+  smoke, blocks 1--4 formation, and—only after a passing formation
+  decision—the remaining pilot requests.
+- The October 25 prospective governance amendment replaces the earlier plan for
+  four distinct v1.2 human authorizations with one exact, short-lived,
+  owner-approved, single-use master authorization. The four internal slices
+  retain independent non-fungible ceilings and automatic fail-closed gates.
 - The only scientific change is a second sequential message round in U/C
   formation. `prompts/baseline_v1_2.txt` is formation-only; calibration,
   evaluation, and probes preserve `prompts/baseline.txt`. Evaluation remains
@@ -94,17 +97,41 @@ transition. The decision was recorded before any v1.2 model output exists.
   It is neither inherited by v1.2 nor authorized. A two-round secondary variant
   would require a new separately reviewed protocol version and lineage.
 
+## Unified prospective governance amendment
+
+The four-stage authorization wording above and in earlier readiness snapshots is
+superseded for v1.2 only. It remains historically correct for the executed v1.1
+lineage. The unified v1.2 contract binds one ordered `20 + 192 + 480 + 888 =
+1,580` logical-request plan under one run and namespace. Maximum dispatch
+attempts are non-fungible by slice: `61 + 694 + 1,765 + 2,997 = 5,517`.
+
+After calibration, the controller may release smoke only on the frozen
+capability pass. After smoke, it may release Phase 1 only when an exhaustive,
+deterministic, outcome-blind automatic audit verifies all 192 smoke identities,
+payloads, raw evidence, timing/visibility, checkpoints, transport, provider,
+scope, authorization, and budget invariants. After Phase 1, it may release the
+888 Phase 2 requests only when at least three of five C histories satisfy the
+frozen marker. A failed or indeterminate gate stops all later dispatch. A marker
+failure after 692 requests is the completed feasibility result for this pilot,
+not permission to tune or continue.
+
+The exact shape-sum reservation envelope is `$5,032.461128`; it is a theoretical
+worst-case projection, not expected spend and not spending authority. The live
+contract instead enforces a `$250.000000` cumulative hard stop over actual
+settled spend plus the next request's complete reservation. If the next request
+cannot fit, the run stops before dispatch as `budget_limited` and may remain
+scientifically incomplete.
+
+Human transcript and claim audit is mandatory after the run and before
+publication, but it is not an intermediate dispatch gate. The master release
+excludes Gate 4, confirmation, publication, the formation-peer study, and every
+secondary study. No v1.2 call has yet been made.
+
 ## Next permissible step
 
-The dedicated v1.2 Gate 1 controller has now been implemented and independently
-reviewed offline. The checked release package renders the exact prompt/context
-projection, binds freshly verified official pricing and exact token/cost
-ceilings, and includes a static proposal and external authorization schema.
-This preparation accessed no credential and made no provider call. Gate 1's
-logical/transport envelope is 20 requests, at most one affected identity, and
-at most 61 dispatch attempts. The next permissible action is to create a fresh,
-short-lived, external one-use authorization bound to that exact package; only
-then may the **20-request v1.2 capability calibration** run. It hard-stops before
-smoke and grants no hypothesis-bearing authority. Gate 2 and Gate 3 Phase 1
-remain plan projections; their live controllers and cross-run prerequisite
-assessments are unimplemented.
+Finalize and independently verify the unified controller and static master
+proposal, including exact source/protocol/proposal hashes. Then create the one
+fresh, short-lived, external, single-use authorization bound to that exact
+package. Until that exact authorization is claimed, credential access and every
+v1.2 dispatch remain prohibited. Proposal generation, this decision, and prior
+v1.1 approvals create no live authority.

@@ -6,7 +6,7 @@ This repository contains the historical v1.0 offline foundation, sealed empirica
 
 > **Status on October 25, 2026 Pacific time:** fresh v1.1 Gate 1 passed, and v1.1 Gate 2 completed its 152-request block-0 smoke with a descriptive false feasibility marker. v1.1 Gate 3 Phase 1 run `3e0d7744-45d7-4db5-a36a-a46b634c0b98` then used its exact one-use authorization for blocks 1–4 U/C formation. It stopped fail-closed at `paused_ambiguous_timeout` after 228 in-scope attempts: 227 were `ok`, one block-3/C/zero-based episode-6 (the seventh formation episode)/Bob verdict returned HTTP 500 and remained ambiguous, and 92 planned identities were never dispatched. The run produced 227 usable observations and 5/8 checkpoints; conservative consumed accounting was 2,624,832 input tokens, 20,412 output/reasoning tokens, and `$6.7658595`, including the ambiguous request's full reservation. It made no out-of-scope call. Block 0 is verified false; block-1 and block-2 markers are false in their completed trajectory artifacts but provisional without a formal Gate 3 assessment. Even both unresolved blocks qualifying would therefore yield at most 2/5. That is a partial-run futility upper bound—not a completed Gate 3 result or `0/5`. No formal v1.1 Gate 3 assessment or Phase 2 authority exists.
 
-> **Selected next path:** the v1.2 Gate 1 capability-calibration release is prepared as an explicitly disclosed early-futility methodological deviation. Its dedicated controller, current-price projection, exact proposal, and static authorization schema are checked in for review. It remains unstarted: no v1.2 authorization exists, no credential has been accessed, no v1.2 model call has been made, and all v1.2 result fields remain empty. The first possible empirical step is the separately authorized 20-request capability calibration, which hard-stops before the hypothesis-bearing smoke. Gate 2 and Gate 3 Phase 1 still have projected plans only; their live controllers and cross-run assessments are not implemented.
+> **Selected next path:** protocol v1.2 remains an explicitly disclosed early-futility methodological deviation, but its prospective release governance was consolidated on October 25. One exact, short-lived, owner-approved, single-use master authorization will bind one run and namespace containing `20 + 192 + 480 + 888 = 1,580` ordered logical requests. Internal releases remain conditional: the frozen capability gate releases smoke; an exhaustive outcome-blind automatic smoke-integrity audit releases Phase 1; and the unchanged 3/5 C-history marker releases Phase 2. No exact master authorization has been claimed, no v1.2 model call has been made, and all v1.2 result fields remain empty.
 
 The v1.2 transport contract is now frozen prospectively: one runner-owned retry
 is available only when the received response and exception statuses are integers
@@ -25,12 +25,16 @@ identities, derives their transitive request/checkpoint dependency closures,
 and exports claim-level identification bounds with every verdict in an affected
 closure treated as missing. The 20/192/480/888
 logical stage counts remain unchanged; their maximum dispatch-attempt ceilings
-are 61/694/1,765/2,997, or 5,517 across four releases that each require a
-separate future authorization.
-Gate 1 exact token, context, current-pricing, and cost ceilings are bound in
-`configs/gate1_v1_2_calibration_proposal.json`; later v1.2 stages remain
-unbound. The Gate 1 price record is freshly reverified from the official model
-page and expires after 24 hours for an unclaimed release.
+are 61/694/1,765/2,997, or 5,517 under the one master release. The stage
+ceilings are non-fungible. The complete shape-sum reservation envelope is
+`$5,032.461128`; this is an extreme theoretical ceiling, not expected spend or
+spending authority. Live execution instead enforces a `$250.000000` cumulative
+hard stop over actual settled spend plus the next request's full reservation.
+If the next request cannot fit, the run stops before dispatch as
+`budget_limited` and may remain scientifically incomplete. Human transcript and
+claim audit is required after the run and before publication, but it is not a
+mid-run dispatch gate. Gate 4, confirmation, publication, formation-peer, and
+all secondary studies remain outside the master authorization.
 
 The dated [sprint execution plan](SPRINT_EXECUTION_PLAN.md) translates that scientific protocol into the staged October 23–25 build, live-run, analysis, paper, and submission workback. It does not authorize paid calls or change the protocol by itself.
 
@@ -174,7 +178,7 @@ The existing ignored `gate2_readiness.json` is a historical v1.0 proposal contai
 
 The Stage 2, Gate 1, Gate 2, and Gate 3 Phase 1 authorizations are consumed and cannot be expanded or replayed. [GATE2_READINESS.md](GATE2_READINESS.md) records the earlier lineage; [GATE3_READINESS.md](GATE3_READINESS.md) and [GATE3_PARTIAL_RUN_REPORT.md](GATE3_PARTIAL_RUN_REPORT.md) record the checked contract, partial evidence, and current no-authority boundary.
 
-This is an **experiment-started, partial-run, pilot-incomplete checkpoint**. No formal Gate 3 decision or primary recovery estimate exists. The project selected prospective offline preparation of the sole allowed v1.2 fallback as an early-futility methodological deviation. Its fresh calibration, smoke, Phase 1, and Phase 2 require separate proposals and authorizations; none is authorized here. v1.1 and v1.2 data may not be pooled. Formation-peer-v1 remains one-round, separate, and offline.
+This is an **experiment-started, partial-run, pilot-incomplete v1.1 checkpoint**. No formal v1.1 Gate 3 decision or primary recovery estimate exists. The project selected prospective preparation of the sole allowed v1.2 fallback as an early-futility methodological deviation. For v1.2, one exact master proposal and authorization conditionally govern calibration, smoke, Phase 1, and Phase 2; none has been claimed or dispatched. v1.1 and v1.2 data may not be pooled. Formation-peer-v1 remains one-round, separate, and offline.
 
 ### Analysis, figures, and annotation after a run
 
@@ -212,12 +216,12 @@ The table distinguishes retained v1.0 lineage from the implemented main v1.1 fou
 | Provider boundary | Canonical developer/user rendering; stateless Responses payload with `store: false`, tools disabled, no automatic truncation, strict verdict schema, raw/refusal/error/usage/timing capture; explicit injected transport only |
 | Staged orchestration | Deterministic request identities; calibration/smoke/formation/remaining/probe stages; hash-chained journal; exact resume; immutable checkpoint reuse; process lock; fsynced atomic snapshots; fail-closed torn-tail recovery |
 | Budgets and context | Pre-dispatch request/input/output/dollar reservations; exact-decimal ordinary/cache/cache-write/output pricing with the model-specific >272K long-context multipliers; in-flight ceiling; per-request projected token/context refusal; full-reserve ambiguous accounting; monotonic paid budget/stage/block releases |
-| Gates and freeze | Computed 9/10 + 9/10 + 20/20 calibration gate; human smoke audit; computed 3/5 joint-violation feasibility gate; pilot message/data-quality/bounds assessment; verified pilot lineage; exact prompt/plan/settings/tier/dates/analysis/budget freeze |
+| Gates and freeze | Computed 9/10 + 9/10 + 20/20 calibration gate; exhaustive outcome-blind automatic v1.2 smoke audit; computed 3/5 joint-violation feasibility gate; post-run/pre-publication human transcript and claim audit; verified lineage; exact prompt/plan/settings/tier/dates/analysis/budget freeze |
 | Gate 1 capability | Dedicated 20-request `calibration/v1.1` release completed with 20/20 valid/audited responses, 10/10 clean approvals, and 9/10 faulty rejections; 20 attempts cost `$0.1378975`, and the controller hard-stopped before smoke with `experiment_started: false` |
 | Formation-time peer controls | Separate formation-peer-v1 offline schedule and analysis; two matched policy histories and independent restored-evidence diagnostics; 21 focused tests and five-block mock demonstration; no live integration or empirical results |
 | Gate 2 smoke | Dedicated v1.1 smoke completed 152/152 logical requests in 153 attempts and passed mechanical/external integrity review; block 0 marker false, A/B verdict vectors identical with perfect metrics, F reject-all; hard-stopped with no later-stage authority |
 | Gate 3 Phase 1 | Run `3e0d7744…` paused fail-closed after 228/320 planned identities: 227 `ok`, one ambiguous HTTP 500, 92 undispatched, 5/8 checkpoints, `$6.7658595`; no formal assessment or Phase 2 authority |
-| Protocol v1.2 | Prospective formation-only two-round addendum and early-futility deviation decision recorded; the protocol hash binds the v1.1 base plus addendum, `baseline_v1_2.txt` applies only to formation, and the original baseline remains exact for calibration/evaluation/probes; fresh `fallback-two-round/v1.2/*` lineage; 20/192/480/888 logical partitions; bounded runner-owned 5xx recovery with 61/694/1,765/2,997 attempt ceilings; Gate 1 controller and exact static release package ready but unauthorized/unstarted; later stages remain unbound projections |
+| Protocol v1.2 | Prospective formation-only two-round addendum and early-futility deviation decision recorded; one fresh run/namespace and one exact single-use master authorization; 20/192/480/888 conditional logical partitions; bounded runner-owned 5xx recovery with non-fungible 61/694/1,765/2,997 attempt ceilings; `$5,032.461128` theoretical shape-sum envelope and `$250.000000` actual-spend-plus-next-reservation hard stop; no v1.2 calls yet |
 | Safety | Mock path cannot initialize a provider; fake-live has no transport; all four empirical authorizations are consumed; Gate 3 dispatched no out-of-scope identity and stopped on the first ambiguous provider result without retrying |
 
 The baseline evidence-policy control is a deterministic reviewer of the records in its actual input. It is **not** secretly passed evaluator truth. Without full evidence it rejects; with full evidence it computes the answer itself. `fixtures.select_records` is the evaluator truth function and is separately tested against hand-calculated examples.
@@ -309,7 +313,7 @@ Fake-live staged runs use a separate format: `plan.json` freezes the complete id
 - `gate2_readiness.py`: retired historical v1.0 readiness renderer/audit; it now fails closed and cannot write a current proposal.
 - `gate2_successor.py`, `gate2_passed_lineage.py`, `configs/gate2_smoke_proposal.json`, `release/GATE2_HUMAN_AUTHORIZATION_SCHEMA.json`, `GATE2_READINESS.md`: completed v1.1 smoke controller, consumed release contract, externally reviewed decision, and sealed Gate 2-to-Gate 3 lineage.
 - `gate3_phase1.py`, `configs/gate3_formation_phase1_proposal.json`, `release/GATE3_PHASE1_HUMAN_AUTHORIZATION_SCHEMA.json`, `GATE3_READINESS.md`, `GATE3_PARTIAL_RUN_REPORT.md`: dedicated blocks 1–4 U/C formation controller, consumed release contract, partial-run evidence anchors, and current no-authority boundary.
-- `v1_2_gate1.py`, `configs/gate1_v1_2_calibration_proposal.json`, `release/GATE1_V1_2_HUMAN_AUTHORIZATION_SCHEMA.json`: dedicated fresh-lineage v1.2 capability controller, exact 20-request/61-attempt release contract, external one-use authorization schema, retry evidence audit, and hard stop before smoke.
+- `v1_2_gate1.py`, `configs/gate1_v1_2_calibration_proposal.json`, `release/GATE1_V1_2_HUMAN_AUTHORIZATION_SCHEMA.json`: superseded calibration-only v1.2 preparation retained for audit history; it must not be used to bypass the unified master contract.
 - `staged_requests.py`, `gates.py`: production fixture/history request construction, prompt audit, and scientific gate assessments.
 - `validation.py`, `tests/`: deterministic control checks and regression tests.
 - `prompts/`: inspectable baseline, transition, correction, and peer intervention text.
@@ -325,7 +329,7 @@ Configuration is TOML rather than the plan's illustrative YAML, avoiding a parsi
 
 - Preserve the completed Gate 2 evidence, external integrity decision, consumed authority, and passed-lineage seal without rerunning or selectively replacing the negative smoke block.
 - Preserve the Gate 3 partial archive and its 228 attempts, 227 observations, one ambiguous stop, 92 undispatched identities, and 5/8 checkpoints without retrying, resuming, or imputing a completed score.
-- Obtain the exact, fresh, external one-use authorization bound to the checked v1.2 Gate 1 proposal before accessing a credential or dispatching any request. That authority covers only the 20-request capability calibration within its frozen 61-attempt envelope and expires if unclaimed; it does not cover smoke or any hypothesis-bearing request. Gate 2 and Gate 3 Phase 1 live controllers and cross-run prerequisite assessments remain unimplemented.
+- Finish independent verification and render the exact unified v1.2 static proposal, then obtain its one fresh, short-lived, external, single-use master authorization before credential access or dispatch. The authorization conditionally covers only the 1,580-request pilot under its automatic gates, non-fungible stage ceilings, and `$250.000000` cumulative operational hard stop; it excludes Gate 4, confirmation, publication, and secondary studies.
 - Never pool the partial v1.1 lineage with v1.2. Do not prepare or dispatch the **v1.1** 888-request Phase 2: its pass threshold is already unreachable and no Phase 2 authority exists. The separately versioned v1.2 Phase 2 remains a prospective, marker-contingent future release.
 - A completed five-block pilot, raw-request/response audit hardening in `pilot_freeze_assessment`, Gate-4 decision, and immutable protocol freeze before any confirmation release.
 - Actual pilot/confirmation execution or populated empirical result tables and figures.
@@ -333,7 +337,7 @@ Configuration is TOML rather than the plan's illustrative YAML, avoiding a parsi
 - Separately reviewed formation-peer-v1 live integration and release if the planned secondary empirical study is included; all-block analysis, frozen sample size, independent current diagnostics, and distinct provenance remain required.
 - No further use of the consumed Gate 3 Phase 1 `execute` path. Any future empirical path must be a separately reviewed prospective release.
 
-The experiment progressed into blocks 1–3 formation but did not complete v1.1 Gate 3 Phase 1. The available artifacts make the v1.1 3/5 gate unreachable, yet no formal Gate 3 assessment completed. The v1.2 Gate 1 package is ready for exact external authorization but contains no authorization itself; nothing here authorizes a model call, v1.1 continuation, v1.2 calibration or pilot dispatch, the secondary study, confirmation, publication, or a claim of collusion or recovery.
+The experiment progressed into blocks 1–3 formation but did not complete v1.1 Gate 3 Phase 1. The available artifacts make the v1.1 3/5 gate unreachable, yet no formal Gate 3 assessment completed. The unified v1.2 package remains under final verification and contains no authorization itself; nothing here authorizes a model call, v1.1 continuation, v1.2 pilot dispatch, the secondary study, confirmation, publication, or a claim of collusion or recovery.
 
 ## Pre-sprint status
 
