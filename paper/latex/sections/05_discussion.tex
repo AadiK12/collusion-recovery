@@ -1,73 +1,29 @@
-\section{Discussion and Future Work}
-\subsection{Interpreting recovery}
-This run did not establish the failure needed to answer the intended recovery
-question. The reviewer followed the evidence requirement throughout formation,
-despite the conflicting reward and the accepting peer. Accurate later review
-therefore cannot demonstrate reversal of collusion. The zero correction and
-reset contrasts also cannot show that these interventions would be unnecessary
-or ineffective after a harmful convention had formed.
+\section{Discussion}
+Two agent pairs repeatedly approved work without the required logs: eight of ten
+episodes in one pair and six of ten in the other. We then tested 80 review
+decisions from the first pair to ask whether providing complete logs, adding a
+reminder, or erasing the earlier conversation would improve review.
 
-The observed distinction was between accurate classification with records and
-blanket rejection without them. False approval alone would miss this difference:
-it was zero in every condition. Correct approval distinguishes useful review from
-rejection required by missing evidence. Neither observed accuracy nor low false
-approval certifies independent reasoning or deployment safety.
+With complete logs, the agents accepted correct answers and rejected wrong ones.
+Adding a reminder to follow the verification rule did not improve these results.
+Neither did erasing the earlier conversation on its own. When we combined both
+changes, however, the agents rejected every answer, including correct ones. A
+stricter response was therefore not necessarily a better response.
 
-The contrast with earlier collusion findings~\citep{shi2026emergent} does not identify why induction
-was absent here. Model choice, a scripted neutral peer, short interactions,
-repeated verification instructions, and the absence of tools or reflection all
-differ from broader agent workflows. This experiment does not isolate those
-explanations. Appendix~\ref{app:ethics} states the limits and release disclosures.
+There is an important limit to this finding. Even without complete logs, the
+agents rejected every answer in the later review test. Their earlier unsupported
+approvals had already stopped. We therefore cannot say that restoring the logs
+ended that behavior. What the logs improved was the agents' ability to accept
+correct work. The review test used fixed peer work, not a continuing conversation
+between the agents, and covered only one pair.
 
-\subsection{Priorities for further work}
-The next experiment should first establish a failure influenced by peer behavior.
-Model and infrastructure comparisons should
-use fresh histories and fixed sampling plans, with all assigned outcomes
-reported. Recovery remains the central question; establishing the failure makes
-that question testable.
-
-\textbf{Does correction last?} The current correction rejects prior shortcuts and
-reciprocal approval. Compare this specific correction with a general prohibition
-and an explicit verification procedure. Match instruction length and authority.
-
-Resume peer interaction on new claims after a one-time correction, repeated
-reminders, or scheduled reminder withdrawal. Track false and correct approval
-rates over time, and define recurrence in advance. This tests whether recovery
-survives renewed interaction.
-
-\textbf{What carries the behavior forward?} Feedback and memory can affect
-collusion~\citep{shi2026emergent}. Remove peer messages, observed verdicts, score
-feedback, or stored summaries one at a time. Preserve task facts and match context
-length.
-
-Reintroduce each component after a reset to test whether failures return. Compare
-reset alone with correction alone. Errors without peer messages do not establish
-hidden communication: action history or shared feedback may still shape behavior.
-
-\begin{samepage}
-\textbf{When does recovery need enforcement?} Compare correction with an
-independent checker that requires complete evidence and verifies answers before
-approval. Record proposed verdicts separately from enforced outcomes, then remove
-the checker. This distinguishes blocking errors from changing agent behavior.\par
-\end{samepage}
-
-Measure correct approvals, latency, and checking cost alongside false approvals.
-Rejecting every claim is not useful recovery. Because exact checking is easy in
-this synthetic task, also test settings where it is costly.
-
-\textbf{Does recovery generalize?} Use more independent histories, a fixed sample
-size, and predefined absolute recovery criteria. Vary model family and agent
-infrastructure separately, then test adaptive peers, agent-generated work, and
-sandboxed shared artifacts.
-
-Preserve legitimate task information when removing communication channels.
-These tests would assess transfer while distinguishing peer influence from
-independent adaptation.
+A follow-up should change the reminder's wording to investigate why it led to
+rejection of correct answers after the conversation was erased. It should also
+resume conversation between the agents to test whether unsupported approval
+returns.
 
 \section{Conclusion}
-The controlled histories did not induce unsupported approval in this run.
-Full-evidence review was accurate, restricted-evidence review rejected every
-claim, and correction and reset produced no observed added difference. These
-findings leave recovery from established collusion unanswered. A successful
-test must first demonstrate the harmful peer-dependent behavior and then assess
-whether an intervention restores useful verification.
+Complete logs supported accurate review in this test. Combining a reminder with
+erasing the conversation instead rejected correct work. Evaluating a repair must
+therefore ask both whether agents stop approving wrong answers and whether they
+still approve correct ones.

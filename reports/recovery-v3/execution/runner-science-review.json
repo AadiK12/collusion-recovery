@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "scope": "Independent scientific branch and gate implementation review; exact future release requires a separate hash-bound review.",
+  "reviewed_at": "2026-10-26T10:52:52.626756+00:00",
+  "release_hash": null,
+  "reviewer": "source_audit",
+  "provider_calls": 0,
+  "credentials_read": false,
+  "source_changes_by_this_review": false,
+  "authorship_disclosure": "Reviewer authored endpoints.py and its tests; runner.py and decisions.py were independently authored and independently reviewed here.",
+  "reviewed_source_hashes": {
+    "experiments/recovery_v3/runner.py": "9bbe030288092ff2be79e90c528fc57340f3be641caf5cb075db605c6aae19a0",
+    "experiments/recovery_v3/decisions.py": "d913a233d959290ad8820aa219130a82eaa432126e1cd0f44c9d6c08e867230f",
+    "experiments/recovery_v3/endpoints.py": "96ef039c4ea58ff768a711cf32618dbaa1f371374634638399f7335e28925a8a",
+    "experiments/recovery_v3/fixtures.py": "da5640732d88ea13e0c866f768979ede089bbfa5c40cb2667576ebf4d6ed6235",
+    "experiments/recovery_v3/analysis.py": "09c85d70d53c5c893c407273e146626fdbfbae9c81b1b41b22f4f537bc7caa65",
+    "tests/recovery_v3/test_runner.py": "e11f2ca7e19c27665a95f499be78a53bc9259511a8d7af8720e88d03a52f64cd",
+    "tests/recovery_v3/test_decisions.py": "932c3b1fe5ecb9234e54fa629c8c3510245ce23cf22ec0391327c53c31583962",
+    "tests/recovery_v3/test_endpoints.py": "50d2defcead87cf00c2af5d3bf1bbcc21d7d816836cd121710ead45543198885",
+    "reports/recovery-v3/science/CONTRACT.json": "f95cffe62a41f7e191addeb26b74c622231a15bbb3f99f0ba1e1e6abbfec1b77",
+    "reports/recovery-v3/fixtures/materialized-fixtures.json": "0261da318301a1cffddcc0c02f1f373f8ed572b755e2a3b44f1679a2a8317e28"
+  },
+  "first_wave": {
+    "assigned_sources": 6,
+    "assigned_research_cells": 480,
+    "wave_sources": [
+      "development-reference-1"
+    ],
+    "capability_calls": 6,
+    "research_calls": 80,
+    "total_planned_calls": 86,
+    "independent_units_available": 1,
+    "unknown_assigned_cells_after_all_80_valid": 400,
+    "full_study_complete": false
+  },
+  "checks": [
+    "All six unseeded source dyads remain in the 480-cell assignment; first-wave assignment explicitly selects reference1 only and does not depend on recovery outcomes.",
+    "Each endpoint/role/phase uses the same four fixtures and order across all five arms; each set contains two correct and two faulty cases.",
+    "Original system messages match fresh_history exactly. Retained branches deep-copy only the selected actor's exact endpoint history; reset branches contain only the identical system before intervention.",
+    "Neutral/correction messages are lower-priority user messages. Correction/reset occur once per sequential branch; independent probes restart from their assigned endpoint.",
+    "Full and constrained packet construction differ only in exact evidence chunks; evaluator oracle fields are not included in model requests.",
+    "Precomputed request_body equals execute_decision's actual request construction, including forced submit_verdict.",
+    "Source-order provider output items are preserved exactly for sequential replay, including IDs/phases/opaque state. Only the actual verdict's original syntactic acknowledgment is appended; no truth/reward feedback.",
+    "Wrong valid verdicts continue sequentially; malformed/refused responses receive no invented acknowledgment, terminate only their branch, and leave the unattempted tail unknown.",
+    "All six fresh capability responses must be valid and correct before any research branch. Wrong or invalid capability produces zero research calls.",
+    "Analysis receives a copied 480-cell schedule with frozen completion availability. Unavailable/unattempted/invalid outcomes remain unknown; first wave is not full-study completion.",
+    "Pre-dispatch recomputation rejects drift from frozen initial request digests; post-response provenance also matches the frozen body. The repair-started marker requires a persisted HTTP response/body or HTTP status artifact, not a reservation alone."
+  ],
+  "gate_control_flow_simulation": [
+    {
+      "mode": "pass",
+      "capability_calls": 6,
+      "research_calls": 80,
+      "capability_precedes_all_research": true,
+      "planned_denominator": 480,
+      "unknown_outcomes": 400,
+      "full_study_complete": false,
+      "provider_calls": 0
+    },
+    {
+      "mode": "wrong_capability",
+      "capability_calls": 6,
+      "research_calls": 0,
+      "capability_precedes_all_research": true,
+      "planned_denominator": 480,
+      "unknown_outcomes": 480,
+      "full_study_complete": false,
+      "provider_calls": 0
+    },
+    {
+      "mode": "invalid_capability",
+      "capability_calls": 6,
+      "research_calls": 0,
+      "capability_precedes_all_research": true,
+      "planned_denominator": 480,
+      "unknown_outcomes": 480,
+      "full_study_complete": false,
+      "provider_calls": 0
+    }
+  ],
+  "tests": {
+    "command": ".venv-induction-v3/bin/python -m pytest -q tests/recovery_v3/test_runner.py tests/recovery_v3/test_decisions.py tests/recovery_v3/test_endpoints.py",
+    "passed": 65,
+    "failed": 0,
+    "stdout": "65 passed in 2.72s",
+    "gate_simulation": "Three fully mocked run() branches with all 56 initial request bindings populated and actual request digests checked. All provider/accounting/credential/artifact functions replaced locally. No HTTP/provider invocation or induction mutation."
+  },
+  "findings_resolved": [
+    {
+      "issue": "Source availability omitted from reporting schedule, leaving availability cohort empty.",
+      "resolution": "runner now passes an annotated copy containing source_available and separately reports completed_source_endpoints and wave_sources.",
+      "status": "verified"
+    }
+  ],
+  "blockers": [],
+  "limitations": [
+    "One source dyad gives exploratory within-source contrasts, not population repair efficacy or validated collusion recovery.",
+    "Fixtures are fixed experimenter-generated code-review traces, not fresh adaptive peer behavior.",
+    "Sequential diagnostic carryover is not autonomous dyadic relapse or long-run persistence.",
+    "This review excludes admin handoff/accounting/security clearance, handled by separate reviewers.",
+    "Source hashes must still match this report when the final release is frozen; this implementation report is not authorization to bypass the exact-release audit."
+  ]
+}

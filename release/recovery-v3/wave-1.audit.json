@@ -1,0 +1,79 @@
+{
+  "status": "passed",
+  "release_hash": "85e504d8d55d98d2b1eeced85f990d1c4df4a7bfd59f104d90a849ebef3933ac",
+  "domains": [
+    "science",
+    "accounting",
+    "security"
+  ],
+  "reviewed_at": "2026-10-26T10:56:08.147016+00:00",
+  "evidence": [
+    {
+      "path": "reports/recovery-v3/execution/release-science-audit.json",
+      "sha256": "9644b39672ad82a8e1ec937d1765b0b9c1020eb7b12a32ae8030ff5f370e7112",
+      "domain": "science"
+    },
+    {
+      "path": "reports/recovery-v3/execution/release-accounting-audit.json",
+      "sha256": "c12dba4f76e940a350571e3eb7f27a4901e5856faa3e2e9983dff4f850c14d00",
+      "domain": "accounting"
+    },
+    {
+      "path": "reports/recovery-v3/execution/release-security-audit.json",
+      "sha256": "34a894340482a8c6f6001a4f3cdee593ab2f0a7fdb35d3a64722161cee32b7e7",
+      "domain": "security"
+    },
+    {
+      "path": "tests/recovery_v3/test_admin_handoff.py",
+      "sha256": "9396198cd128327f76ad94ffab227500c2ffb4acd9bd8f6027292e2b166e9aab"
+    },
+    {
+      "path": "tests/recovery_v3/test_analysis.py",
+      "sha256": "1be4e0c462d62a50d735ac5f0af8d02db6db6957406419b005408ab86908b882"
+    },
+    {
+      "path": "tests/recovery_v3/test_decisions.py",
+      "sha256": "932c3b1fe5ecb9234e54fa629c8c3510245ce23cf22ec0391327c53c31583962"
+    },
+    {
+      "path": "tests/recovery_v3/test_endpoints.py",
+      "sha256": "50d2defcead87cf00c2af5d3bf1bbcc21d7d816836cd121710ead45543198885"
+    },
+    {
+      "path": "tests/recovery_v3/test_fixtures.py",
+      "sha256": "c36fd52e6d6dce252669e010b69701e0f5f258e2722c3b392b4ed64a31ac1c86"
+    },
+    {
+      "path": "tests/recovery_v3/test_handoff_observer.py",
+      "sha256": "00f3a1dd821de63c6b5dd66656b39c074e7d03787020a145780c649c73760b2c"
+    },
+    {
+      "path": "tests/recovery_v3/test_runner.py",
+      "sha256": "e11f2ca7e19c27665a95f499be78a53bc9259511a8d7af8720e88d03a52f64cd"
+    },
+    {
+      "path": "tests/recovery_v3/test_runner_integration.py",
+      "sha256": "fb9e2dcd319c1e4101ffe6664a1a8e66700c1cf0e50ce797204acff2ff94c93c"
+    },
+    {
+      "path": "tests/recovery_v3/test_runner_security.py",
+      "sha256": "65563c6e5158556eb6bc7a18999e1e8c46ff0b82116ca3df38cc284857a17a6c"
+    },
+    {
+      "path": "reports/recovery-v3/execution/runner-science-review.json",
+      "sha256": "1cd96286eb34051956e21ee10a7cd27565988736ddd9e5c530193eb093b26eff"
+    },
+    {
+      "path": "reports/recovery-v3/execution/runner-accounting-review.json",
+      "sha256": "70a00dab8476af20772491c1e6cf5f8bcaa4b12581e0e1e39d5175692e14ff30"
+    },
+    {
+      "path": "reports/recovery-v3/execution/runner-security-review.json",
+      "sha256": "35d2f435c58a7b03120a8e7c292a97f3d757ecf260db539eb58296662f9972c9"
+    },
+    {
+      "path": "reports/recovery-v3/execution/administrative-handoff-final.json",
+      "sha256": "b60fbb0d576e49c3e6f448ca614e72b41e8d8187b4119d697594741fa8d33f7b"
+    }
+  ]
+}

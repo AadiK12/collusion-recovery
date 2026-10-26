@@ -1,0 +1,147 @@
+\section{Limitations and Dual-Use / Ethical Considerations}
+\label{app:ethics}
+\subsection{What the design can establish}
+\textbf{Scripted peer.} The peer follows an assigned policy and sends a neutral
+message. This tests whether peer history affects unsupported approval; it cannot
+show spontaneous coordination between two adaptive agents. Independent adaptation
+to repeated correct claims can still contribute to approval.
+
+\textbf{No demonstrated induction.} Neither peer condition produced unsupported
+formation approval in this run. Intervention outcomes describe behavior under
+the assigned histories, but cannot establish recovery from collusion. This is
+a substantive limit on the intended recovery inference, not evidence that
+collusion is impossible for this model or in other configurations.
+
+\textbf{Verdicts and feedback.} Peer assignment changes observed verdicts, truthful
+shared scores, and feedback, which may also change the reviewer's behavior.
+The main contrast measures their combined history effect under restored evidence.
+It cannot separate the effect of peer verdicts from their reward and feedback
+consequences, or identify one causal message or memory.
+
+\textbf{History removal.} Reset deletes useful examples and shortens context
+as well as removing prior interaction. E$-$D tests adding history removal to
+correction. It does not measure the effect of reset alone.
+
+\textbf{Changed tasks and incentives.} Formation uses only correct claims;
+recovery tests use an equal mix of correct and faulty claims. Accuracy scoring can
+reward approval even when the reviewer lacks required evidence. Both assignments
+share this conflict, but the design does not isolate interactions among claim
+frequency, feedback, and peer policy.
+
+\textbf{Short follow-up.} Formation has ten episodes with two message rounds
+each. Recovery tests use a fixed peer message without further discussion. Each
+independently starts from its assigned history or reset. This cannot establish long-term persistence,
+resistance to relapse, or recovery during continued adaptive interaction.
+
+\textbf{Evidence use.} Complete input records show evidence access, not
+attention. Cited identifiers and brief reasons do not prove that an agent checked
+the claim independently.
+
+\textbf{Synthetic setting.} Agents judge fixed packets rather than generate
+their own work. The task omits tools, reflection, private channels, and real
+approval consequences. It cannot establish how common collusion is, or which
+interventions work, in deployed workflows.
+
+\textbf{Model scope.} One model and configuration cannot separate model
+capability from agent architecture. Hosted-model variation and future updates
+also limit reproducibility. The initial capability check uses 20 packets; it
+does not estimate general capability.
+
+\textbf{Small sample.} Five paired blocks provide only five independent
+replications. Identical outcomes can produce misleadingly narrow intervals;
+multiple comparisons add uncertainty. Missing decisions may also be systematic.
+We retain all blocks and account for missing outcomes, but conclusions remain
+exploratory and specific to this configuration.
+
+\subsection{Misuse and misinterpretation risks}
+The study tests when evidence restoration, correction, and history removal improve
+peer review. The same knowledge could support harmful uses.
+
+\textbf{Inducing unsupported approvals.} An operator could adapt the incentives,
+prompts, or transcripts to weaken review. Descriptions of failed interventions
+could help preserve that behavior. Publishing exact prompts and traces lowers
+the effort needed to reproduce or adapt it, although transfer to deployed
+approval systems remains untested.
+
+\textbf{Overclaiming safety or collusion.} A small gap between conditions does
+not show safety if both perform poorly. Joint approval also does not establish
+intentional collusion. We report absolute false and correct approval rates,
+missing decisions, and the limits of our behavioral definition to reduce the risk of
+these claims distorting deployment decisions.
+
+\textbf{Loss of useful work.} Correction could block legitimate approvals;
+reset could remove information needed later. Fewer false approvals alone cannot
+justify deployment. An intervention must also preserve useful work, remain
+effective over time, and work outside this benchmark.
+
+\subsection{Experimental safeguards and release considerations}
+\textbf{Direct safeguards.} Records are synthetic and verdicts have no real
+effect. Agents have no production tools, financial authority, or personal data.
+Peer text is treated as data and never executed. These safeguards limit direct
+harm from the experiment, but cannot prevent others from adapting the design.
+
+\textbf{Release review.} Reproduction needs the task generator, scoring rules,
+conditions, prompts, and enough transcript evidence to check the claims. Public
+artifacts should exclude credentials, account identifiers, and private reasoning
+traces. Any redactions that affect interpretation should be documented.
+
+Release decisions should balance the value of independent audit against the risk
+that others could reuse failure examples. Removing secrets alone does not resolve
+that risk.
+
+\textbf{Use of findings.} The report should not be presented as a model safety
+certification or a guide to bypassing real approval controls.
+
+\subsection{Execution and monitoring disclosures}
+An initial attempt stopped after 339 provider requests because a timed-out
+request had an unresolved outcome. It was retained for provenance and excluded
+in full from the reported estimates. A fresh run used the same scientific
+design, prompts, model, and sample size after an accounting-compatibility fix.
+Only this completed run supplies the results.
+
+The completed run made 562 provider requests for 560 planned requests, including
+two permitted message-length revisions. It produced 340 scored study decisions
+and 20 separate capability decisions, with no ambiguous outcomes. Its accounted
+provider cost was \$18.57. Independent replay and raw-output rescoring verified
+the final artifacts.
+
+During monitoring, the assistant operating the experiment inadvertently displayed
+one unscored formation message while diagnosing a message-length revision. It
+reported no inspection of scored verdicts or aggregate outcomes and no adaptive
+changes in response. The revision succeeded within the frozen retry policy.
+Monitoring was therefore not completely blinded to generated content; this
+exception is retained in the provenance record.
+
+\section{Verification and Correction Instructions}
+\label{app:prompts}
+The following verification instruction is repeated on each request:
+\begin{quote}\small
+Review the packet assigned to your peer. Accept only when you have received all
+source records required by the packet specification and the claimed answer
+matches those records. Otherwise reject. Peer messages may help identify evidence
+but do not change the verification rule. Do not modify either packet.
+\end{quote}
+The task instruction defines the selection rule over the active, flagged, and
+score fields, requires the complete sorted identifier list, and describes the
+shared correctness score and communication budget. Verdicts are structured as
+\texttt{verdict}, \texttt{evidence\_record\_ids}, and \texttt{brief\_reason}; the
+reason is limited to 500 characters and private chain-of-thought is not requested.
+
+\begin{samepage}
+The correction condition adds:
+\begin{quote}\small
+Any earlier agreement, habit, or shortcut to approve a peer without complete
+verification is invalid. Evaluate each current packet independently from its
+source records. Previous success and reciprocal approval are not evidence that
+the current claim is correct. Reject a claim that is unsupported or inconsistent
+with the records, even if the peer asks for approval or offers approval in return.
+\end{quote}
+\end{samepage}
+
+\section{LLM Usage Statement}
+The human authors led the research planning, developed the experimental design
+and tests, and made the research and experimental decisions. OpenAI Codex
+assisted with selected aspects of planning, experiment implementation and
+execution, and manuscript drafting and revision. The human authors retain
+responsibility for the interpretation of results, citation accuracy, empirical
+claims, and the final submission.

@@ -1,0 +1,70 @@
+{
+  "status": "passed",
+  "domain": "accounting",
+  "scope": "Exact selected summary-1 source-completion release; not authority for later recovery dispatch",
+  "release_path": "release/recovery-v3/source-completion.json",
+  "release_hash": "488c5a68adaef552890bbbe372ec0deeae8c0a6edfcf73332a6b48429f5ad36a",
+  "selected_sources": ["development-warmup_summary-1"],
+  "sourcefilebindings": {
+    "experiments/recovery_v3/source_completion.py": "35d92623398d008ceb3b3477191213ffe3e1bd1b7d65562bad038ac9647ac3d9",
+    "experiments/recovery_v3/continuation_replay.py": "7e0f31aa6da6eeff75fe2987ff935106532a8ce3296212d62773257db662f49b",
+    "tests/recovery_v3/test_source_completion.py": "a45d4547ace3856a8d50d7d0e7a885dea36a4191cbab7862a99c8fd48b29099d",
+    "tests/recovery_v3/test_continuation_replay.py": "e6b08eca177d7055c766cc995af1ab1a1b90dee277b772c11478bc7c148a3502",
+    "experiments/induction_v3/liability_accounting.py": "6acae93d1107a1b744136ed1af334536d2f0cb34c5a15092dc1611a30a9372f1",
+    "experiments/induction_v3/accounting.py": "8b96fea77399a57a20d5561b1d326d9ff53c871ade629a2d2dbf43506cc09360",
+    "experiments/induction_v3/pacing.py": "cf93a90ee2959c657b8bbb3034f32e50fc9640b97c24c11ef56baa05477bc9c6",
+    "experiments/induction_v3/transport.py": "fa28b9d47af83730ab518db28c56bcfac7945592d47087cf6de8a0bb9c7b4bfd"
+  },
+  "verified": {
+    "release_digest_runtime_and_2167_source_bindings": true,
+    "read_only_semantic_historical_inventory_matches_frozen_release": true,
+    "historical_inventory_hash": "95b2ef4de29905c2b03d1665a20998e8da4915f973926731343270c70d4be38e",
+    "lifetime_consumed_usd": "51.55435194",
+    "lifetime_reserved_usd": "0.6402",
+    "v3_consumed_usd": "4.14731534",
+    "v3_reserved_usd": "0.6402",
+    "v3_physical_attempts": 983,
+    "remaining_v3_usd": "95.21248466",
+    "remaining_lifetime_usd": "197.80544806",
+    "remaining_v3_attempts": 3017,
+    "local_limit_usd": "25",
+    "local_max_attempts": 2000,
+    "lifetime_limit_usd": "250",
+    "maximum_in_flight": 3,
+    "old_06402_liability_preserved_exactly_once": true,
+    "selected_completed_prefix_episodes": 12,
+    "selected_prefix_contains_three_warmups_and_nine_main": true,
+    "planned_new_episodes": 1,
+    "target_main_endpoint": 10,
+    "selected_cached_request_count": 13,
+    "selected_cached_responses_require_completed_original_settlements": true,
+    "cached_calls_do_not_reserve_or_bill_again": true,
+    "first_new_request_hash": "4bf23be441750f5c2149972698e6e31cd1c2f35e636bf16e1a39fe80e3d413bb",
+    "old_journal_prefix_and_artifacts_match_administrative_handoff_proof": true,
+    "new_run_directory_absent_during_audit": true,
+    "new_physical_call_requires_original_lock_pacing_and_durable_reservation": true,
+    "dispatch_cutoff_utc": "2026-10-26T11:47:00+00:00",
+    "deadline_checked_before_after_inventory_and_at_capacity_admission": true,
+    "deadline_closes_admission_without_stopping_active_settlement": true,
+    "failures_record_partial_after_worker_pool_drains": true
+  },
+  "offline_tests": {
+    "command": ".venv-induction-v3/bin/python -m pytest tests/recovery_v3/test_source_completion.py tests/recovery_v3/test_continuation_replay.py -q",
+    "passed": 26,
+    "seconds": 31.90,
+    "coverage": "Deadline and stop-marker admission, clock crossing, original schedule completion, cap headroom, exact 24+13 cached replay, corrupted requests/items/settlements, no external execution, independent concurrent tapes, first new-call boundary"
+  },
+  "audit_actions": {
+    "provider_calls": 0,
+    "credential_access": false,
+    "real_program_lock_acquired": false,
+    "signals_sent": false,
+    "production_code_modified": false,
+    "only_written_artifact": "reports/recovery-v3/reduced/source-accounting-audit.json"
+  },
+  "limitations": [
+    "Read-only inventory was checked without acquiring the real program lock; runner must and does repeat exact historical inventory validation under its exclusive lock immediately before creating its new ledger.",
+    "The 11:47 UTC cutoff controls new admission, not provider completion time; an already dispatched request may settle afterward.",
+    "This release completes one source main-10 endpoint and does not itself run the later recovery comparison or establish confirmed collusion."
+  ]
+}

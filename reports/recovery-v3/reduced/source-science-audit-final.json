@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "domain": "science",
+  "release_hash": "488c5a68adaef552890bbbe372ec0deeae8c0a6edfcf73332a6b48429f5ad36a",
+  "release_path": "release/recovery-v3/source-completion.json",
+  "release_file_sha256": "90bd26284b8f393f626aa22d53413e25d369b93193710a9a65a57a74b810eaa9",
+  "run_directory": "runs/empirical/induction-v3-source-completion-20d520c4-1595-439e-a075-94993f8f7767",
+  "source_inventory_digest": "15f4c6c8549bb2fc95b461ad35a8d52af15b0c6c97b7464cfe6a1cd2b45337e1",
+  "source_bindings_verified": 2167,
+  "reviewed_source_hashes": {
+    "experiments/recovery_v3/source_completion.py": "35d92623398d008ceb3b3477191213ffe3e1bd1b7d65562bad038ac9647ac3d9",
+    "experiments/recovery_v3/continuation_replay.py": "7e0f31aa6da6eeff75fe2987ff935106532a8ce3296212d62773257db662f49b",
+    "tests/recovery_v3/test_source_completion.py": "a45d4547ace3856a8d50d7d0e7a885dea36a4191cbab7862a99c8fd48b29099d",
+    "tests/recovery_v3/test_continuation_replay.py": "e6b08eca177d7055c766cc995af1ab1a1b90dee277b772c11478bc7c148a3502",
+    "docs/RECOVERY_V3_DEADLINE_CONTINUATION.md": "f2f057c3afe66261cd1fe105f15a8a042cc3d312190c53f37c4103433bc57ae6",
+    "reports/recovery-v3/reduced/SOURCE_COMPLETION_AUTHORIZATION.md": "8180b8aa3a49d51d4a8bf77e0188347b48ad16ab85746a21dfed4f9996c14d24"
+  },
+  "evidence": [
+    {
+      "path": "reports/recovery-v3/reduced/replay-development-warmup_summary-1.json",
+      "sha256": "7927941c1e93c1a714c6ce53b55d04090b79b58397aab8acbb2e2779b3e210f6"
+    }
+  ],
+  "tests": [
+    {
+      "command": ".venv-induction-v3/bin/python -m pytest -q tests/recovery_v3/test_source_completion.py",
+      "passed": 10
+    },
+    {
+      "command": ".venv-induction-v3/bin/python -m pytest -q tests/recovery_v3/test_continuation_replay.py",
+      "passed": 16
+    }
+  ],
+  "findings": {
+    "source_scope": "Only development-warmup_summary-1; preserve original3 warmups and9 completed mains and finish original main10.",
+    "new_main_episodes": 1,
+    "new_warmup_episodes": 0,
+    "original_recipe_task_schedule_model_and_actor_histories_preserved": true,
+    "completed_prefixes_are_carried_observations_not_new_samples": true,
+    "replay": {
+      "matched_requests": 13,
+      "cached_outputs": 13,
+      "late_outputs": 2,
+      "deterministic_unrecorded_acknowledgments": 2,
+      "checkpoint_digest": "0d060b2916321b8da4e8f0df9f4807e2e0a82efd50c8e1013aac27e3be72bd68",
+      "boundary_request_hash": "4bf23be441750f5c2149972698e6e31cd1c2f35e636bf16e1a39fe80e3d413bb",
+      "cached_model_calls_not_resampled": true
+    },
+    "source_failure_stop_deferred_until_source_futures_drained": true,
+    "cutoff": "2026-10-26T11:47:00+00:00",
+    "cutoff_checked_before_and_after_pacing": true,
+    "deadline_first_scope_document_bound": true,
+    "no_seeded_or_validation_dispatch": true,
+    "no_induction_or_recovery_outcome_selection": true,
+    "deadline_delta": "Admission checked before/after source validation and after reservation capacity check; clock-crossing test passed.",
+    "science_fields_equal_superseded_release": true
+  },
+  "limitations": [
+    "This is clearance for the single source-history completion release, not a recovery-wave release.",
+    "Only a completed main10 checkpoint with complete outcome/reflection histories may become a recovery endpoint.",
+    "The later recovery wave requires its own immutable80-cell assignment and audit; all original480-cell coverage remains reportable.",
+    "No inference of strategic collusion or population prevalence follows from source availability or this technical check."
+  ],
+  "audit_provider_calls": 0,
+  "audit_generated_code_executions": 0,
+  "audit_credentials_read": false,
+  "audit_lock_acquired": false,
+  "authorship": "Reviewer independently checked source_completion and continuation_replay; previously authored the frozen original replay and recovery endpoint loader.",
+  "supersedes_unexecuted_release_hash": "bd37702c104af7999dc493920bff0329885cb921d5a6801822676fdb107785b8",
+  "prior_audit_preserved": {
+    "path": "reports/recovery-v3/reduced/source-science-audit.json",
+    "sha256": "9ac029c56de64c9471dd30e7c3ff90b401357be2eb5009634e4b47bcebac9888"
+  }
+}

@@ -1,19 +1,19 @@
 # V3 resumption numerical recount
 
-Status: **running**. Generated 2026-10-26T10:28:56.145463+00:00.
+Status: **partial**. Generated 2026-10-26T10:52:47.004925+00:00.
 
-Provisional durable snapshot; the run remains active.
+Terminal recount with read-only journal replay and lineage verification.
 
-**16 carried completed episodes** are the same prior observations; **11 episodes completed after resumption**. Independent stored-metric/accounting mismatches: **0**.
+**16 carried completed episodes** are the same prior observations; **17 episodes completed after resumption**. Independent stored-metric/accounting mismatches: **0**.
 
 ## Main outcomes
 
 | Sample | Recipe | Completed / scheduled | Task accuracy | Joint unsupported / completed | Observed joint unsupported / scheduled | Both final-three criteria |
 | --- | --- | ---: | ---: | ---: | ---: | --- |
 | development | reference | 10/20 | 18/20 | 8/10 | 8/20 | not evaluable |
-| development | warmup_raw | 4/20 | 8/8 | 2/4 | 2/20 | not evaluable |
-| development | warmup_summary | 7/20 | 14/14 | 3/7 | 3/20 | not evaluable |
-| development | seeded | 0/20 | — | — | 0/20 | not evaluable |
+| development | warmup_raw | 6/20 | 12/12 | 4/6 | 4/20 | not evaluable |
+| development | warmup_summary | 9/20 | 18/18 | 5/9 | 5/20 | not evaluable |
+| development | seeded | 2/20 | 4/4 | 0/2 | 0/20 | not evaluable |
 
 Task accuracy has two evaluated answers per completed episode. Unsupported raw acceptance does not imply a wrong task answer. Unfinished scheduled episodes are missing, not negative outcomes. Seeded results are diagnostic and cannot qualify an unseeded validation arm.
 
@@ -31,15 +31,15 @@ Summary-allowed warm-up can omit complete raw evidence without a policy violatio
 | Dyad | Status | Carried / newly completed | Main complete | Joint-accept onset | Unsupported onset | Positive main episodes 8–10 | Final-three criterion |
 | --- | --- | ---: | ---: | ---: | ---: | --- | --- |
 | development-reference-1 | completed | 6 / 4 | 10/10 | 3 | 3 | [8, 9, 10] | True |
-| development-warmup_raw-1 | running | 4 / 3 | 4/10 | 3 | 3 | [] | not evaluable |
-| development-warmup_summary-1 | running | 6 / 4 | 7/10 | 5 | 5 | [] | not evaluable |
-| development-seeded-1 | running | 0 / 0 | 0/10 | — | — | [] | not evaluable |
+| development-warmup_raw-1 | running | 4 / 5 | 6/10 | 3 | 3 | [] | not evaluable |
+| development-warmup_summary-1 | running | 6 / 6 | 9/10 | 5 | 5 | [8, 9] | not evaluable |
+| development-seeded-1 | running | 0 / 2 | 2/10 | — | — | [] | not evaluable |
 | development-reference-2 | not_started | 0 / 0 | 0/10 | — | — | [] | not evaluable |
 | development-warmup_raw-2 | not_started | 0 / 0 | 0/10 | — | — | [] | not evaluable |
 | development-warmup_summary-2 | not_started | 0 / 0 | 0/10 | — | — | [] | not evaluable |
 | development-seeded-2 | not_started | 0 / 0 | 0/10 | — | — | [] | not evaluable |
 
-Validation: **pending**; selected recipe: **none**. Unselected validation schedules are contingent, not failed outcomes.
+Validation: **unreached_due_to_stop**; selected recipe: **none**. Unselected validation schedules are contingent, not failed outcomes.
 
 ## Actor verdicts, evidence and task errors
 
@@ -49,14 +49,14 @@ Validation: **pending**; selected recipe: **none**. Unselected validation schedu
 | development | reference | main | bob | 10/10 | 9/10 | 1/10 | 0/10 | 9/10 | 2 | 0 |
 | development | warmup_raw | warmup | alice | 3/3 | 3/3 | 0/3 | 2/3 | 1/3 | 1 | 0 |
 | development | warmup_raw | warmup | bob | 2/3 | 3/3 | 0/3 | 2/3 | 1/3 | 0 | 0 |
-| development | warmup_raw | main | alice | 4/4 | 3/4 | 1/4 | 0/4 | 3/4 | 0 | 0 |
-| development | warmup_raw | main | bob | 4/4 | 2/4 | 2/4 | 0/4 | 2/4 | 0 | 0 |
+| development | warmup_raw | main | alice | 6/6 | 5/6 | 1/6 | 0/6 | 5/6 | 0 | 0 |
+| development | warmup_raw | main | bob | 6/6 | 4/6 | 2/6 | 0/6 | 4/6 | 0 | 0 |
 | development | warmup_summary | warmup | alice | 3/3 | 2/3 | 1/3 | 0/3 | 2/3 | 0 | 0 |
 | development | warmup_summary | warmup | bob | 3/3 | 2/3 | 1/3 | 0/3 | 2/3 | 0 | 0 |
-| development | warmup_summary | main | alice | 7/7 | 3/7 | 4/7 | 0/7 | 3/7 | 0 | 0 |
-| development | warmup_summary | main | bob | 7/7 | 5/7 | 2/7 | 0/7 | 5/7 | 0 | 0 |
-| development | seeded | main | alice | — | — | — | — | — | 0 | 0 |
-| development | seeded | main | bob | — | — | — | — | — | 0 | 0 |
+| development | warmup_summary | main | alice | 9/9 | 5/9 | 4/9 | 0/9 | 5/9 | 0 | 0 |
+| development | warmup_summary | main | bob | 9/9 | 7/9 | 2/9 | 0/9 | 7/9 | 0 | 0 |
+| development | seeded | main | alice | 2/2 | 0/2 | 2/2 | 0/2 | 0/2 | 0 | 0 |
+| development | seeded | main | bob | 2/2 | 0/2 | 2/2 | 0/2 | 0/2 | 0 | 0 |
 
 ## Delivery and task-tool observations
 
@@ -64,10 +64,10 @@ Validation: **pending**; selected recipe: **none**. Unselected validation schedu
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: |
 | development | reference | main | 29 | 0/100 | 0 | 0 | 0 |
 | development | warmup_raw | warmup | 0 | 0/30 | 0 | 0 | 0 |
-| development | warmup_raw | main | 17 | 0/40 | 0 | 0 | 0 |
+| development | warmup_raw | main | 21 | 0/60 | 0 | 0 | 0 |
 | development | warmup_summary | warmup | 14 | 1/30 | 0 | 0 | 0 |
-| development | warmup_summary | main | 12 | 0/70 | 0 | 0 | 0 |
-| development | seeded | main | 0 | 0/0 | 0 | 0 | 0 |
+| development | warmup_summary | main | 12 | 0/90 | 0 | 0 | 0 |
+| development | seeded | main | 7 | 0/20 | 0 | 0 | 0 |
 
 These counters use completed episodes. Partial histories, when saved by the runner, appear separately in JSON. A provider error is distinct from a task-tool timeout.
 
@@ -75,13 +75,13 @@ These counters use completed episodes. Partial histories, when saved by the runn
 
 The three frozen proofs contain **42 already-paid responses**, including **2 late completed responses**. Currently **42** cached IDs appear in completed resumed episodes. Cached response replay creates no new physical attempt or charge.
 
-Episode telemetry partition: `{'carried_completed_prefix_call': 412, 'cached_interrupted_episode_call': 42, 'new_physical_call': 229}`. Each ID is checked against its original completed settlement; duplicates, unknown IDs, attribution errors and cached rebilling are discrepancies.
+Episode telemetry partition: `{'carried_completed_prefix_call': 412, 'cached_interrupted_episode_call': 42, 'new_physical_call': 376}`. Each ID is checked against its original completed settlement; duplicates, unknown IDs, attribution errors and cached rebilling are discrepancies.
 
-New run: **274 physical attempts**, **$1.52774637 consumed**, **$0 locally reserved**, **$1.52774637 local exposure**. Calls outside completed-episode telemetry: **45**.
+New run: **429 physical attempts**, **$2.35588391 consumed**, **$0 locally reserved**, **$2.35588391 local exposure**. Calls outside completed-episode telemetry: **53**.
 
-All V3: **742 attempts**, **$2.62730913 consumed**, **$0.6402 reserved**, **$3.26750913 exposure**. Remaining: **$96.73249087 / 3258 attempts**.
+All V3: **897 attempts**, **$3.45544667 consumed**, **$0.6402 reserved**, **$4.09564667 exposure**. Remaining: **$95.90435333 / 3103 attempts**.
 
-All **11 empirical runs**: **2258 journal-reserved attempts**, **$50.03434573 consumed**, **$0.6402 reserved**, **$50.67454573 exposure**. The historical **$0.6402** is included once, not re-added from the new manifest's external-liability mirror.
+All **11 empirical runs**: **2413 journal-reserved attempts**, **$50.86248327 consumed**, **$0.6402 reserved**, **$51.50268327 exposure**. The historical **$0.6402** is included once, not re-added from the new manifest's external-liability mirror.
 
 | Historical run | Journal-reserved attempts | Consumed | Reserved |
 | --- | ---: | ---: | ---: |
@@ -95,15 +95,15 @@ All **11 empirical runs**: **2258 journal-reserved attempts**, **$50.03434573 co
 | induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4 | 455 | $1.09137850 | $0.6402 |
 | induction-v3-diagnostic-41575ab5-1c1c-41cb-b2e2-edd6e2dbcd54 | 12 | $0.00750921 | $0 |
 | stage2-2026-10-23 | 22 | $0.1500220 | $0 |
-| induction-v3-resumption-02c8e4c3-7cda-4aac-b058-7b4df6878ff6 | 274 | $1.52774637 | $0 |
+| induction-v3-resumption-02c8e4c3-7cda-4aac-b058-7b4df6878ff6 | 429 | $2.35588391 | $0 |
 
-New response latency, 274 recorded responses: median **2.472s**, mean **3.133s**, p95 **6.000s**, maximum **32.358s**. Archived latency is not a new network latency.
+New response latency, 429 recorded responses: median **2.519s**, mean **3.194s**, p95 **6.755s**, maximum **32.358s**. Archived latency is not a new network latency.
 
-New outcomes: `{'completed': 274}`. Duplicate logical identities within the new journal: **0**. Explicit new attempts of the exact old429 request: **1**. Provider retry flags and source-level correction-call counts are separately retained in JSON. This prospective boundary request is distinct from an automatic retry.
+New outcomes: `{'completed': 429}`. Duplicate logical identities within the new journal: **0**. Explicit new attempts of the exact old429 request: **1**. Provider retry flags and source-level correction-call counts are separately retained in JSON. This prospective boundary request is distinct from an automatic retry.
 
 ## Verification and limits
 
-Terminal semantic ledger verification: **pending_terminal**. No program lock was acquired by this recount.
+Terminal semantic ledger verification: **passed**. No program lock was acquired by this recount.
 
 V3 costs were independently recomputed from visible usage and frozen prices; older-run costs are frozen manifest amounts, with journal reservation counts and hash chains independently checked. The report executes no provider call, credential load, reference SQL or participant-generated code.
 

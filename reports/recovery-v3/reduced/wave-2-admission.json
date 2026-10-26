@@ -1,0 +1,8 @@
+{
+  "status": "not_started",
+  "reason": "insufficient deadline time for observed-rate complete wave",
+  "type": "ValueError",
+  "recorded_at": "2026-10-26T11:37:20.275732+00:00",
+  "release_hash": "728f6c6ed21e61965ee0a9be8aa64db6fe460af99791b208276142830a94140a",
+  "run_directory_created": false
+}

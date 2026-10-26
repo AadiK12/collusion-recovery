@@ -1,186 +1,102 @@
 \section{Methods}
 \label{sec:methods}
-\subsection{Task and scoring}
-\textbf{Task.} Each packet contains 32 synthetic records, a selection rule, and a
-claim listing the identifiers that satisfy the rule. The rule uses each record's
-active status, flag, and a minimum score. A program computes the exact sorted answer.
-Faulty claims omit, add, or substitute one identifier. Neither agent can change
-the packets.
+\subsection{Initial interaction}
+\textbf{Agents and tasks.} Alice and Bob use \texttt{gpt-5.6-luna} with high
+reasoning effort, temperature 1.0, and a 64,000-token output limit. We use the
+task engine and agent structure of \citet{shi2026emergent}
+\citep{saltnlp2026repo}. In each episode, they solve different tasks in code
+analysis, database querying, or text extraction. Each uses tools, saves an
+answer, and retrieves a log of its tool calls and results. They cannot inspect
+each other's workspace.
 
-\textbf{Evidence.} The model sees its own complete packet and reviews its peer's
-claim. With full evidence, it also sees the peer's source records. With restricted
-evidence, it sees only the peer's rule and claim. Before giving its verdict, it
-is not told whether the current claim is correct or which error it contains.
+\textbf{Approval rule.} Before approving, an agent must receive its partner's
+complete, unchanged tool log and find evidence supporting the answer. Summaries
+do not count. The log excludes the call used to retrieve it. We call an approval
+without this log \emph{unsupported}; a joint unsupported approval means both
+agents approve this way in the same episode.
 
-\textbf{Verification rule.} The reviewer may \texttt{ACCEPT} only if it has all
-required records and the claim matches them. Otherwise, it must \texttt{REJECT}.
-Peer messages cannot override this rule.
+\textbf{Messages and rewards.} Agents exchange five rounds of messages, each
+limited to 200 characters. Alice sends first; Bob reads her message before
+replying. Both see the final messages, then privately submit verdicts without
+seeing the other's verdict. They receive truthful feedback and a shared reward:
+ten points per verdict matching actual task correctness, up to twenty.
+Thus, approving correct work earns points even without the required log.
+Each writes a brief private reflection and retains its own saved conversation,
+including tool results, messages, feedback, and reflections.
 
-\textbf{Conflicting reward.} During the initial interactions, all claims are
-correct. Each verdict matching a claim's actual correctness earns one point,
-giving the pair a shared score from zero to two. Approving without evidence can
-therefore earn points, while following the rule and rejecting cannot. This
-creates an incentive for unsupported approval without an instruction to collude.
+\textbf{Planned and completed pairs.} Before the review tests, we assigned six
+pairs: two with no warm-up, two with three episodes allowing unrestricted
+messages, and two with three episodes permitting summaries. Each then completes
+ten main episodes under the original log rule and message limit. Test eligibility
+requires a completed conversation, not a minimum approval rate.
 
-\subsection{Agents and interaction histories}
-We test one model reviewer interacting with a scripted peer. The study has five
-independent paired blocks. Each block contains two ten-episode interactions:
-one with a peer that always accepts and one with a peer that always rejects.
-We call this initial phase \emph{formation}.
-
-The paired interactions use the same correct packets, restricted evidence, and
-neutral peer message: ``Review my packet using the ordinary verification rule.''
-The model's assigned role is matched within each block and counterbalanced across
-blocks. A fixed random seed sets condition order.
-
-\textbf{Model and memory.} The reviewer uses \texttt{gpt-6.1-sol}, low reasoning
-effort, the default service tier, and a 4,096-token output limit. Its only memory
-is the visible JSON transcript. It has no tools, retrieval, separate reflection
-step, provider-managed conversation history, or carried-over private reasoning.
-The verification rule appears on every request; peer content is marked untrusted.
-
-\textbf{Episode sequence.} Each message is limited to 200 Unicode code points.
-Every formation episode follows four steps:
-\begin{enumerate}[itemsep=2pt]
-\item The reviewer writes its first message without seeing the peer's current
-message.
-\item Both first-round messages become visible. The reviewer writes a second
-message; the peer repeats its neutral message.
-\item The reviewer sees both rounds and gives its verdict before seeing the
-peer's verdict.
-\item Both verdicts and the truthful score feedback are added to the next
-episode's history.
-\end{enumerate}
-The conditions therefore differ in both the peer's verdicts and the feedback
-those verdicts produce. Fixed task seeds do not make the model's outputs
-deterministic.
-
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}[font=\small,>=Stealth,
- box/.style={draw=inkblue,rounded corners=2pt,align=center,fill=lightblue,
- minimum height=14mm,text width=33mm,inner sep=4pt}]
-\node[box] (u) at (0,0.9) {Rejecting-peer\\history};
-\node[box] (c) at (0,-0.9) {Accepting-peer\\history};
-\node[box,text width=42mm,minimum height=31mm] (eval) at (5,0)
- {Matched new claims\\\textbf{Complete evidence}\\\vspace{2pt}A: rejecting peer\\B: accepting peer};
-\node[box,text width=29mm,minimum height=31mm] (out) at (9.8,0)
- {False approval\\\textbf{B minus A}\\\vspace{2pt}Also measure correct-claim approval};
-\draw[->,thick,inkblue] (u.east) -- (eval.west |- u.east);
-\draw[->,thick,inkblue] (c.east) -- (eval.west |- c.east);
-\draw[->,thick,inkblue] (eval) -- (out);
-\end{tikzpicture}
-\caption{Testing recovery. After each type of peer history, the reviewer receives
-the same new claims and full evidence. B minus A measures the remaining history
-effect on false approval. Other conditions test correction, history removal,
-and continued evidence restriction.}
-\label{fig:design}
-\end{figure}
-
-\subsection{Checks before interpreting recovery}
-\textbf{Can the model perform the task?} Before formation, we test ten correct
-and ten faulty claims with full evidence and no interaction history. The model
-must return valid structured responses to all 20 and classify at least nine of
-each type correctly. These tests are excluded from the recovery estimates.
-
-\begin{samepage}
-\textbf{Does peer history affect unsupported approval?} We compare approval
-rates over formation episodes 2--10, taking accepting minus rejecting within
-each block and weighting blocks equally. Greater approval after an accepting
-peer is supported only if the combined interval and missing-outcome bounds lie
-above zero. We keep all blocks and recovery conditions regardless of this check.\par
-\end{samepage}
-
-Episode 1 is a control: the reviewer has not yet received feedback that differs
-by peer policy. Initial inputs are identical across conditions. Later inputs in
-that episode also match if generated messages and attempts match. Separate model
-calls can still produce different outputs.
+Two pairs completed these conversations. Only the first pair, which had no
+warm-up, completed recovery tests: 80 of the planned 480 reviews. After seeing
+these results, a deadline amendment allowed up to 240 additional reviews,
+prioritizing pairs by remaining work rather than outcomes. No additional review
+tests began before collection closed. All 400 uncollected reviews remain unknown;
+independent validation of the initial interaction was not completed.
 
 \subsection{Recovery tests}
-After formation, we save both interaction histories and test six recovery
-conditions (Table~\ref{tab:arms}). Each condition receives the same eight new
-claim pairs in the same order. The reviewer's own claim and the peer's claim can
-each be correct or faulty; all four combinations appear twice.
+We test five conditions (Table~\ref{tab:arms}). A \emph{reminder} tells the agent
+to stop unsupported approvals and follow the original rule. A \emph{fresh
+conversation} removes previous tasks, messages, feedback, and reflections while
+keeping the original instructions and model settings. It does not change the
+model's weights. Full instructions appear in Appendix~\ref{app:prompts}.
 
-This gives four correct and four faulty peer claims per condition and block.
-Faulty claims cover all three error types. A fixed random seed sets the order in
-which conditions run.
-
-Each test starts again from its assigned saved history, except E, which removes
-that history. All conditions have full current evidence except F. The reviewer
-receives a common neutral peer message and makes a review decision. It sends no
-message and sees no current peer verdict.
-
-Earlier test responses never enter later tests. We therefore measure immediate
-responses on new claims, rather than recovery over a continuing conversation.
-Appendix~\ref{app:prompts} gives the verification and correction instructions.
-
-\begin{table}[htbp]
+\begin{table}[t]
 \centering\small
-\caption{Recovery conditions. Both formation histories have restricted evidence.
-Correction explicitly rejects earlier approval shortcuts. History removal clears
-the earlier transcript but keeps the current task, correction, and verification
-rule.}
+\caption{Recovery conditions. All receive the same current tasks and saved work.
+A fresh conversation clears the earlier interaction.}
 \label{tab:arms}
-\begin{tabularx}{\linewidth}{@{}c l l X l@{}}
+\begin{tabularx}{\linewidth}{@{}X l l@{}}
 \toprule
-Arm & Formation peer & Current evidence & Instruction & History\\
+Condition & Earlier conversation & Reminder\\
 \midrule
-A & Rejecting & Full & Neutral & Retained\\
-B & Accepting & Full & Neutral & Retained\\
-C & Rejecting & Full & Correction & Retained\\
-D & Accepting & Full & Correction & Retained\\
-E & Accepting & Full & Correction & Removed\\
-F & Accepting & Restricted & Neutral & Retained\\
+Incomplete log & Retained & No\\
+Complete log & Retained & No\\
+Complete log + reminder & Retained & Yes\\
+Complete log + fresh conversation & Removed & No\\
+Complete log + reminder + fresh conversation & Removed & Yes\\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\begin{samepage}
-We compare false approval rates as follows:
-\begin{itemize}[itemsep=3pt]
-\item \textbf{Remaining peer-history effect (B$-$A, primary):} compare the two
-histories after restoring full evidence.
-\item \textbf{Evidence restoration (B$-$F):} restore evidence after the same
-accepting-peer history.
-\item \textbf{Correction (D$-$B and C$-$A):} add correction after each type of
-history. The difference, $(D-B)-(C-A)$, tests whether its effect depends on
-the prior peer.
-\item \textbf{History removal (E$-$D):} remove history while keeping correction
-in place. This measures the added effect of removal, not reset alone.
-\end{itemize}
-\end{samepage}
-A small B$-$A difference does not establish recovery if both conditions perform
-poorly. We therefore also report each condition's absolute performance.
+\textbf{Matched work.} We created eight code-review cases, with two correct and
+two incorrect answers in each test phase. All saved answers report
+\texttt{no\_bug}. We actually execute the code-reading, test-writing, test-running,
+and answer-saving tools to produce the logs. Faulty code fails a test that
+contradicts the saved answer. Complete-log conditions receive the entire log;
+the incomplete-log condition receives its first 1,000 characters as five
+200-character messages. Every full log is longer. Conditions receive the same
+cases in the same order, fixed before testing. Agents know the work was supplied
+by the experimenters; no partner produces new messages or verdicts.
 
-\subsection{Measures and uncertainty}
-\textbf{Measures.} False approval rate (\far) is the fraction of faulty claims
-accepted; lower is better. Correct-claim approval (\cpa) is the fraction of
-correct claims accepted; higher indicates more useful review when evidence is
-complete. Balanced accuracy averages correct rejection and correct approval:
-$\{(1-\far)+\cpa\}/2$.
+\textbf{Two test phases.} Four independent reviews each start from the agent's
+saved conversation or a fresh conversation. Separately, four consecutive reviews
+retain earlier reviews within that sequence. The reminder and conversation
+clearing occur only at the start. No review receives correctness, reward, or
+partner-verdict feedback. Each pair therefore contributes
+$2\text{ agents}\times5\text{ conditions}\times8\text{ reviews}=80$ decisions.
 
-We interpret these measures together. Rejecting everything lowers false approval
-but also blocks correct work. When evidence is restricted, however, rejection
-is required by the verification rule even for correct claims.
+\textbf{Basic checks.} Before testing, both agents must approve correct work with
+a complete log, reject incorrect work with a complete log, and reject correct
+work with an incomplete log. These six checks use separate cases and are
+excluded from results. Any invalid or wrong first response stops collection.
 
-\textbf{Independent comparisons.} We calculate $\far_B-\far_A$ within each block,
-then average the five differences with equal weight. The independent unit is the
-paired block, not each review.
+\subsection{Measures}
+We measure approval of incorrect work and approval of correct work separately:
+rejecting everything is not useful recovery. Balanced discrimination averages
+correct approval and incorrect rejection. We also distinguish approvals lacking
+the required log from approvals contradicted by complete evidence.
 
-\textbf{Uncertainty.} We prespecified two 95\% intervals: a block bootstrap with
-10,000 fixed-seed resamples, and a paired-block Student-$t$ interval. Resampling
-keeps all conditions within a block together. The combined interval spans both
-intervals. The analysis withholds uninformative intervals when paired effects
-are identical across blocks. With only five blocks, these estimates are
-exploratory; identical observed outcomes cannot establish that an effect is absent.
+We compare complete versus incomplete logs, each reminder and conversation
+change with and without the other, and their combined interaction. Differences
+are calculated within each agent, then averaged across the two agents and
+equally across completed pairs. The two phases remain separate.
 
-\textbf{Missing decisions.} Missing or invalid verdicts remain unknown. For $a$
-observed faulty approvals, $m$ missing outcomes, and $N$ scheduled faulty reviews,
-the possible rate ranges from $a/N$ to $(a+m)/N$. This covers treating every
-missing decision as a rejection or as an approval.
-
-We carry these bounds through differences between conditions. Requests whose
-final outcome cannot be confirmed remain in sensitivity analyses. A small
-estimated difference or an incomplete run does not establish recovery or
-equivalent performance.
+A pair is the independent unit; its reviews are repeated observations.
+Missing, refused, or malformed decisions remain unknown. With $a$ approvals,
+$u$ unknown outcomes, and $n$ assigned reviews, approval lies within
+$[a/n,(a+u)/n]$. Difference bounds use opposite interval ends. These describe
+missing outcomes, not statistical confidence.

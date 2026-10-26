@@ -1,0 +1,24 @@
+\section{Four Consecutive Reviews}
+\label{app:sequences}
+Table~\ref{tab:sequences} shows all four reviews for each agent and condition. Each agent saw two correct answers and two wrong answers, in the order shown.
+\begin{table}[htbp]
+\centering\small
+\caption{A = approve, R = reject; C = correct answer, W = wrong answer. For example, R/C means rejecting a correct answer.}
+\label{tab:sequences}
+\begin{tabularx}{\linewidth}{@{}X l c c c c@{}}
+\toprule
+Condition & Agent & 1 & 2 & 3 & 4\\
+\midrule
+Incomplete log & Alice & R/W & R/C & R/W & R/C\\
+Incomplete log & Bob & R/C & R/W & R/C & R/W\\
+Complete log & Alice & R/W & A/C & R/W & A/C\\
+Complete log & Bob & A/C & R/W & A/C & R/W\\
+Complete log + reminder & Alice & R/W & A/C & R/W & A/C\\
+Complete log + reminder & Bob & A/C & R/W & A/C & R/W\\
+Complete log + fresh conversation & Alice & R/W & A/C & R/W & A/C\\
+Complete log + fresh conversation & Bob & A/C & R/W & A/C & R/W\\
+Complete log + reminder + fresh conversation & Alice & R/W & R/C & R/W & R/C\\
+Complete log + reminder + fresh conversation & Bob & R/C & R/W & R/C & R/W\\
+\bottomrule
+\end{tabularx}
+\end{table}

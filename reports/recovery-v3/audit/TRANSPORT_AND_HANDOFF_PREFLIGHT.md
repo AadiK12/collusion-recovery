@@ -133,3 +133,42 @@ Official references inspected:
 
 The local 1M-window/three-call settings are frozen project operating limits,
 not a claim about the account's guaranteed provider capacity.
+
+## Additive administrative handoff utility
+
+`experiments/recovery_v3/admin_handoff.py` implements only read-only readiness
+proof creation and a post-death partial finalizer. It never sends signals,
+loads credentials or dispatches a provider request. The executor must own the
+guarded process-control sequence:
+
+1. Identify the exact Python resumption PID, command and start time; SIGSTOP it.
+2. Run `readiness --run <absolute-run> --pid <pid> --proof <fresh-external.json>`.
+   On ANY error, identity-check and SIGCONT that same PID immediately. The utility
+   itself deliberately cannot resume a process. Do not leave it paused.
+3. Only a successful proof permits terminating that exact still-stopped process;
+   never use SIGTERM followed by SIGCONT, which introduces a dispatch window.
+4. Run `finalize --proof <proof.json> --report <fresh-external-report.json>` within
+   180 seconds. Finalization requires the old PID absent (PID reuse also fails),
+   no other resumption process, no induction containers, no lock holders, and
+   successful exclusive acquisition of the unchanged original lock inode.
+
+Readiness checks all threads are process-stopped, exact Python argv and current
+UID, no descendant processes or extant induction sandbox containers, the sole
+lock file holder plus an independently busy flock, exact ledger semantics, no
+local reserved/in-flight balance, and stable artifact hashes across inspection.
+The proof binds the process start identity, original full ledger binding,
+complete journal prefix/tail and every nonscratch artifact. A half-written
+atomic artifact, unknown OS query or process mismatch refuses readiness.
+
+Finalization rechecks the proof and every artifact under the original lock,
+reopens with the exact original liability-journal binding, appends explicit
+administrative `stop` plus terminal `partial`, and verifies the ledger. Original
+journal bytes remain a prefix, all non-accounting artifacts remain unchanged,
+and the old $0.6402 liability remains. Partial episode observations are preserved
+but are not eligible as complete endpoints. This never declares induction
+validation complete or starts repairs.
+
+Final offline tests passed (13 cases in 16.26 seconds), with real ledgers and locks under
+temporary roots and mocked process/container observations. Native process
+inventory parsing was read-only checked successfully. Exact-argv shell-wrapper
+rejection is included. Independent parent review is required before execution.

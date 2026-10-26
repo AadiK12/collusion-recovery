@@ -1,27 +1,27 @@
 {
   "status": "development_running",
-  "updated_at": "2026-10-26T10:34:41.151699+00:00",
+  "updated_at": "2026-10-26T10:45:24.827387+00:00",
   "active_run": "runs/empirical/induction-v3-resumption-02c8e4c3-7cda-4aac-b058-7b4df6878ff6",
   "active_release": "release/induction-v3/resumption.json",
   "source_run": "runs/empirical/induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4",
   "ledger": {
     "consumed": {
-      "requests": 317,
-      "input_tokens": 20477355,
-      "output_tokens": 53240,
-      "cost_usd": "1.79614390"
+      "requests": 387,
+      "input_tokens": 25279374,
+      "output_tokens": 64908,
+      "cost_usd": "2.20300641"
     },
     "reserved": {
-      "requests": 0,
-      "input_tokens": 0,
-      "output_tokens": 0,
-      "cost_usd": "0"
+      "requests": 1,
+      "input_tokens": 1050000,
+      "output_tokens": 64000,
+      "cost_usd": "0.6402"
     },
-    "physical_attempts": 317,
-    "in_flight": 0,
-    "campaign_exposure_usd": "1.79614390",
+    "physical_attempts": 388,
+    "in_flight": 1,
+    "campaign_exposure_usd": "2.84320641",
     "historical_cost_usd": "48.50659936",
-    "lifetime_exposure_usd": "50.94294326",
+    "lifetime_exposure_usd": "51.99000577",
     "stop_reason": null,
     "pricing": {
       "model": "gpt-5.6-luna",
@@ -57,16 +57,16 @@
       "error_code": "rate_limit_exceeded",
       "error_type": "tokens"
     },
-    "combined_v3_consumed_cost_usd": "2.89570666",
-    "combined_v3_reserved_cost_usd": "0.6402",
-    "combined_v3_exposure_usd": "3.53590666",
-    "combined_v3_physical_attempts": 785
+    "combined_v3_consumed_cost_usd": "3.30256917",
+    "combined_v3_reserved_cost_usd": "1.2804",
+    "combined_v3_exposure_usd": "4.58296917",
+    "combined_v3_physical_attempts": 856
   },
   "pacing": {
     "state": "queuedbeforephysicalattempt",
-    "queued": 2,
-    "active": 0,
-    "charged_estimated_units": 941321,
+    "queued": 1,
+    "active": 1,
+    "charged_estimated_units": 979495,
     "capacity": 1000000,
     "window_seconds": 60.0,
     "initial_cooldown_remaining_seconds": 0
@@ -78,6 +78,6 @@
   "repair_started": false,
   "latest_completed_episode": {
     "dyad_id": "development-warmup_summary-1",
-    "episode": 11
+    "episode": 12
   }
 }

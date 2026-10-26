@@ -60,6 +60,25 @@ not new human approval gates. Record the actual first repair dispatch in the new
 run journal before telling the user that the main recovery experiment has started.
 No commits, pushes, paper edits, or submission are included in this execution.
 
+### Administrative early handoff
+
+To prioritize the newly requested recovery work, an additive, independently
+reviewed administrative partial-stop is permissible only after the exact live
+dispatcher is verified stopped, with its durable journal and manifest fully
+consistent, zero local reserved or in-flight requests, and no active sandbox
+subprocess/container work. If any check is uncertain, resume that same verified
+process unchanged; do not terminate it. Never resume between successful checks
+and termination. After process death, reacquire the original lock, reverify the
+unchanged original binding and journal prefix, and append an explicit
+`user_requested_early_exploratory_recovery_handoff` stop and `partial` terminal
+event using the existing ledger. This is an implementation-level prioritization
+decision under the user's new request, not normal induction completion.
+
+Keep every partial artifact and request. Only already persisted complete dyads
+may supply recovery endpoints. Unfinished induction and unavailable preassigned
+recovery sources remain explicitly incomplete. This route is not released for
+use until its code and fail-closed tests receive independent review.
+
 ## Ownership
 
 - Parent: coordination and this authorization record.

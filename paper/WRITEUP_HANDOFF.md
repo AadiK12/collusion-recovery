@@ -1,5 +1,7 @@
 # Results-to-paper handoff
 
+> Current active study: see [incremental recovery integration](RECOVERY_RESULTS_HANDOFF.md). The user clarified that the adaptive-agent architecture and newly running repair assay now define the paper. The completed controlled-study record below remains historical evidence; its PDF and sources are preserved in `archive/controlled-study-completed/`. Do not apply its absent-induction conclusion, model, A–F arms, or five-block analysis to the active experiment.
+
 ## Current objective and ownership
 
 **Recovery remains the research question.** The user clarified repeatedly that peer-dependence controls are a setup-validity improvement, not a replacement central question or the paper's main contribution. Lead with evidence restoration, correction, and history removal. Do not rewrite the title or abstract around diagnosing independent learning.

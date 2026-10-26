@@ -1,0 +1,23 @@
+{
+  "snapshot_at": "2026-10-26T11:38:05.051794+00:00",
+  "status": "collection_closed_before_deadline",
+  "original_recovery_assignment": 480,
+  "recovery_valid": 80,
+  "additional_recovery_calls": 0,
+  "completed_assayed_sources": 1,
+  "completed_eligible_sources": 2,
+  "new_source_calls": 10,
+  "wave_2_status": "not_started_insufficient_observed_rate_time",
+  "planned_but_uncollected_recovery_cells": 400,
+  "new_calls_authorized_after_snapshot": false,
+  "bindings": {
+    "release/recovery-v3/wave-1.json": "a690bab8408d5398e6b79544eb82698c7afdeefab89dbd66c3f11637ad42a6d8",
+    "release/recovery-v3/wave-2.json": "9035670f3623e25304648d508d94505e26a72abac6bec2504a8b4fc96266e48a",
+    "release/recovery-v3/source-completion.json": "90bd26284b8f393f626aa22d53413e25d369b93193710a9a65a57a74b810eaa9",
+    "reports/recovery-v3/reduced/wave-2-admission.json": "115157446d0080ed3c316b58d5f3c1faa12c26c5eee3e4007530309b51b66c90",
+    "reports/recovery-v3/execution/wave-1-scientific-readout.json": "584c1028e133dcb7ee4314a2daffbafc3330bd41512f48a39def8bbc3f7c1567",
+    "runs/empirical/induction-v3-source-completion-20d520c4-1595-439e-a075-94993f8f7767/manifest.json": "fa03dd1e327b3d629b277c51c3625309812cfab8c264a6baf0a7fb95f13321a2",
+    "runs/empirical/induction-v3-source-completion-20d520c4-1595-439e-a075-94993f8f7767/journal.jsonl": "5aaf8671499d3e2ef1dffe2df8f2c96b825f9f89b531cf2890db4f3443f1563c",
+    "runs/empirical/induction-v3-source-completion-20d520c4-1595-439e-a075-94993f8f7767/dyads/development-warmup_summary-1.json": "d6dca5d3d443681283a68a48e77607fa7c50d7045d6ab45a499a0c64873d2c56"
+  }
+}

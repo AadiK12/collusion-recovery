@@ -1,0 +1,29 @@
+\section{Introduction}
+An agent must check its peer's work before approving it. But the records it needs
+are missing, and approving still earns points when the claim happens to be
+correct. The agent can improve its score by breaking the verification rule.
+If peer interaction encourages this shortcut, will restoring the records
+restore careful review?
+
+This is a recovery problem. The agent might resume checking, continue approving
+without checking, or start rejecting everything. Only the first outcome provides
+useful review. We therefore measure both rejection of faulty claims and approval
+of correct claims.
+
+We adapt the peer-verification task of \citet{shi2026emergent}. A model reviewer
+interacts with a scripted peer that always accepts or always rejects. The tasks,
+evidence access, and peer messages are otherwise matched. We then test new claims
+after restoring evidence, adding a corrective instruction, or combining
+correction with history removal. A program computes each claim's exact answer.
+
+The accepting- and rejecting-peer conditions also check whether peer history
+contributes to the initial failure. Approval without evidence could arise simply
+because earlier claims were correct. A difference between the conditions would
+show an effect of peer history, including its score feedback. It would not prove
+a hidden agreement.
+
+In the completed run, neither peer condition produced unsupported approval.
+Full evidence supported accurate observed verdicts, while restricted evidence
+produced rejection of every claim. We report these outcomes without treating them
+as recovery from collusion: the failure that the interventions were intended to
+repair was not demonstrated in this configuration.

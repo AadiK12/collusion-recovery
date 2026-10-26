@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "release_hash": "488c5a68adaef552890bbbe372ec0deeae8c0a6edfcf73332a6b48429f5ad36a",
+  "domains": [
+    "science",
+    "accounting",
+    "security"
+  ],
+  "evidence": [
+    {
+      "path": "reports/recovery-v3/reduced/source-science-audit-final.json",
+      "sha256": "2e43d5471835c33526290b83b015ec6664944284e877e9557c73d0c7782ea5a4"
+    },
+    {
+      "path": "reports/recovery-v3/reduced/source-accounting-audit.json",
+      "sha256": "53eb5500469952a9fd137c51391f737741ada23b197a809c3c4e2298039c069a"
+    },
+    {
+      "path": "reports/recovery-v3/reduced/source-security-audit.json",
+      "sha256": "f483afefd002d9c1e064962f4487542e30d623edc6c284c588f72ec0817ae80b"
+    }
+  ]
+}

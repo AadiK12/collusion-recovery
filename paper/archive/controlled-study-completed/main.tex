@@ -1,0 +1,66 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{fontspec}
+\setmainfont{OldStandard-Regular.ttf}[Path=fonts/,BoldFont=OldStandard-Bold.ttf,ItalicFont=OldStandard-Italic.ttf]
+\usepackage[margin=1in]{geometry}
+\usepackage{microtype,amsmath,amssymb}
+\usepackage{booktabs,tabularx,array,enumitem}
+\usepackage{xcolor,graphicx,tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{hyperref,xurl,fancyhdr,titlesec}
+\definecolor{inkblue}{HTML}{244A63}
+\definecolor{lightblue}{HTML}{EEF4F7}
+\hypersetup{colorlinks=true,linkcolor=inkblue,citecolor=inkblue,urlcolor=inkblue,
+pdftitle={Does Restoring Evidence Restore Independent Verification?},
+pdfauthor={Aadi Khanna, Simon Wilton, Sujay Potlapelly}}
+\urlstyle{same}
+\widowpenalty=10000
+\clubpenalty=10000
+\displaywidowpenalty=10000
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt minus 1pt}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.13}
+\setlist{nosep,leftmargin=*}
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{12pt plus 2pt}{5pt}
+\titlespacing*{\subsection}{0pt}{8pt plus 2pt}{3pt}
+\newcommand{\far}{\ensuremath{\mathrm{FAR}}}
+\newcommand{\cpa}{\ensuremath{\mathrm{CPA}}}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[L]{\scriptsize AI Collusion Research Sprint, October 2026}
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\setlength{\headheight}{15pt}
+\begin{document}
+\begin{center}
+\rule{\linewidth}{2pt}\par\vspace{10pt}
+{\fontsize{20}{23}\selectfont\bfseries Does Restoring Evidence Restore\\Independent Verification?\par}
+\vspace{10pt}\rule{\linewidth}{0.5pt}\par\vspace{10pt}
+\begin{tabularx}{\linewidth}{@{}>{\centering\arraybackslash}X>{\centering\arraybackslash}X>{\centering\arraybackslash}X@{}}
+Aadi Khanna & Simon Wilton & Sujay Potlapelly\\
+\small Indiana University & \small University of British Columbia & \small University of Colorado Boulder
+\end{tabularx}
+\vspace{8pt}\par
+{\small\textbf{With}\\Apart Research}\par
+\vspace{10pt}
+{\large\bfseries Abstract}
+\end{center}
+\begin{quote}\small
+\input{sections/00_abstract}
+\end{quote}
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_methods}
+\input{sections/04_results_template}
+\input{sections/05_discussion}
+\label{main-text-end}
+\clearpage
+\bibliographystyle{plainnat}
+\bibliography{references}
+\clearpage
+\appendix
+\input{sections/appendix}
+\end{document}

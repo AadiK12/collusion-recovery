@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "domain": "security",
+  "status": "passed",
+  "reviewed_at": "2026-10-26T10:55:40.411Z",
+  "scope": "Independent offline review of the additive recovery runner, unchanged official transport/pacer/liability ledger integration, and native handoff observer parser.",
+  "release_path": "release/recovery-v3/wave-1.json",
+  "release_hash": "85e504d8d55d98d2b1eeced85f990d1c4df4a7bfd59f104d90a849ebef3933ac",
+  "release_file_sha256": "a690bab8408d5398e6b79544eb82698c7afdeefab89dbd66c3f11637ad42a6d8",
+  "reviewed_source_hashes": {
+    "docs/RECOVERY_V3_EXPLORATORY.md": "c5c0faf60d8479edb96ffc797b314b3149f7f23949e084eedbb6b5e538d1f13b",
+    "experiments/induction_v3/accounting.py": "8b96fea77399a57a20d5561b1d326d9ff53c871ade629a2d2dbf43506cc09360",
+    "experiments/induction_v3/liability_accounting.py": "6acae93d1107a1b744136ed1af334536d2f0cb34c5a15092dc1611a30a9372f1",
+    "experiments/induction_v3/pacing.py": "cf93a90ee2959c657b8bbb3034f32e50fc9640b97c24c11ef56baa05477bc9c6",
+    "experiments/induction_v3/resumption.py": "26466737725f5c511b763aa56bedfcddd01277b8a2f52921ebe7e8b25f5d4a03",
+    "experiments/induction_v3/transport.py": "fa28b9d47af83730ab518db28c56bcfac7945592d47087cf6de8a0bb9c7b4bfd",
+    "experiments/recovery_v3/admin_handoff.py": "8ddd44b593065fa73b97e4dfe3fe5616b2eb74365921f1aa90ba4b7db4257658",
+    "experiments/recovery_v3/analysis.py": "09c85d70d53c5c893c407273e146626fdbfbae9c81b1b41b22f4f537bc7caa65",
+    "experiments/recovery_v3/decisions.py": "d913a233d959290ad8820aa219130a82eaa432126e1cd0f44c9d6c08e867230f",
+    "experiments/recovery_v3/endpoints.py": "96ef039c4ea58ff768a711cf32618dbaa1f371374634638399f7335e28925a8a",
+    "experiments/recovery_v3/fixtures.py": "da5640732d88ea13e0c866f768979ede089bbfa5c40cb2667576ebf4d6ed6235",
+    "experiments/recovery_v3/handoff_observer.py": "19d009c9625f68a641c29487b652e848816a72709de1f144dc0d2ea0e802a788",
+    "experiments/recovery_v3/runner.py": "9bbe030288092ff2be79e90c528fc57340f3be641caf5cb075db605c6aae19a0",
+    "release/recovery-v3/wave-1.json": "a690bab8408d5398e6b79544eb82698c7afdeefab89dbd66c3f11637ad42a6d8",
+    "reports/recovery-v3/coordination/AUTHORIZATION.md": "5df3e909ec5f47c2dabe93c164d15f4fd9bd6db60528f3de9617c34fe6fa81c9",
+    "reports/recovery-v3/execution/administrative-handoff-final.json": "b60fbb0d576e49c3e6f448ca614e72b41e8d8187b4119d697594741fa8d33f7b",
+    "reports/recovery-v3/fixtures/materialized-fixtures.json": "0261da318301a1cffddcc0c02f1f373f8ed572b755e2a3b44f1679a2a8317e28",
+    "reports/recovery-v3/science/CONTRACT.json": "f95cffe62a41f7e191addeb26b74c622231a15bbb3f99f0ba1e1e6abbfec1b77",
+    "tests/recovery_v3/test_admin_handoff.py": "9396198cd128327f76ad94ffab227500c2ffb4acd9bd8f6027292e2b166e9aab",
+    "tests/recovery_v3/test_analysis.py": "1be4e0c462d62a50d735ac5f0af8d02db6db6957406419b005408ab86908b882",
+    "tests/recovery_v3/test_decisions.py": "932c3b1fe5ecb9234e54fa629c8c3510245ce23cf22ec0391327c53c31583962",
+    "tests/recovery_v3/test_endpoints.py": "50d2defcead87cf00c2af5d3bf1bbcc21d7d816836cd121710ead45543198885",
+    "tests/recovery_v3/test_fixtures.py": "c36fd52e6d6dce252669e010b69701e0f5f258e2722c3b392b4ed64a31ac1c86",
+    "tests/recovery_v3/test_handoff_observer.py": "00f3a1dd821de63c6b5dd66656b39c074e7d03787020a145780c649c73760b2c",
+    "tests/recovery_v3/test_runner.py": "e11f2ca7e19c27665a95f499be78a53bc9259511a8d7af8720e88d03a52f64cd",
+    "tests/recovery_v3/test_runner_integration.py": "fb9e2dcd319c1e4101ffe6664a1a8e66700c1cf0e50ce797204acff2ff94c93c",
+    "tests/recovery_v3/test_runner_security.py": "65563c6e5158556eb6bc7a18999e1e8c46ff0b82116ca3df38cc284857a17a6c"
+  },
+  "validation": {
+    "command": "runner.validate(Path('release/recovery-v3/wave-1.json'), require_audit=False)",
+    "status": "passed",
+    "source_inventory_bindings_verified": 1728,
+    "source_inventory_digest": "9410fdfd13e99bc78aef1bb02fa3cfc396d8fb244cd7724703273c5eb671eec0",
+    "initial_request_hashes_recomputed": 56,
+    "historical_inventory_hash": "e20ceb8fdc77b98499fc2d7cadbb10f43761d5c66d4a7d2ef7bcc422fa8a6d7f",
+    "wave_source_assignment": [
+      "development-reference-1"
+    ],
+    "wave_planned_calls": 86,
+    "limits": {
+      "campaign_limit_usd": "25",
+      "max_attempts": 600,
+      "lifetime_limit_usd": "250",
+      "max_in_flight": 3
+    },
+    "new_security_test_bound_in_release": true
+  },
+  "checks": [
+    {
+      "id": "precredential_binding",
+      "status": "passed",
+      "finding": "Release canonical hash, settings, source inventory, endpoint snapshots, schedules and initial requests are checked before credential loading; locked revalidation and exact terminal-history equality precede journal construction. Frozen local tokenizer and archived opaque-ID hashes are loaded and initial requests estimated before credential loading."
+    },
+    {
+      "id": "request_boundary",
+      "status": "passed",
+      "finding": "Actual first-cell request_body hash is checked before execute_decision and again against its returned provenance. Frozen preparation and execution both force submit_verdict with identical body encoding. Independent injected post-preflight drift produced zero reservations and zero HTTP entries."
+    },
+    {
+      "id": "minimum_caps",
+      "status": "passed",
+      "finding": "Local recovery allocation is min($25 minus previous recovery exposure, remaining V3 $100 exposure, remaining lifetime $250 exposure) and min(600 minus previous recovery attempts, remaining V3 4000 attempts). Frozen unchanged ledger durably reserves worst-case 1,050,000 input and 64,000 output before each attempt and preserves the exact prior $0.6402 unknown liability."
+    },
+    {
+      "id": "shared_pacing_concurrency",
+      "status": "passed",
+      "finding": "One PacedOfficialTransport and one shared SlidingWindowPacer serve all workers, with max_workers=3, transport semaphore=3, and journal max_in_flight=3. Pacing precedes reservations, checks stops while waiting, and keeps credits through response plus 60 seconds. Independent overlap test observed no more than three mock HTTP entries."
+    },
+    {
+      "id": "capability_gate",
+      "status": "passed",
+      "finding": "Exactly six fresh capability cells precede all research. Research requires six valid correct verdicts and an unstopped journal. The fixed first wave contains 80 research cells from reference-1; all 480 assigned cells remain in reporting. Failed gate simulations produced zero research attempts."
+    },
+    {
+      "id": "stop_no_retry",
+      "status": "passed",
+      "finding": "Each decision performs one transport complete call; invalid tool output ends that sequential branch without a follow-up. Future exceptions immediately stop the journal; queued work checks stop and existing workers finish before terminal finalization. HTTP 429 and ambiguous timeouts retain conservative unknown liability with no automatic retry."
+    },
+    {
+      "id": "actual_dispatch_reporting",
+      "status": "passed",
+      "finding": "repair_started now requires a research response artifact containing body or http_status, which the unchanged transport writes only after HTTP returns. A reservation alone only increments research_requests_reserved. REPAIR_STARTED.json binds the confirmed reservation event and response path/hash. Independent pre-HTTP failure test produced no marker; actual mock HTTP 429 produced a marker with zero accepted research responses."
+    },
+    {
+      "id": "isolation_and_no_oracle_feedback",
+      "status": "passed",
+      "finding": "Recovery decisions expose only submit_verdict and never execute generated tools or code. Actor histories and packet contents are copied; ordered provider items are retained unchanged, opaque reasoning is not decoded, and valid submissions receive only the original syntactic acknowledgment. Evaluator truth/evidence scores are not inserted into subsequent histories."
+    },
+    {
+      "id": "native_observer_delta",
+      "status": "passed",
+      "finding": "Native lock parsing preserves every positive numeric PID and accepts only numeric descriptor records after a PID. Unknown/orphan fields fail closed. Inherited readiness still requires the exact stopped owner, sole lock ownership, no subprocess or sandbox activity, zero local open/unresolved reservations, and unchanged durable evidence; finalizer requires verified death and exclusive lock ownership."
+    }
+  ],
+  "resolved_findings": [
+    {
+      "id": "reservation_not_dispatch",
+      "severity": "reporting_blocker",
+      "resolution": "Root replaced reservation-only repair_started with HTTP-response evidence, preserving reservation count separately; independently regression-tested."
+    },
+    {
+      "id": "first_request_check_after_call",
+      "severity": "dispatch_boundary",
+      "resolution": "Root added the actual first-request hash check before execute_decision; independently injected drift resulted in zero physical attempts."
+    }
+  ],
+  "tests": [
+    {
+      "command": ".venv-induction-v3/bin/python -m pytest -q tests/recovery_v3/test_handoff_observer.py tests/recovery_v3/test_admin_handoff.py",
+      "passed": 19,
+      "failed": 0,
+      "seconds": 16.1
+    },
+    {
+      "command": ".venv-induction-v3/bin/python -m pytest -q tests/recovery_v3/test_runner_security.py",
+      "passed": 4,
+      "failed": 0,
+      "seconds": 17.33
+    },
+    {
+      "command": ".venv-induction-v3/bin/python -m pytest -q tests/recovery_v3",
+      "passed": 144,
+      "failed": 0,
+      "seconds": 47.4
+    }
+  ],
+  "blockers": [],
+  "provider_calls": 0,
+  "credentials_read": false,
+  "live_process_signals_sent": false,
+  "real_program_lock_acquired": false,
+  "limitations": [
+    "Offline security clearance is specific to this release hash and reviewed source bytes; it does not replace science/accounting review or grant new spending authorization.",
+    "repair_started is conservative response-confirmed evidence. A request that times out without an HTTP response artifact can have been dispatched while repair_started remains false; its reservation and unresolved liability remain recorded.",
+    "Pacing is an empirical scheduling estimate, not a provider token guarantee; any rate-limit rejection still stops without retry.",
+    "The first wave contains one source dyad. Completion of 80 research cells leaves 400 assigned research cells unknown and does not complete the six-source study."
+  ]
+}

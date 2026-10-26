@@ -1,0 +1,130 @@
+{
+  "schema": "recovery_v3_runner_accounting_review_v1",
+  "status": "passed",
+  "domain": "accounting",
+  "reviewed_at": "2026-10-26T10:54:25Z",
+  "reviewer": "execution accounting subagent; independent of recovery runner author",
+  "authorship_disclosure": "Reviewer authored the reused liability ledger, recovery analysis, and the new integration tests; this is an independent review of runner integration and exact release accounting, not an independent reimplementation audit of those authored modules.",
+  "release_path": "release/recovery-v3/wave-1.json",
+  "release_hash": "85e504d8d55d98d2b1eeced85f990d1c4df4a7bfd59f104d90a849ebef3933ac",
+  "release_file_sha256": "a690bab8408d5398e6b79544eb82698c7afdeefab89dbd66c3f11637ad42a6d8",
+  "run_directory": "runs/empirical/induction-v3-recovery-3f57db64-9595-43fb-9462-8df2816e54e9",
+  "source_hashes": {
+    "experiments/recovery_v3/runner.py": "9bbe030288092ff2be79e90c528fc57340f3be641caf5cb075db605c6aae19a0",
+    "experiments/recovery_v3/decisions.py": "d913a233d959290ad8820aa219130a82eaa432126e1cd0f44c9d6c08e867230f",
+    "experiments/recovery_v3/analysis.py": "09c85d70d53c5c893c407273e146626fdbfbae9c81b1b41b22f4f537bc7caa65",
+    "experiments/recovery_v3/fixtures.py": "da5640732d88ea13e0c866f768979ede089bbfa5c40cb2667576ebf4d6ed6235",
+    "experiments/recovery_v3/endpoints.py": "96ef039c4ea58ff768a711cf32618dbaa1f371374634638399f7335e28925a8a",
+    "experiments/induction_v3/accounting.py": "8b96fea77399a57a20d5561b1d326d9ff53c871ade629a2d2dbf43506cc09360",
+    "experiments/induction_v3/liability_accounting.py": "6acae93d1107a1b744136ed1af334536d2f0cb34c5a15092dc1611a30a9372f1",
+    "experiments/induction_v3/transport.py": "fa28b9d47af83730ab518db28c56bcfac7945592d47087cf6de8a0bb9c7b4bfd",
+    "experiments/induction_v3/pacing.py": "cf93a90ee2959c657b8bbb3034f32e50fc9640b97c24c11ef56baa05477bc9c6",
+    "experiments/induction_v3/resumption.py": "26466737725f5c511b763aa56bedfcddd01277b8a2f52921ebe7e8b25f5d4a03",
+    "experiments/induction_v3/common.py": "1975241fe02a4389c6c4fc3555aabe7f660c2afb57fd86ade9466a7fa48208e8",
+    "tests/recovery_v3/test_runner.py": "e11f2ca7e19c27665a95f499be78a53bc9259511a8d7af8720e88d03a52f64cd",
+    "tests/recovery_v3/test_runner_integration.py": "fb9e2dcd319c1e4101ffe6664a1a8e66700c1cf0e50ce797204acff2ff94c93c",
+    "tests/recovery_v3/test_decisions.py": "932c3b1fe5ecb9234e54fa629c8c3510245ce23cf22ec0391327c53c31583962",
+    "tests/recovery_v3/test_analysis.py": "1be4e0c462d62a50d735ac5f0af8d02db6db6957406419b005408ab86908b882",
+    "tests/induction_v3/test_accounting.py": "8e80f35a503c2c0cbb6b62900d9ddd7652327ac2e8b029288807d5243bf129f2",
+    "tests/induction_v3/test_liability_accounting.py": "c801360662722bade285f549d8841a7ef52a57ddced416efa0f7a17c2995984b",
+    "tests/induction_v3/test_resumption_accounting.py": "8d1546655659deeb2de622bf8dde1c6e29caee2b7631ff51e76afd61011ecbde",
+    "reports/recovery-v3/execution/administrative-handoff-final.json": "b60fbb0d576e49c3e6f448ca614e72b41e8d8187b4119d697594741fa8d33f7b",
+    "reports/recovery-v3/execution/accounting-interface-notes.md": "8a17b6a5035b03000b81beacfdc5b23b6406f15694712f493587b6cd1a0805f1",
+    "reports/recovery-v3/science/CONTRACT.json": "f95cffe62a41f7e191addeb26b74c622231a15bbb3f99f0ba1e1e6abbfec1b77",
+    "docs/RECOVERY_V3_EXPLORATORY.md": "c5c0faf60d8479edb96ffc797b314b3149f7f23949e084eedbb6b5e538d1f13b",
+    "reports/recovery-v3/coordination/AUTHORIZATION.md": "5df3e909ec5f47c2dabe93c164d15f4fd9bd6db60528f3de9617c34fe6fa81c9",
+    "runs/empirical/induction-v3-resumption-02c8e4c3-7cda-4aac-b058-7b4df6878ff6/manifest.json": "ad201966c7211147a0a41949b24ebbbd249e58fafd3e7036d6dd35cece3bcce3",
+    "runs/empirical/induction-v3-resumption-02c8e4c3-7cda-4aac-b058-7b4df6878ff6/journal.jsonl": "a1b5e76fdcd506af2de88245688416c796087be08ac1ddd664eae6006d1a1b3c"
+  },
+  "checks": {
+    "exact_release_validation_without_audit_gate": "passed",
+    "immutable_source_inventory_bindings": 1728,
+    "exact_terminal_history_equal_to_release": "passed_read_only_without_lock",
+    "current_history_run_count": 11,
+    "historical_inventory_hash": "e20ceb8fdc77b98499fc2d7cadbb10f43761d5c66d4a7d2ef7bcc422fa8a6d7f",
+    "new_run_directory_absent_at_review": true,
+    "runner_revalidates_release_and_all_history_under_program_lock_before_key": true,
+    "source_history_and_request_identity_checks_before_dispatch": true,
+    "exact_initial_request_checks_before_and_after_response": true,
+    "reused_fsync_before_dispatch_serialized_journal": true,
+    "thread_safe_interleaved_settlement_and_max_three_calls": true,
+    "no_automatic_provider_retry": true,
+    "unknown_usage_or_timeout_retains_full_reservation_and_stops_new_dispatch": true,
+    "queued_jobs_cannot_dispatch_after_global_stop": true,
+    "capability_six_first_responses_must_all_pass_before_research": true,
+    "capability_failure_leaves_all_480_research_outcomes_unknown": true,
+    "first_wave_six_capability_plus_eighty_research": true,
+    "all_480_assigned_cells_preserved_with_400_unknown_after_successful_first_wave": true,
+    "same_immutable_original_06402_liability_carried_once": true,
+    "local_recovery_allowance_subtracted_across_prefixed_prior_recovery_runs": true,
+    "later_recovery_waves_rejected_by_current_prepare": true,
+    "fresh_run_reuse_rejected": true,
+    "final_semantic_verification_with_held_program_lock": true,
+    "no_real_provider_calls_credentials_or_program_lock_by_reviewer": true
+  },
+  "limits": {
+    "campaign_limit_usd": "25",
+    "max_attempts": 600,
+    "lifetime_limit_usd": "250",
+    "max_in_flight": 3,
+    "prior_recovery_exposure_usd": "0",
+    "prior_recovery_attempts": 0
+  },
+  "historical_totals": {
+    "lifetime_consumed_usd": "50.86248327",
+    "lifetime_reserved_usd": "0.6402",
+    "v3_consumed_usd": "3.45544667",
+    "v3_reserved_usd": "0.6402",
+    "v3_attempts": 897,
+    "remaining_v3_usd": "95.90435333",
+    "remaining_lifetime_usd": "198.49731673",
+    "remaining_v3_attempts": 3103
+  },
+  "historical_exposure_usd": {
+    "v3": "4.09564667",
+    "lifetime": "51.50268327"
+  },
+  "first_wave": {
+    "sources": [
+      "development-reference-1"
+    ],
+    "capability_calls": 6,
+    "research_calls": 80,
+    "total_calls": 86,
+    "full_planned_research_cells": 480
+  },
+  "tests": [
+    {
+      "command": ".venv-induction-v3/bin/python -m pytest -q tests/recovery_v3/test_runner.py tests/recovery_v3/test_decisions.py tests/recovery_v3/test_analysis.py",
+      "result": "64 passed",
+      "seconds": 2.85
+    },
+    {
+      "command": ".venv-induction-v3/bin/python -m pytest -q tests/recovery_v3/test_runner_integration.py",
+      "result": "3 passed",
+      "seconds": 16,
+      "scope": "Actual LiabilityReservationJournal, temporary copied historical fixtures and temporary program lock, real decision adapter and paced official transport using httpx.MockTransport. Release validation, estimator construction, and credential loading are replaced offline. Actual release validation was separately executed read-only."
+    },
+    {
+      "command": ".venv-induction-v3/bin/python -m pytest -q tests/induction_v3/test_accounting.py tests/induction_v3/test_liability_accounting.py tests/induction_v3/test_resumption_accounting.py",
+      "result": "45 passed, 4 subtests passed",
+      "seconds": 24.9
+    }
+  ],
+  "resolved_findings": [
+    {
+      "severity": "launch_blocker",
+      "location": "experiments/recovery_v3/runner.py progress()",
+      "finding": "The initial progress implementation looked for a top-level reservation_id although real reservation events nest it under reservation.",
+      "disposition": "Root corrected the lookup to event['reservation']['reservation_id']; the new real-ledger full-wave test exercises the corrected progress marker and final verification.",
+      "fixed_runner_sha256": "9bbe030288092ff2be79e90c528fc57340f3be641caf5cb075db605c6aae19a0"
+    }
+  ],
+  "unresolved_accounting_blockers": [],
+  "limitations": [
+    "This read-only review did not acquire the real program lock. The exact release constructor must and does recheck the frozen inventory under that lock before dispatch.",
+    "Administrative handoff procedure is separately audited. Its final artifact was hash-bound and the resulting terminal induction ledger was independently replayed without mutation.",
+    "A completed accounting journal denotes the local dispatch wave's terminal ledger, not six-source scientific completion; comparison.json retains the full 480-cell schedule and explicit full_study_complete=false for this 80-cell wave.",
+    "Source/hash or historical-inventory drift invalidates this review. No capability or recovery provider request was issued by this reviewer."
+  ]
+}

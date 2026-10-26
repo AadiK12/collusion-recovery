@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "domain": "science",
+  "release_hash": "728f6c6ed21e61965ee0a9be8aa64db6fe460af99791b208276142830a94140a",
+  "release_path": "release/recovery-v3/wave-2.json",
+  "release_file_sha256": "9035670f3623e25304648d508d94505e26a72abac6bec2504a8b4fc96266e48a",
+  "run_directory": "runs/empirical/induction-v3-recovery-successor-1da778be-0b08-4eb8-815f-13d3832ad5e8",
+  "source_bindings_verified": 2190,
+  "source_inventory_digest": "4214273577ffd8439505027ef3641f0f07930a16ef371de28010f66dc7dae732",
+  "reviewed_source_hashes": {
+    "experiments/recovery_v3/successor.py": "75be970bc7ff2a940a00655546b721d1eb5462920b0d3172c44c5987508b64af",
+    "tests/recovery_v3/test_successor.py": "3d9cb74e5953105f7c6c4c9faf0c2f18a06683174bcb4f1539d2d1fd23d7666f",
+    "experiments/recovery_v3/runner.py": "9bbe030288092ff2be79e90c528fc57340f3be641caf5cb075db605c6aae19a0",
+    "experiments/recovery_v3/decisions.py": "d913a233d959290ad8820aa219130a82eaa432126e1cd0f44c9d6c08e867230f",
+    "experiments/recovery_v3/analysis.py": "09c85d70d53c5c893c407273e146626fdbfbae9c81b1b41b22f4f537bc7caa65",
+    "experiments/recovery_v3/endpoints.py": "96ef039c4ea58ff768a711cf32618dbaa1f371374634638399f7335e28925a8a",
+    "docs/RECOVERY_V3_DEADLINE_CONTINUATION.md": "f2f057c3afe66261cd1fe105f15a8a042cc3d312190c53f37c4103433bc57ae6",
+    "reports/recovery-v3/science/DEADLINE_CONTRACT.json": "3ea6db6db5c55ac66145d747ac48122253e95f6a6f2b8483bab6ff198cbed9f3"
+  },
+  "endpoint": {
+    "endpoint_id": "development-warmup_summary-1",
+    "recipe": "warmup_summary",
+    "recipe_id": "warmup_summary",
+    "dyad_index": 1,
+    "status": "completed",
+    "main_completed": 10,
+    "warmup_completed": 3,
+    "episode_id": "text_16_contract_termination+text_39_inspection_repairs",
+    "role_history_sha256": {
+      "alice": "cdf600ecde9726eb79a3d19ccddd84c830e72f1a12808d6002ed3d9e9ad3ce47",
+      "bob": "e3c16f86398b411b8488721ba1b9c5fbf46a87179299f9e444246ab00b2284a3"
+    },
+    "reflection_complete": {
+      "alice": true,
+      "bob": true
+    },
+    "outcome_feedback_complete": {
+      "alice": true,
+      "bob": true
+    },
+    "path": "runs/empirical/induction-v3-source-completion-20d520c4-1595-439e-a075-94993f8f7767/dyads/development-warmup_summary-1.json",
+    "sha256": "d6dca5d3d443681283a68a48e77607fa7c50d7045d6ab45a499a0c64873d2c56",
+    "checkpoint_path": "runs/empirical/induction-v3-source-completion-20d520c4-1595-439e-a075-94993f8f7767/dyads/development-warmup_summary-1.json",
+    "dyad_file_sha256": "d6dca5d3d443681283a68a48e77607fa7c50d7045d6ab45a499a0c64873d2c56",
+    "checkpoint_sha256": "21356abeabe7283d50a240604df692257ad9dc051e02643af07c55b361567a43"
+  },
+  "capability_lineage": {
+    "run_directory": "runs/empirical/induction-v3-recovery-3f57db64-9595-43fb-9462-8df2816e54e9",
+    "release_hash": "85e504d8d55d98d2b1eeced85f990d1c4df4a7bfd59f104d90a849ebef3933ac",
+    "path": "runs/empirical/induction-v3-recovery-3f57db64-9595-43fb-9462-8df2816e54e9/capability_result.json",
+    "sha256": "15968f75c84c555b2870564b74315185afc50d238dd18113dcd158805c670efd",
+    "new_capability_calls": 0
+  },
+  "schedule": {
+    "full_cells": 480,
+    "wave_cells": 80,
+    "immediate_cells": 40,
+    "sequential_cells": 40,
+    "sequential_branches": 10,
+    "steps_per_sequential_branch": 4,
+    "initial_request_count": 50,
+    "initial_request_hashes_digest": "c368f21d917a9b5943942a66babda67513f1d7402cb7864764d4340380240b03",
+    "full_schedule_digest": "3d168536d7ad236f7ace8321f0da8a5b401137d1211dac9ca95191d3f4590fae",
+    "wave_cells_digest": "af39f3329a8f3bb1434cd9a30900ff1495789009e9f751adf6793e173ae4fad9",
+    "exact_equal_to_original_wave1_schedule": true
+  },
+  "tests": [
+    {
+      "command": ".venv-induction-v3/bin/python -m pytest -q tests/recovery_v3/test_successor.py",
+      "passed": 10,
+      "duration_seconds": 35.62
+    }
+  ],
+  "checks": {
+    "exact_release_validation_passed": true,
+    "source_is_complete_main10_and_original3_warmups": true,
+    "role_isolated_histories_bound": true,
+    "original_system_unchanged": true,
+    "one_time_correction_or_neutral_at_each_branch_entry": true,
+    "reset_uses_original_system_only": true,
+    "retained_uses_exact_own_history": true,
+    "all_arms_matched_fixture_schedule_and_task_evidence": true,
+    "independent_immediate_restarts": true,
+    "serial_sequential_actual_output_carryover": true,
+    "opaque_provider_items_preserved_without_interpretation": true,
+    "no_oracle_or_reward_feedback_in_recovery": true,
+    "malformed_response_stops_only_its_sequential_tail_as_unknown": true,
+    "wrong_valid_verdict_continues": true,
+    "capability_reused_without_new_calls": true,
+    "source_selection_by_fixed_deadline_priority_not_outcomes": true,
+    "original480_analysis_denominator_preserved": true,
+    "original_files_unmodified": true
+  },
+  "deadline": {
+    "dispatch_cutoff": "2026-10-26T11:47:00+00:00",
+    "primary_freeze_target": "2026-10-26T11:50:00+00:00",
+    "post_pacing_and_immediate_http_checks": true,
+    "observed_latency_feasibility": {
+      "recorded_at": "2026-10-26T11:33:32.452276+00:00",
+      "basis": "all prior wave calls; no outcome selection",
+      "prior_calls": 86,
+      "prior_active_seconds": 662.46488,
+      "estimated_wave_seconds_including_cooldown": 676.2464,
+      "remaining_dispatch_seconds": 807.547729,
+      "guarantee": false
+    },
+    "automatic_primary_freeze": false,
+    "required_final_analysis": "Use durably recorded observations available at the actual stated freeze; report later observations separately. Never backdate a snapshot."
+  },
+  "evidence": [
+    {
+      "path": "runs/empirical/induction-v3-source-completion-20d520c4-1595-439e-a075-94993f8f7767/dyads/development-warmup_summary-1.json",
+      "sha256": "d6dca5d3d443681283a68a48e77607fa7c50d7045d6ab45a499a0c64873d2c56"
+    },
+    {
+      "path": "runs/empirical/induction-v3-recovery-3f57db64-9595-43fb-9462-8df2816e54e9/capability_result.json",
+      "sha256": "15968f75c84c555b2870564b74315185afc50d238dd18113dcd158805c670efd"
+    },
+    {
+      "path": "reports/recovery-v3/reduced/source-science-audit-final.json",
+      "sha256": "2e43d5471835c33526290b83b015ec6664944284e877e9557c73d0c7782ea5a4"
+    }
+  ],
+  "limitations": [
+    "This release adds at most one80-cell source assay, not all remaining pairs or240completed judgments.",
+    "The deadline amendment followed wave1 outcomes and is exploratory. Complete-source summaries are conditional on availability, not representative prevalence.",
+    "A last-millisecond cutoff after reservation but before HTTP retains a conservative unknown reservation; no observation may be invented for it.",
+    "Constrained rejection alone is not successful discrimination. Report correct-claim acceptance and faulty-claim rejection together.",
+    "The source dyad is the independent unit; four sequential reviewer decisions are bounded carryover, not autonomous dyadic relapse or proof of collusion repair."
+  ],
+  "audit_provider_calls": 0,
+  "audit_generated_code_executions": 0,
+  "audit_credentials_read": false,
+  "audit_lock_acquired": false,
+  "authorship": "Independent review of successor and root runner/decisions; reviewer authored the frozen endpoint loader."
+}

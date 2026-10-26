@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "domain": "security",
+  "status": "passed",
+  "reviewed_at": "2026-10-26T11:30:02.853Z",
+  "release_path": "release/recovery-v3/source-completion.json",
+  "release_hash": "488c5a68adaef552890bbbe372ec0deeae8c0a6edfcf73332a6b48429f5ad36a",
+  "release_file_sha256": "90bd26284b8f393f626aa22d53413e25d369b93193710a9a65a57a74b810eaa9",
+  "reviewed_source_hashes": {
+    "experiments/recovery_v3/source_completion.py": "35d92623398d008ceb3b3477191213ffe3e1bd1b7d65562bad038ac9647ac3d9",
+    "experiments/recovery_v3/continuation_replay.py": "7e0f31aa6da6eeff75fe2987ff935106532a8ce3296212d62773257db662f49b",
+    "tests/recovery_v3/test_source_completion.py": "a45d4547ace3856a8d50d7d0e7a885dea36a4191cbab7862a99c8fd48b29099d",
+    "tests/recovery_v3/test_continuation_replay.py": "e6b08eca177d7055c766cc995af1ab1a1b90dee277b772c11478bc7c148a3502",
+    "experiments/induction_v3/transport.py": "fa28b9d47af83730ab518db28c56bcfac7945592d47087cf6de8a0bb9c7b4bfd",
+    "experiments/induction_v3/pacing.py": "cf93a90ee2959c657b8bbb3034f32e50fc9640b97c24c11ef56baa05477bc9c6",
+    "experiments/induction_v3/liability_accounting.py": "6acae93d1107a1b744136ed1af334536d2f0cb34c5a15092dc1611a30a9372f1",
+    "experiments/induction_v3/engine.py": "894c9cacff6fc3defbc9ca39a5c1ebe9d43dda4b83d1762f1b129e778c9e9312",
+    "experiments/induction_v3/isolation.py": "4d0427eec82f53a3917e2ebcf7d0debb51808d6a432e018c5b57846e6eb07ad4",
+    "docs/RECOVERY_V3_DEADLINE_CONTINUATION.md": "f2f057c3afe66261cd1fe105f15a8a042cc3d312190c53f37c4103433bc57ae6",
+    "reports/recovery-v3/reduced/SOURCE_COMPLETION_AUTHORIZATION.md": "8180b8aa3a49d51d4a8bf77e0188347b48ad16ab85746a21dfed4f9996c14d24",
+    "reports/recovery-v3/reduced/replay-development-warmup_summary-1.json": "7927941c1e93c1a714c6ce53b55d04090b79b58397aab8acbb2e2779b3e210f6",
+    "reports/recovery-v3/execution/administrative-handoff-proof.json": "15b08a93f106b721322a2075e6cd4e0c9199b7fafb2300e01501567d1812a3c4",
+    "reports/recovery-v3/execution/administrative-handoff-final.json": "b60fbb0d576e49c3e6f448ca614e72b41e8d8187b4119d697594741fa8d33f7b"
+  },
+  "source_inventory_bindings_verified": 2167,
+  "source_inventory_digest": "15f4c6c8549bb2fc95b461ad35a8d52af15b0c6c97b7464cfe6a1cd2b45337e1",
+  "historical_inventory_hash": "95b2ef4de29905c2b03d1665a20998e8da4915f973926731343270c70d4be38e",
+  "selected_sources": [
+    "development-warmup_summary-1"
+  ],
+  "planned_new_episodes": 1,
+  "limits": {
+    "campaign_limit_usd": "25",
+    "max_attempts": 2000,
+    "lifetime_limit_usd": "250",
+    "max_in_flight": 3
+  },
+  "dispatch_cutoff": "2026-10-26T11:47:00+00:00",
+  "validation_command": "source_completion.validate(Path('release/recovery-v3/source-completion.json'), require_audit=False)",
+  "checks": [
+    {
+      "id": "exact_release_precredential",
+      "status": "passed",
+      "finding": "All 2,167 source bindings, selected summary-only plan, settings, runtime, caps and liability anchor validate. Locked history equality, replay-proof reconstruction, frozen Docker image verification and offline tokenizer loading precede credential loading."
+    },
+    {
+      "id": "deadline_and_settlement",
+      "status": "passed",
+      "finding": "Admission checks the deadline/STOP_REQUESTED marker before and after inherited source/history validation and after capacity checks immediately before durable reservation. Closing admission raises without changing journal stop state, permitting already-active responses to settle/decode; worker completion precedes terminal journal finalization."
+    },
+    {
+      "id": "exact_completed_prefix",
+      "status": "passed",
+      "finding": "The actual run_dyad path was driven offline with the real adapter and a sentinel delegate. It preserved all 12 completed source episodes and exact actor histories, replayed all 13 already-paid partial responses, reached one delegate entry with the audited unsampled request, and wrote only temporary output. Source files remained unchanged."
+    },
+    {
+      "id": "replay_boundary",
+      "status": "passed",
+      "finding": "The selected boundary request is 4bf23be441750f5c2149972698e6e31cd1c2f35e636bf16e1a39fe80e3d413bb. All cached physical identities remain original; new calls use a distinct resume_run_id and source logical index. Two unrecorded send_message acknowledgments reconstruct deterministically from exact cached arguments. External code/SQL output is always cached during historical replay."
+    },
+    {
+      "id": "source_immutability",
+      "status": "passed",
+      "finding": "Replay checks the administrative proof/final hash chain, every preserved non-accounting source artifact and the old journal prefix. The completed snapshot, original task schedule, policy, model, communication limits, rewards, verdict review and reflection are unchanged."
+    },
+    {
+      "id": "budget_and_concurrency",
+      "status": "passed",
+      "finding": "One shared program lock, liability journal, pacer and official transport; at most three workers/in-flight calls, with only one selected source in this release. New source calls are additional to recovery judgments. Aggregate V3 $100/4000 and lifetime $250 bounds and the original $0.6402 liability remain enforced; 250 attempt slots are withheld from source completion allocation."
+    },
+    {
+      "id": "isolated_execution_no_retry",
+      "status": "passed",
+      "finding": "New task tools retain the previously verified fixed Docker sandbox and official transport. Historical tools cannot call the live sandbox. Provider errors propagate without retries; frozen source or history drift blocks dispatch."
+    }
+  ],
+  "resolved_findings": [
+    {
+      "id": "cutoff_crossed_during_validation",
+      "previous_unexecuted_release_hash": "bd37702c104af7999dc493920bff0329885cb921d5a6801822676fdb107785b8",
+      "reproduction": "A synthetic clock crossed from 11:46:59 to 11:47:01 during inherited validation and old admission returned successfully.",
+      "resolution": "The replacement release adds post-validation and final capacity-boundary checks; clock-crossing regression passes. The prior release was preserved as superseded before any dispatch."
+    }
+  ],
+  "tests": [
+    {
+      "command": ".venv-induction-v3/bin/python -m pytest -q tests/recovery_v3/test_source_completion.py",
+      "passed": 10,
+      "failed": 0,
+      "seconds": 0.18
+    },
+    {
+      "command": ".venv-induction-v3/bin/python -m pytest -q tests/recovery_v3/test_continuation_replay.py",
+      "passed": 16,
+      "failed": 0,
+      "seconds": 31.88
+    },
+    {
+      "name": "Actual source_completion.run_dyad with real replay hooks and offline sentinel delegate",
+      "status": "passed",
+      "preserved_prefix_episodes": 12,
+      "cached_responses_replayed": 13,
+      "delegate_boundary_entries": 1,
+      "provider_calls": 0,
+      "source_unchanged": true
+    }
+  ],
+  "evidence": {
+    "reports/recovery-v3/reduced/replay-development-warmup_summary-1.json": "7927941c1e93c1a714c6ce53b55d04090b79b58397aab8acbb2e2779b3e210f6"
+  },
+  "blockers": [],
+  "provider_calls": 0,
+  "credentials_read": false,
+  "real_program_lock_acquired": false,
+  "live_process_signals_sent": false,
+  "limitations": [
+    "This clearance is only for the exact summary-1 source-completion release; it does not authorize or verify any later recovery assay.",
+    "The cutoff closes new admissions; it does not cancel active HTTP requests or guarantee the primary-data freeze time. Unresolved or late outcomes must retain their actual timestamps and unknown status.",
+    "The selected source contributes one remaining original main episode. Raw/reference continuations and all seeded trajectories are outside this release."
+  ]
+}

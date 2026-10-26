@@ -1,0 +1,83 @@
+{
+  "schema": "recovery_v3_administrative_partial_stop_v1",
+  "status": "administratively_stopped_partial",
+  "proof_hash": "ead390dabcb49ed07cd51da167913e974ea47c074bf6dee9e054a260fd3f89d0",
+  "run_id": "induction-v3-resumption-02c8e4c3-7cda-4aac-b058-7b4df6878ff6",
+  "reason": "user_requested_early_exploratory_recovery_handoff",
+  "provider_calls": 0,
+  "signals_sent_by_tool": false,
+  "original_journal_prefix_preserved": true,
+  "verification": {
+    "schema": "induction_v3_liability_accounting_v1",
+    "run_id": "induction-v3-resumption-02c8e4c3-7cda-4aac-b058-7b4df6878ff6",
+    "journal_valid": true,
+    "manifest_consistent": true,
+    "event_count": 861,
+    "source_inventory_verified": true,
+    "frozen_historical_lineage_verified": true,
+    "historical_inventory_rechecked_under_lock": true,
+    "requires_restart_stop": false,
+    "stopped": true,
+    "carried_liability_unchanged": true,
+    "ledger": {
+      "consumed": {
+        "requests": 429,
+        "input_tokens": 28236021,
+        "output_tokens": 72897,
+        "cost_usd": "2.35588391"
+      },
+      "reserved": {
+        "requests": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cost_usd": "0"
+      },
+      "physical_attempts": 429,
+      "in_flight": 0,
+      "campaign_exposure_usd": "2.35588391",
+      "historical_cost_usd": "48.50659936",
+      "lifetime_exposure_usd": "51.50268327",
+      "stop_reason": "user_requested_early_exploratory_recovery_handoff",
+      "pricing": {
+        "model": "gpt-5.6-luna",
+        "source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+        "input_usd_per_million": "0.20",
+        "cached_input_usd_per_million": "0.02",
+        "cache_write_input_usd_per_million": "0.25",
+        "output_usd_per_million": "1.20",
+        "long_context_threshold_input_tokens": 272000,
+        "long_context_input_multiplier": "2",
+        "long_context_output_multiplier": "1.5",
+        "reasoning_included_in_output_tokens": true,
+        "missing_cache_write_detail": "assume_all_non_cached_input_is_cache_write",
+        "cost_basis": "estimate_from_provider_usage_and_frozen_list_prices"
+      },
+      "historical_reserved_cost_usd": "0.6402",
+      "historical_consumed_cost_usd": "48.50659936",
+      "external_liability": {
+        "run_id": "induction-v3-continuation-97f9c0b4-0bcb-4125-97f9-431caee260e4",
+        "manifest_sha256": "a869d51aecb9be1d1bdaffdaf1914bb848569bd14737a2cc33389701824f1483",
+        "journal_sha256": "8f5e4b84fda9702edf77e1b8ee47039da030225a725ec2859ead4e1aceb1e474",
+        "journal_tail": "bbd0b813980c4b5b610a8813b28db49477d7964e81a76f4987420322963abc6c",
+        "reservation_id": "ebb929c67f6b4506ba3f5f091572c78e",
+        "reservation_event_hash": "277ff2320bd312e75e7f7d7fd1a1d70d72edea7dc3b2e87abff6f37465defd65",
+        "request_hash": "eef5c49475cd58bf4239179b64a237c8a88ddec56d2b0a33af93922589313f16",
+        "request_artifact_sha256": "9a138aca3bb7ce11b2c0c712744f266ec8b308617343d375519920ab44edd1a2",
+        "response_artifact_sha256": "05f689dfea21c1397e72c38899383f28eb9795141e99dff31ca84b25f6e5ba75",
+        "reserved_cost_usd": "0.6402",
+        "input_token_bound": 1050000,
+        "max_output_tokens": 64000,
+        "outcome": "unknown",
+        "http_status": 429,
+        "error_code": "rate_limit_exceeded",
+        "error_type": "tokens"
+      },
+      "combined_v3_consumed_cost_usd": "3.45544667",
+      "combined_v3_reserved_cost_usd": "0.6402",
+      "combined_v3_exposure_usd": "4.09564667",
+      "combined_v3_physical_attempts": 897
+    }
+  },
+  "induction_validation_complete": false,
+  "repair_started": false
+}

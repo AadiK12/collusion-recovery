@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "status": "reviewed_pending_exact_release",
+  "scope": "Additive source completion and provisional balanced recovery design; no dispatch authorization from this note",
+  "reviewed_source_hashes": {
+    "experiments/recovery_v3/source_completion.py": "79293e95e40068547221b9654c965cecf075ea8ff33bb6af3cd2ba23e6bd9860",
+    "experiments/recovery_v3/continuation_replay.py": "7e0f31aa6da6eeff75fe2987ff935106532a8ce3296212d62773257db662f49b",
+    "reports/recovery-v3/reduced/SOURCE_COMPLETION_AUTHORIZATION.md": "c560999b1e6462b2b541791a3172793d1a70a0982a3585bc3e1a1eb2ee0a3863",
+    "release/recovery-v3/wave-1.json": "a690bab8408d5398e6b79544eb82698c7afdeefab89dbd66c3f11637ad42a6d8",
+    "runs/empirical/induction-v3-resumption-02c8e4c3-7cda-4aac-b058-7b4df6878ff6/manifest.json": "ad201966c7211147a0a41949b24ebbbd249e58fafd3e7036d6dd35cece3bcce3"
+  },
+  "source_completion": {
+    "source_ids": [
+      "development-warmup_raw-1",
+      "development-warmup_summary-1",
+      "development-reference-2"
+    ],
+    "new_main_episodes": [
+      4,
+      1,
+      10
+    ],
+    "new_warmup_episodes": 0,
+    "checks": {
+      "original_remaining_task_order": true,
+      "exact_actor_isolated_history_prefixes": true,
+      "completed_prefixes_not_new_observations": true,
+      "one_replay_scope_per_interrupted_episode": true,
+      "reflection_reward_verdict_review_retained": true
+    }
+  },
+  "offline_actual_replay": {
+    "provider_calls": 0,
+    "generated_code_executions": 0,
+    "cached_response_count": 37,
+    "late_response_count": 4,
+    "deterministic_unrecorded_acknowledgments": 4,
+    "rows": [
+      {
+        "dyad_id": "development-warmup_raw-1",
+        "episode": 10,
+        "matched_request_count": 24,
+        "cached_response_count": 24,
+        "late_response_count": 2,
+        "checkpoint_digest": "ff6b3f5e3841df591c6cee12ab75297b98f183af18a6b7cbfae811cff64a4dd0",
+        "boundary_request_hash": "42c7ab6730df92958d2caf5b53d538030f0868cc245f403f435fe55609cae8bd"
+      },
+      {
+        "dyad_id": "development-warmup_summary-1",
+        "episode": 13,
+        "matched_request_count": 13,
+        "cached_response_count": 13,
+        "late_response_count": 2,
+        "checkpoint_digest": "0d060b2916321b8da4e8f0df9f4807e2e0a82efd50c8e1013aac27e3be72bd68",
+        "boundary_request_hash": "4bf23be441750f5c2149972698e6e31cd1c2f35e636bf16e1a39fe80e3d413bb"
+      }
+    ]
+  },
+  "recovery_scope": {
+    "status": "pending_coordinating_contract",
+    "superseded_three_new_source_exclusion_not_frozen": true,
+    "amendment_files_written": false,
+    "viable_250_options": [
+      {
+        "immediate_prefix": 3,
+        "sequential_prefix": 2
+      },
+      {
+        "immediate_prefix": 2,
+        "sequential_prefix": 3
+      }
+    ],
+    "new_endpoint_count": 5,
+    "cells_per_new_endpoint": 50,
+    "new_judgments": 250,
+    "full_collected_if_all_valid": 330,
+    "matched_primary_cells_across_six_sources": 300,
+    "extra_wave1_observations_separately_reported": 30,
+    "original_planned_cells": 480,
+    "principles": [
+      "Preserve original cell IDs, fixture order, recipe assignments, prompts, settings and original source histories.",
+      "Fix exact prefix rule before any new recovery outcomes. Changes follow already observed wave1 and are exploratory, not preregistration.",
+      "Compute truth-specific rates within each actor then average roles and source dyads; the odd-length phase is truth-balanced across roles but not within each role.",
+      "Report phase-specific metrics and shortened two- or three-step carryover; no claim of four-step persistence across all sources.",
+      "Use the same selected50-cell subset for reference1 in the matched primary analysis; retain its extra30 existing observations as auxiliary evidence, not new calls.",
+      "Preserve original480-cell coverage separately. Missing selected results remain unknown; unselected positions are not collected by amendment.",
+      "Avoid1+4 or4+1 prefixes: the single-position phase lacks both truth classes for each individual role."
+    ]
+  },
+  "pending": [
+    "Focused source-completion tests and final exact release binding",
+    "Final user/coordinator scope and reduced recovery contract"
+  ],
+  "no_provider_or_credentials_or_lock_access": true
+}

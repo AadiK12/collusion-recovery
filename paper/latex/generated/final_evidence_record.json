@@ -1,0 +1,31 @@
+{
+  "snapshot_path": "reports/recovery-v3/reduced/final-primary-snapshot.json",
+  "snapshot_sha256": "030d5b4999e31998f2c404f1244d1c3d8a3a2d26787e13c422f53155a05f5d18",
+  "snapshot_at": "2026-10-26T11:38:05.051794+00:00",
+  "completed_source_histories": 2,
+  "recovery_assayed_sources": 1,
+  "valid_recovery_decisions": 80,
+  "planned_recovery_decisions": 480,
+  "unknown_recovery_decisions": 400,
+  "additional_recovery_calls": 0,
+  "scientific_audits": [
+    "paper/RECOVERY_WAVE1_SCIENTIFIC_AUDIT.md",
+    "paper/RECOVERY_SUMMARY_SOURCE_AUDIT.md"
+  ],
+  "bindings": {
+    "release/recovery-v3/wave-1.json": "a690bab8408d5398e6b79544eb82698c7afdeefab89dbd66c3f11637ad42a6d8",
+    "release/recovery-v3/wave-2.json": "9035670f3623e25304648d508d94505e26a72abac6bec2504a8b4fc96266e48a",
+    "release/recovery-v3/source-completion.json": "90bd26284b8f393f626aa22d53413e25d369b93193710a9a65a57a74b810eaa9",
+    "reports/recovery-v3/reduced/wave-2-admission.json": "115157446d0080ed3c316b58d5f3c1faa12c26c5eee3e4007530309b51b66c90",
+    "reports/recovery-v3/execution/wave-1-scientific-readout.json": "584c1028e133dcb7ee4314a2daffbafc3330bd41512f48a39def8bbc3f7c1567",
+    "runs/empirical/induction-v3-source-completion-20d520c4-1595-439e-a075-94993f8f7767/manifest.json": "fa03dd1e327b3d629b277c51c3625309812cfab8c264a6baf0a7fb95f13321a2",
+    "runs/empirical/induction-v3-source-completion-20d520c4-1595-439e-a075-94993f8f7767/journal.jsonl": "5aaf8671499d3e2ef1dffe2df8f2c96b825f9f89b531cf2890db4f3443f1563c",
+    "runs/empirical/induction-v3-source-completion-20d520c4-1595-439e-a075-94993f8f7767/dyads/development-warmup_summary-1.json": "d6dca5d3d443681283a68a48e77607fa7c50d7045d6ab45a499a0c64873d2c56",
+    "reports/recovery-v3/reduced/final-locked-verification.json": "6d498b7617e01dc6a12edf5ae959bb22c5675fc1b9e7ca1964c04ade8b6e2a83",
+    "paper/RECOVERY_WAVE1_SCIENTIFIC_AUDIT.md": "cec2de23501fca7c59001aaa005f1118ba1712b49aee275a26719ad325aa4bdc",
+    "paper/RECOVERY_SUMMARY_SOURCE_AUDIT.md": "4af7fa7d5746f931120033ffbb8928142f4fb7accb03bc554e5c2a952693f805",
+    "reports/recovery-v3/reduced/final-scientific-readout.json": "1c37c2ee5ac257fccbf2af1f6be9ea96e98a7594b2b9a8b62a93fe1635b3fd1d",
+    "reports/recovery-v3/reduced/final-accounting.json": "9db485c7b7357a48e09155934c0eff8e1fb16971ee749673aeeae12299dc69aa",
+    "reports/recovery-v3/reduced/FINAL_RESULTS.md": "adecdd021122efbee79dda3af1e1a254910470e8df0801a834ffd3dbc29591c8"
+  }
+}

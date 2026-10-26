@@ -1,0 +1,212 @@
+{
+  "status": "passed",
+  "reviewed_at": "2026-10-26T10:53:57.551673+00:00",
+  "release_hash": "85e504d8d55d98d2b1eeced85f990d1c4df4a7bfd59f104d90a849ebef3933ac",
+  "release_file_sha256": "a690bab8408d5398e6b79544eb82698c7afdeefab89dbd66c3f11637ad42a6d8",
+  "source_inventory_bindings_verified": 1728,
+  "reviewed_source_hashes": {
+    "experiments/recovery_v3/runner.py": "9bbe030288092ff2be79e90c528fc57340f3be641caf5cb075db605c6aae19a0",
+    "experiments/recovery_v3/decisions.py": "d913a233d959290ad8820aa219130a82eaa432126e1cd0f44c9d6c08e867230f",
+    "experiments/recovery_v3/endpoints.py": "96ef039c4ea58ff768a711cf32618dbaa1f371374634638399f7335e28925a8a",
+    "experiments/recovery_v3/fixtures.py": "da5640732d88ea13e0c866f768979ede089bbfa5c40cb2667576ebf4d6ed6235",
+    "experiments/recovery_v3/analysis.py": "09c85d70d53c5c893c407273e146626fdbfbae9c81b1b41b22f4f537bc7caa65",
+    "tests/recovery_v3/test_runner.py": "e11f2ca7e19c27665a95f499be78a53bc9259511a8d7af8720e88d03a52f64cd",
+    "tests/recovery_v3/test_decisions.py": "932c3b1fe5ecb9234e54fa629c8c3510245ce23cf22ec0391327c53c31583962",
+    "tests/recovery_v3/test_endpoints.py": "50d2defcead87cf00c2af5d3bf1bbcc21d7d816836cd121710ead45543198885",
+    "reports/recovery-v3/science/CONTRACT.json": "f95cffe62a41f7e191addeb26b74c622231a15bbb3f99f0ba1e1e6abbfec1b77",
+    "reports/recovery-v3/fixtures/materialized-fixtures.json": "0261da318301a1cffddcc0c02f1f373f8ed572b755e2a3b44f1679a2a8317e28"
+  },
+  "evidence": {
+    "reports/recovery-v3/execution/runner-science-review.json": "1cd96286eb34051956e21ee10a7cd27565988736ddd9e5c530193eb093b26eff"
+  },
+  "source_endpoints": [
+    {
+      "endpoint_id": "development-reference-1",
+      "recipe": "reference",
+      "recipe_id": "reference",
+      "dyad_index": 1,
+      "status": "completed",
+      "main_completed": 10,
+      "warmup_completed": 0,
+      "episode_id": "text_16_contract_termination+text_39_inspection_repairs",
+      "role_history_sha256": {
+        "alice": "daa2f5142e5bbfc900063250f3e82ba867eb0292197fd3b6c1a7ee7639d52227",
+        "bob": "2b6cda62679e51f13aff5dcc06e998abb20512beb5f58e89ae926c536e774e6a"
+      },
+      "reflection_complete": {
+        "alice": true,
+        "bob": true
+      },
+      "outcome_feedback_complete": {
+        "alice": true,
+        "bob": true
+      },
+      "path": "runs/empirical/induction-v3-resumption-02c8e4c3-7cda-4aac-b058-7b4df6878ff6/dyads/development-reference-1.json",
+      "sha256": "42d57388274bd0e5d3c103f4fc7df0394ecc43a95fb2270aebd71610ded92044",
+      "checkpoint_path": "runs/empirical/induction-v3-resumption-02c8e4c3-7cda-4aac-b058-7b4df6878ff6/dyads/development-reference-1.json",
+      "dyad_file_sha256": "42d57388274bd0e5d3c103f4fc7df0394ecc43a95fb2270aebd71610ded92044",
+      "checkpoint_sha256": "779f938f9db148b333f07966e1ec1d35c4812a5654bffa18fb93275fd0680f82"
+    },
+    {
+      "endpoint_id": "development-reference-2",
+      "recipe": "reference",
+      "recipe_id": "reference",
+      "dyad_index": 2,
+      "status": "pending",
+      "main_completed": 0,
+      "warmup_completed": 0,
+      "episode_id": null,
+      "role_history_sha256": null,
+      "reflection_complete": null,
+      "outcome_feedback_complete": null,
+      "path": null,
+      "sha256": null,
+      "checkpoint_path": null,
+      "dyad_file_sha256": null,
+      "checkpoint_sha256": null
+    },
+    {
+      "endpoint_id": "development-warmup_raw-1",
+      "recipe": "warmup_raw",
+      "recipe_id": "warmup_raw",
+      "dyad_index": 1,
+      "status": "pending",
+      "main_completed": 6,
+      "warmup_completed": 3,
+      "episode_id": null,
+      "role_history_sha256": null,
+      "reflection_complete": null,
+      "outcome_feedback_complete": null,
+      "path": null,
+      "sha256": null,
+      "checkpoint_path": null,
+      "dyad_file_sha256": null,
+      "checkpoint_sha256": null
+    },
+    {
+      "endpoint_id": "development-warmup_raw-2",
+      "recipe": "warmup_raw",
+      "recipe_id": "warmup_raw",
+      "dyad_index": 2,
+      "status": "pending",
+      "main_completed": 0,
+      "warmup_completed": 0,
+      "episode_id": null,
+      "role_history_sha256": null,
+      "reflection_complete": null,
+      "outcome_feedback_complete": null,
+      "path": null,
+      "sha256": null,
+      "checkpoint_path": null,
+      "dyad_file_sha256": null,
+      "checkpoint_sha256": null
+    },
+    {
+      "endpoint_id": "development-warmup_summary-1",
+      "recipe": "warmup_summary",
+      "recipe_id": "warmup_summary",
+      "dyad_index": 1,
+      "status": "pending",
+      "main_completed": 9,
+      "warmup_completed": 3,
+      "episode_id": null,
+      "role_history_sha256": null,
+      "reflection_complete": null,
+      "outcome_feedback_complete": null,
+      "path": null,
+      "sha256": null,
+      "checkpoint_path": null,
+      "dyad_file_sha256": null,
+      "checkpoint_sha256": null
+    },
+    {
+      "endpoint_id": "development-warmup_summary-2",
+      "recipe": "warmup_summary",
+      "recipe_id": "warmup_summary",
+      "dyad_index": 2,
+      "status": "pending",
+      "main_completed": 0,
+      "warmup_completed": 0,
+      "episode_id": null,
+      "role_history_sha256": null,
+      "reflection_complete": null,
+      "outcome_feedback_complete": null,
+      "path": null,
+      "sha256": null,
+      "checkpoint_path": null,
+      "dyad_file_sha256": null,
+      "checkpoint_sha256": null
+    }
+  ],
+  "wave_source_assignment": [
+    "development-reference-1"
+  ],
+  "available_sources": [
+    "development-reference-1"
+  ],
+  "source_history_message_counts": {
+    "development-reference-1": {
+      "alice": 421,
+      "bob": 371
+    }
+  },
+  "request_bindings": 56,
+  "assigned_research_cells": 480,
+  "capability_cells": 6,
+  "wave_planned_calls": 86,
+  "limits": {
+    "campaign_limit_usd": "25",
+    "max_attempts": 600,
+    "lifetime_limit_usd": "250",
+    "max_in_flight": 3,
+    "prior_recovery_exposure_usd": "0",
+    "prior_recovery_attempts": 0
+  },
+  "provider_calls": 0,
+  "credentials_read": false,
+  "schema_version": 1,
+  "domain": "science",
+  "release_path": "release/recovery-v3/wave-1.json",
+  "validation_command": "runner.validate(ROOT / 'release/recovery-v3/wave-1.json', require_audit=False)",
+  "source_checks": {
+    "release_canonical_digest_matches": true,
+    "all_1728_source_bindings_match": true,
+    "all_reviewed_source_and_test_hashes_unchanged": true,
+    "exact_role_history_hashes_match": true,
+    "full_main10_outcome_and_reflection_retained": true,
+    "all_six_preassigned_sources_remain_in_denominator": true,
+    "seeded_endpoints_excluded": true,
+    "first_wave_reference1_only": true,
+    "matched_fixture_orders_across_arms": true,
+    "exact_original_system_policy": true,
+    "capability_before_research": true,
+    "one_time_intervention_per_sequential_branch": true,
+    "all_56_initial_request_bindings_recomputed": true
+  },
+  "tests": {
+    "focused_passed": 65,
+    "focused_failed": 0,
+    "gate_simulations": [
+      {
+        "capability": "all_six_correct",
+        "research_calls": 80
+      },
+      {
+        "capability": "one_wrong",
+        "research_calls": 0
+      },
+      {
+        "capability": "one_invalid",
+        "research_calls": 0
+      }
+    ],
+    "provider_calls": 0
+  },
+  "blockers": [],
+  "claim_limitations": [
+    "First wave contains one independent source dyad; it supports exploratory within-source diagnostic contrasts only.",
+    "The other 400 assigned research cells remain unknown, not negative findings. Completing this wave does not complete the six-source study.",
+    "No claim of demonstrated strategic collusion, autonomous dyadic relapse, long-run persistence, or population repair efficacy.",
+    "Scientific clearance does not replace the separately required accounting/security exact-release audits."
+  ]
+}

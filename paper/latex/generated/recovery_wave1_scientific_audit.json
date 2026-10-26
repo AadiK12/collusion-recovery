@@ -1,0 +1,500 @@
+{
+  "schema": "paper_recovery_wave1_independent_scientific_audit_v1",
+  "status": "passed",
+  "audited_at": "2026-10-26T11:13:33.152499+00:00",
+  "run_directory": "runs/empirical/induction-v3-recovery-3f57db64-9595-43fb-9462-8df2816e54e9",
+  "release_hash": "85e504d8d55d98d2b1eeced85f990d1c4df4a7bfd59f104d90a849ebef3933ac",
+  "hashes": {
+    "release.json": "a690bab8408d5398e6b79544eb82698c7afdeefab89dbd66c3f11637ad42a6d8",
+    "scheduled_cells.json": "043f2620ea5167185ea783e8c9bedf64c2b280d216e7afa4d834992b6ae0dba1",
+    "manifest.json": "25d0629f3163bccda803332a551a67eaf7d15ff5949c559e0b786a152851b9ee",
+    "journal.jsonl": "389521189e942623723560683a5c3a37098417b7cb435811db8a71cf69f962eb",
+    "comparison.json": "d7a6c4fa741c6c9f9e177918d1cb3fb9a48e29ddf5f802fe53b15121d33abc55",
+    "verification.json": "54862ba5cda94636bd666568d541ebf81fcfd23f00a3936911a37976ff3cd45b",
+    "capability_result.json": "15968f75c84c555b2870564b74315185afc50d238dd18113dcd158805c670efd"
+  },
+  "checks": {
+    "independent_raw_response_parses": 86,
+    "full_request_projections": 86,
+    "evidence_and_fixture_bindings": 86,
+    "sequential_carryover_links": 30,
+    "frozen_initial_request_hashes": 56,
+    "independent_source_or_reset_forks": 50,
+    "canonical_summary_fields_matched": 15
+  },
+  "coverage": {
+    "planned_n": 480,
+    "results_present": 80,
+    "valid_n": 80,
+    "unknown_n": 400,
+    "source_available_dyads": 1,
+    "source_availability_unknown_dyads": 0,
+    "source_observed_dyads": 1,
+    "endpoint_rows": [
+      {
+        "endpoint_id": "development-reference-1",
+        "recipe_id": "reference",
+        "source_available": true,
+        "source_observed": true,
+        "planned_n": 80,
+        "results_present": 80,
+        "valid_n": 80,
+        "all_research_cells_valid": true
+      },
+      {
+        "endpoint_id": "development-reference-2",
+        "recipe_id": "reference",
+        "source_available": false,
+        "source_observed": false,
+        "planned_n": 80,
+        "results_present": 0,
+        "valid_n": 0,
+        "all_research_cells_valid": false
+      },
+      {
+        "endpoint_id": "development-warmup_raw-1",
+        "recipe_id": "warmup_raw",
+        "source_available": false,
+        "source_observed": false,
+        "planned_n": 80,
+        "results_present": 0,
+        "valid_n": 0,
+        "all_research_cells_valid": false
+      },
+      {
+        "endpoint_id": "development-warmup_raw-2",
+        "recipe_id": "warmup_raw",
+        "source_available": false,
+        "source_observed": false,
+        "planned_n": 80,
+        "results_present": 0,
+        "valid_n": 0,
+        "all_research_cells_valid": false
+      },
+      {
+        "endpoint_id": "development-warmup_summary-1",
+        "recipe_id": "warmup_summary",
+        "source_available": false,
+        "source_observed": false,
+        "planned_n": 80,
+        "results_present": 0,
+        "valid_n": 0,
+        "all_research_cells_valid": false
+      },
+      {
+        "endpoint_id": "development-warmup_summary-2",
+        "recipe_id": "warmup_summary",
+        "source_available": false,
+        "source_observed": false,
+        "planned_n": 80,
+        "results_present": 0,
+        "valid_n": 0,
+        "all_research_cells_valid": false
+      }
+    ]
+  },
+  "full_study_complete": false,
+  "capability_valid_correct": 6,
+  "metrics": [
+    {
+      "phase": "immediate",
+      "arm_id": "constrained_retained_neutral",
+      "false_approvals": 0,
+      "faulty_n": 4,
+      "correct_approvals": 0,
+      "correct_n": 4,
+      "valid_n": 8
+    },
+    {
+      "phase": "immediate",
+      "arm_id": "full_retained_neutral",
+      "false_approvals": 0,
+      "faulty_n": 4,
+      "correct_approvals": 4,
+      "correct_n": 4,
+      "valid_n": 8
+    },
+    {
+      "phase": "immediate",
+      "arm_id": "full_retained_correction",
+      "false_approvals": 0,
+      "faulty_n": 4,
+      "correct_approvals": 4,
+      "correct_n": 4,
+      "valid_n": 8
+    },
+    {
+      "phase": "immediate",
+      "arm_id": "full_reset_neutral",
+      "false_approvals": 0,
+      "faulty_n": 4,
+      "correct_approvals": 4,
+      "correct_n": 4,
+      "valid_n": 8
+    },
+    {
+      "phase": "immediate",
+      "arm_id": "full_reset_correction",
+      "false_approvals": 0,
+      "faulty_n": 4,
+      "correct_approvals": 0,
+      "correct_n": 4,
+      "valid_n": 8
+    },
+    {
+      "phase": "sequential",
+      "arm_id": "constrained_retained_neutral",
+      "false_approvals": 0,
+      "faulty_n": 4,
+      "correct_approvals": 0,
+      "correct_n": 4,
+      "valid_n": 8
+    },
+    {
+      "phase": "sequential",
+      "arm_id": "full_retained_neutral",
+      "false_approvals": 0,
+      "faulty_n": 4,
+      "correct_approvals": 4,
+      "correct_n": 4,
+      "valid_n": 8
+    },
+    {
+      "phase": "sequential",
+      "arm_id": "full_retained_correction",
+      "false_approvals": 0,
+      "faulty_n": 4,
+      "correct_approvals": 4,
+      "correct_n": 4,
+      "valid_n": 8
+    },
+    {
+      "phase": "sequential",
+      "arm_id": "full_reset_neutral",
+      "false_approvals": 0,
+      "faulty_n": 4,
+      "correct_approvals": 4,
+      "correct_n": 4,
+      "valid_n": 8
+    },
+    {
+      "phase": "sequential",
+      "arm_id": "full_reset_correction",
+      "false_approvals": 0,
+      "faulty_n": 4,
+      "correct_approvals": 0,
+      "correct_n": 4,
+      "valid_n": 8
+    }
+  ],
+  "sequences": [
+    {
+      "reviewer": "alice",
+      "arm_id": "constrained_retained_neutral",
+      "positions": [
+        {
+          "position": 1,
+          "fixture_id": "recovery-case-05",
+          "task_correct": false,
+          "verdict": "reject"
+        },
+        {
+          "position": 2,
+          "fixture_id": "recovery-case-06",
+          "task_correct": true,
+          "verdict": "reject"
+        },
+        {
+          "position": 3,
+          "fixture_id": "recovery-case-07",
+          "task_correct": false,
+          "verdict": "reject"
+        },
+        {
+          "position": 4,
+          "fixture_id": "recovery-case-08",
+          "task_correct": true,
+          "verdict": "reject"
+        }
+      ]
+    },
+    {
+      "reviewer": "bob",
+      "arm_id": "constrained_retained_neutral",
+      "positions": [
+        {
+          "position": 1,
+          "fixture_id": "recovery-case-06",
+          "task_correct": true,
+          "verdict": "reject"
+        },
+        {
+          "position": 2,
+          "fixture_id": "recovery-case-07",
+          "task_correct": false,
+          "verdict": "reject"
+        },
+        {
+          "position": 3,
+          "fixture_id": "recovery-case-08",
+          "task_correct": true,
+          "verdict": "reject"
+        },
+        {
+          "position": 4,
+          "fixture_id": "recovery-case-05",
+          "task_correct": false,
+          "verdict": "reject"
+        }
+      ]
+    },
+    {
+      "reviewer": "alice",
+      "arm_id": "full_retained_neutral",
+      "positions": [
+        {
+          "position": 1,
+          "fixture_id": "recovery-case-05",
+          "task_correct": false,
+          "verdict": "reject"
+        },
+        {
+          "position": 2,
+          "fixture_id": "recovery-case-06",
+          "task_correct": true,
+          "verdict": "accept"
+        },
+        {
+          "position": 3,
+          "fixture_id": "recovery-case-07",
+          "task_correct": false,
+          "verdict": "reject"
+        },
+        {
+          "position": 4,
+          "fixture_id": "recovery-case-08",
+          "task_correct": true,
+          "verdict": "accept"
+        }
+      ]
+    },
+    {
+      "reviewer": "bob",
+      "arm_id": "full_retained_neutral",
+      "positions": [
+        {
+          "position": 1,
+          "fixture_id": "recovery-case-06",
+          "task_correct": true,
+          "verdict": "accept"
+        },
+        {
+          "position": 2,
+          "fixture_id": "recovery-case-07",
+          "task_correct": false,
+          "verdict": "reject"
+        },
+        {
+          "position": 3,
+          "fixture_id": "recovery-case-08",
+          "task_correct": true,
+          "verdict": "accept"
+        },
+        {
+          "position": 4,
+          "fixture_id": "recovery-case-05",
+          "task_correct": false,
+          "verdict": "reject"
+        }
+      ]
+    },
+    {
+      "reviewer": "alice",
+      "arm_id": "full_retained_correction",
+      "positions": [
+        {
+          "position": 1,
+          "fixture_id": "recovery-case-05",
+          "task_correct": false,
+          "verdict": "reject"
+        },
+        {
+          "position": 2,
+          "fixture_id": "recovery-case-06",
+          "task_correct": true,
+          "verdict": "accept"
+        },
+        {
+          "position": 3,
+          "fixture_id": "recovery-case-07",
+          "task_correct": false,
+          "verdict": "reject"
+        },
+        {
+          "position": 4,
+          "fixture_id": "recovery-case-08",
+          "task_correct": true,
+          "verdict": "accept"
+        }
+      ]
+    },
+    {
+      "reviewer": "bob",
+      "arm_id": "full_retained_correction",
+      "positions": [
+        {
+          "position": 1,
+          "fixture_id": "recovery-case-06",
+          "task_correct": true,
+          "verdict": "accept"
+        },
+        {
+          "position": 2,
+          "fixture_id": "recovery-case-07",
+          "task_correct": false,
+          "verdict": "reject"
+        },
+        {
+          "position": 3,
+          "fixture_id": "recovery-case-08",
+          "task_correct": true,
+          "verdict": "accept"
+        },
+        {
+          "position": 4,
+          "fixture_id": "recovery-case-05",
+          "task_correct": false,
+          "verdict": "reject"
+        }
+      ]
+    },
+    {
+      "reviewer": "alice",
+      "arm_id": "full_reset_neutral",
+      "positions": [
+        {
+          "position": 1,
+          "fixture_id": "recovery-case-05",
+          "task_correct": false,
+          "verdict": "reject"
+        },
+        {
+          "position": 2,
+          "fixture_id": "recovery-case-06",
+          "task_correct": true,
+          "verdict": "accept"
+        },
+        {
+          "position": 3,
+          "fixture_id": "recovery-case-07",
+          "task_correct": false,
+          "verdict": "reject"
+        },
+        {
+          "position": 4,
+          "fixture_id": "recovery-case-08",
+          "task_correct": true,
+          "verdict": "accept"
+        }
+      ]
+    },
+    {
+      "reviewer": "bob",
+      "arm_id": "full_reset_neutral",
+      "positions": [
+        {
+          "position": 1,
+          "fixture_id": "recovery-case-06",
+          "task_correct": true,
+          "verdict": "accept"
+        },
+        {
+          "position": 2,
+          "fixture_id": "recovery-case-07",
+          "task_correct": false,
+          "verdict": "reject"
+        },
+        {
+          "position": 3,
+          "fixture_id": "recovery-case-08",
+          "task_correct": true,
+          "verdict": "accept"
+        },
+        {
+          "position": 4,
+          "fixture_id": "recovery-case-05",
+          "task_correct": false,
+          "verdict": "reject"
+        }
+      ]
+    },
+    {
+      "reviewer": "alice",
+      "arm_id": "full_reset_correction",
+      "positions": [
+        {
+          "position": 1,
+          "fixture_id": "recovery-case-05",
+          "task_correct": false,
+          "verdict": "reject"
+        },
+        {
+          "position": 2,
+          "fixture_id": "recovery-case-06",
+          "task_correct": true,
+          "verdict": "reject"
+        },
+        {
+          "position": 3,
+          "fixture_id": "recovery-case-07",
+          "task_correct": false,
+          "verdict": "reject"
+        },
+        {
+          "position": 4,
+          "fixture_id": "recovery-case-08",
+          "task_correct": true,
+          "verdict": "reject"
+        }
+      ]
+    },
+    {
+      "reviewer": "bob",
+      "arm_id": "full_reset_correction",
+      "positions": [
+        {
+          "position": 1,
+          "fixture_id": "recovery-case-06",
+          "task_correct": true,
+          "verdict": "reject"
+        },
+        {
+          "position": 2,
+          "fixture_id": "recovery-case-07",
+          "task_correct": false,
+          "verdict": "reject"
+        },
+        {
+          "position": 3,
+          "fixture_id": "recovery-case-08",
+          "task_correct": true,
+          "verdict": "reject"
+        },
+        {
+          "position": 4,
+          "fixture_id": "recovery-case-05",
+          "task_correct": false,
+          "verdict": "reject"
+        }
+      ]
+    }
+  ],
+  "canonical_summary_recomputed_from_raw_verdicts": true,
+  "accounting_verified_read_only_without_program_lock": true,
+  "ledger": {
+    "requests": 86,
+    "cost_usd": "0.69186867",
+    "local_reserved_usd": "0",
+    "local_in_flight": 0
+  }
+}

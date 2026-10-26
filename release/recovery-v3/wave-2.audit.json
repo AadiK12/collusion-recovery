@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "release_hash": "728f6c6ed21e61965ee0a9be8aa64db6fe460af99791b208276142830a94140a",
+  "domains": [
+    "science",
+    "accounting",
+    "security"
+  ],
+  "evidence": [
+    {
+      "path": "reports/recovery-v3/reduced/wave-2-science-audit.json",
+      "sha256": "b9a0d40dcfd26e392a68265df6cd81746049a3b9ed4bfc2eee05ca24d7341082"
+    },
+    {
+      "path": "reports/recovery-v3/reduced/wave-2-accounting-audit.json",
+      "sha256": "329eebbc397908ed4849ce248858c657a3d542266167ecbd59105bd817a89ead"
+    },
+    {
+      "path": "reports/recovery-v3/reduced/wave-2-security-audit.json",
+      "sha256": "51ce0c7d71bd4250d8a3474817231d1d4b54fa8ac2856f0641c79179a64e5a8a"
+    }
+  ]
+}

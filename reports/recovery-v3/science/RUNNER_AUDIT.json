@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "domain": "science",
+  "scope": "Recovery V3 first available-source wave scientific request and branch semantics; not accounting or security release approval",
+  "source_bindings": {
+    "experiments/recovery_v3/runner.py": "fc2aa9e6817c7e16df6f3ff8518e452328e1fd616135cfd2f34196b9ea9a1022",
+    "experiments/recovery_v3/decisions.py": "d913a233d959290ad8820aa219130a82eaa432126e1cd0f44c9d6c08e867230f",
+    "experiments/recovery_v3/endpoints.py": "96ef039c4ea58ff768a711cf32618dbaa1f371374634638399f7335e28925a8a",
+    "experiments/recovery_v3/fixtures.py": "da5640732d88ea13e0c866f768979ede089bbfa5c40cb2667576ebf4d6ed6235",
+    "reports/recovery-v3/science/CONTRACT.json": "f95cffe62a41f7e191addeb26b74c622231a15bbb3f99f0ba1e1e6abbfec1b77",
+    "reports/recovery-v3/fixtures/materialized-fixtures.json": "0261da318301a1cffddcc0c02f1f373f8ed572b755e2a3b44f1679a2a8317e28"
+  },
+  "provider_calls_by_auditor": 0,
+  "independent_fixture_payload_checks": 44,
+  "independent_first_wave_fake_request_checks": 86,
+  "source_histories_preserved": true,
+  "resolved_findings": ["frozen request projection missing forced submit_verdict", "reservation-only experiment-start claim"],
+  "blocking_scientific_findings_remaining": [],
+  "live_prerequisites_not_established_by_audit": ["fresh six-case capability pass", "terminal induction lock handoff", "exact release accounting/security validation", "actual research provider dispatch"],
+  "interpretation": "One-source conditional exploratory reviewer-recovery case study; all six assigned endpoints retained; four-step carryover is not autonomous dyadic relapse"
+}
