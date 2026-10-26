@@ -32,6 +32,8 @@ from .staged_requests import ScientificRequestFactory
 
 ANNOTATION_VERSION = "annotation-v1.1"
 ANNOTATION_PROTOCOL_VERSION = "v1.1"
+# Keep ANNOTATION_VERSION as the frozen selection salt for both protocols.
+ANNOTATION_VERSIONS = {"v1.1": ANNOTATION_VERSION, "v1.2": "annotation-v1.2"}
 LABELS = (
     "ordinary_cooperation",
     "proposal_to_relax_evidence_rule",
@@ -114,6 +116,13 @@ def _selection_rank(seed: str, identity: str) -> str:
                    "sample_seed": seed, "request_identity": identity})
 
 
+def _split_prefix(run_type: str, protocol_version: str) -> str:
+    prefix = "pilot" if run_type == "pilot" else "confirm"
+    if protocol_version == "v1.2":
+        return f"fallback-two-round/v1.2/{prefix}/"
+    return f"{prefix}/v1.1/"
+
+
 def _verdict_index(plan: RunPlan) -> dict[tuple[Any, ...], ScheduledRequest]:
     result: dict[tuple[Any, ...], ScheduledRequest] = {}
     for spec in plan.requests:
@@ -134,18 +143,16 @@ def select_annotation_units(plan: RunPlan, sample_seed: str) -> list[dict[str, A
     """Select the frozen sample using schedule metadata, never observed outcomes."""
     if plan.run_type not in {"pilot", "confirmation"}:
         raise AnnotationError("annotation supports only pilot or confirmation runs")
-    if plan.protocol_version != ANNOTATION_PROTOCOL_VERSION:
+    if plan.protocol_version not in ANNOTATION_VERSIONS:
         raise AnnotationError(
-            "annotation-v1.1 accepts only protocol v1.1 runs"
+            "annotation accepts only protocol v1.1 or v1.2 runs"
         )
     if not isinstance(sample_seed, str) or not sample_seed.strip():
         raise AnnotationError("annotation sample seed must be nonempty")
-    required_prefix = (
-        "pilot/v1.1/" if plan.run_type == "pilot" else "confirm/v1.1/"
-    )
+    required_prefix = _split_prefix(plan.run_type, plan.protocol_version)
     if not plan.split.startswith(required_prefix):
         raise AnnotationError(
-            "annotation-v1.1 run type and versioned split namespace do not match"
+            "annotation run type and versioned split namespace do not match"
         )
 
     index = _verdict_index(plan)
@@ -156,7 +163,7 @@ def select_annotation_units(plan: RunPlan, sample_seed: str) -> list[dict[str, A
     if blocks != list(range(len(blocks))):
         raise AnnotationError("formation blocks must be a contiguous frozen schedule")
     if plan.run_type == "pilot" and len(blocks) != 5:
-        raise AnnotationError("annotation-v1.1 pilot sampling requires exactly five blocks")
+        raise AnnotationError("annotation pilot sampling requires exactly five blocks")
     if not blocks:
         raise AnnotationError("the run plan has no constrained formation blocks")
 
@@ -280,10 +287,18 @@ def _visible_review(run: DurableRun, factory: ScientificRequestFactory,
                     spec: ScheduledRequest) -> tuple[dict[str, Any], str]:
     rows = run.result_events(spec.identity)
     event = _final_event(run, spec)
+    if spec.action != "verdict":
+        raise AnnotationError("selected annotation request is not a verdict view")
+    return _visible_attempt(run, factory, spec, event, rows[:-1])
+
+
+def _visible_attempt(run: DurableRun, factory: ScientificRequestFactory,
+                     spec: ScheduledRequest, event: Mapping[str, Any],
+                     prior_results: Sequence[Mapping[str, Any]]) -> tuple[dict[str, Any], str]:
     attempt = event.get("attempt")
     if type(attempt) is not int or attempt < 0:
         raise AnnotationError("selected durable result has an invalid attempt index")
-    context = ExecutionContext(run, attempt, tuple(rows[:-1]))
+    context = ExecutionContext(run, attempt, tuple(prior_results))
     provider_request, _rendered = factory.build(spec, context)
     request_hash = event.get("request_hash")
     if not isinstance(request_hash, str):
@@ -297,14 +312,48 @@ def _visible_review(run: DurableRun, factory: ScientificRequestFactory,
             "selected durable request differs from independent reconstruction")
     request = factory.agent_request(spec, context)
     payload = request.payload()
-    if payload.get("action") != "verdict":
-        raise AnnotationError("selected annotation request is not a verdict view")
+    if payload.get("action") != spec.action:
+        raise AnnotationError("selected annotation request action differs from its plan")
     view = {"visible_request": payload, "model_response": _response_view(event)}
+    if getattr(run.config, "protocol_version", None) == "v1.2":
+        # Exact rendered text only: the provider envelope carries unblinded IDs.
+        view["provider_turns"] = [turn.to_dict() for turn in provider_request.turns]
     _reject_hidden_metadata(view)
     event_hash = event.get("event_hash")
     if not isinstance(event_hash, str):
         raise AnnotationError("selected durable result lacks an event hash")
     return view, event_hash
+
+
+def _visible_message_rounds(run: DurableRun, factory: ScientificRequestFactory,
+                            block: int, episode: int) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    rounds = {}
+    provenance = []
+    for message_round in (1, 2):
+        roles = {}
+        for role in ROLES:
+            matches = [spec for spec in run.plan.requests
+                       if spec.phase == "formation" and spec.action == "message"
+                       and spec.metadata.get("block") == block
+                       and spec.metadata.get("history") == "C"
+                       and spec.metadata.get("episode") == episode
+                       and spec.metadata.get("role") == role
+                       and spec.metadata.get("message_round") == message_round]
+            if len(matches) != 1:
+                raise AnnotationError("formation message round is incomplete or duplicated")
+            spec = matches[0]
+            _final_event(run, spec)
+            rows = run.result_events(spec.identity)
+            attempts, event_hashes = [], []
+            for index, event in enumerate(rows):
+                view, event_hash = _visible_attempt(run, factory, spec, event, rows[:index])
+                attempts.append({"attempt": event["attempt"], **view})
+                event_hashes.append(event_hash)
+            roles[role] = {"attempts": attempts}
+            provenance.append({"request_identity": spec.identity,
+                               "result_event_hashes": event_hashes})
+        rounds[f"round_{message_round}"] = roles
+    return rounds, provenance
 
 
 def _reject_hidden_metadata(value: Any) -> None:
@@ -327,6 +376,7 @@ def _materialize_units(run: DurableRun, selections: Sequence[Mapping[str, Any]])
     key_units: list[dict[str, Any]] = []
     for item in selections:
         identities = list(item["request_identities"])
+        message_provenance = []
         views: list[tuple[ScheduledRequest, dict[str, Any], str]] = []
         for identity in identities:
             spec = specs.get(identity)
@@ -346,7 +396,13 @@ def _materialize_units(run: DurableRun, selections: Sequence[Mapping[str, Any]])
                     if len(matches) != 1:
                         raise AnnotationError("formation pair window is incomplete or duplicated")
                     role_views[role] = matches[0]
-                episodes.append({"window_position": position, "roles": role_views})
+                episode_view = {"window_position": position, "roles": role_views}
+                if run.plan.protocol_version == "v1.2":
+                    rounds, provenance = _visible_message_rounds(
+                        run, factory, item["unblinded"]["block"], episode)
+                    episode_view["message_rounds"] = rounds
+                    message_provenance.extend(provenance)
+                episodes.append(episode_view)
             transcript = {
                 "unit_description": "Both agents, final three constrained-formation episodes",
                 "episodes": episodes,
@@ -375,6 +431,8 @@ def _materialize_units(run: DurableRun, selections: Sequence[Mapping[str, Any]])
             "result_event_hashes": [event_hash for _spec, _view, event_hash in views],
             "unblinded": dict(item["unblinded"]),
         })
+        if message_provenance:
+            key_units[-1]["formation_message_results"] = message_provenance
     return rater_units, key_units
 
 
@@ -424,6 +482,7 @@ def export_annotation_packet(run_dir: str | Path, output_dir: str | Path,
         raise AnnotationError("provide one or more unique rater IDs")
     run = DurableRun.inspect(run_dir)
     selections = select_annotation_units(run.plan, sample_seed)
+    annotation_version = ANNOTATION_VERSIONS[run.plan.protocol_version]
     units, key_units = _materialize_units(run, selections)
 
     destination = Path(output_dir)
@@ -455,7 +514,7 @@ def export_annotation_packet(run_dir: str | Path, output_dir: str | Path,
     unit_inventory_hash = digest(units)
     manifest = {
         "artifact_type": "annotation-rater-packet",
-        "annotation_version": ANNOTATION_VERSION,
+        "annotation_version": annotation_version,
         "source": source,
         "sample_seed": sample_seed,
         "selection_policy": policy,
@@ -475,7 +534,7 @@ def export_annotation_packet(run_dir: str | Path, output_dir: str | Path,
     }
     key = {
         "artifact_type": "annotation-admin-key",
-        "annotation_version": ANNOTATION_VERSION,
+        "annotation_version": annotation_version,
         "source": source,
         "sample_seed": sample_seed,
         "unit_inventory_hash": unit_inventory_hash,
@@ -489,7 +548,7 @@ def export_annotation_packet(run_dir: str | Path, output_dir: str | Path,
         _write_rating_sheet(rater_dir / f"ratings-{rater}.csv", rater, units)
     export_manifest = {
         "artifact_type": "annotation-export",
-        "annotation_version": ANNOTATION_VERSION,
+        "annotation_version": annotation_version,
         "source": source,
         "rater_ids": raters,
         "rater_manifest_hash": digest(manifest),
@@ -527,16 +586,16 @@ def _load_packet(packet_dir: str | Path) -> tuple[dict[str, Any], list[dict[str,
         raise AnnotationError("cannot read valid rater units") from exc
     if (not isinstance(manifest, dict)
             or manifest.get("artifact_type") != "annotation-rater-packet"
-            or manifest.get("annotation_version") != ANNOTATION_VERSION):
+            or manifest.get("annotation_version") not in ANNOTATION_VERSIONS.values()):
         raise AnnotationError("annotation packet manifest type/version mismatch")
     source = manifest.get("source")
     if (not isinstance(source, Mapping)
             or source.get("run_type") not in {"pilot", "confirmation"}
-            or source.get("protocol_version") != ANNOTATION_PROTOCOL_VERSION):
+            or source.get("protocol_version") not in ANNOTATION_VERSIONS):
         raise AnnotationError("annotation packet source is malformed")
-    prefix = (
-        "pilot/v1.1/" if source["run_type"] == "pilot" else "confirm/v1.1/"
-    )
+    if manifest["annotation_version"] != ANNOTATION_VERSIONS[source["protocol_version"]]:
+        raise AnnotationError("annotation packet manifest and source versions differ")
+    prefix = _split_prefix(source["run_type"], source["protocol_version"])
     if not isinstance(source.get("split"), str) or not source["split"].startswith(prefix):
         raise AnnotationError(
             "annotation packet mixes run type, protocol version, or split namespace"
@@ -574,14 +633,19 @@ def _visible_strings(value: Any) -> Iterable[str]:
 
 
 def _read_rating_rows(path: Path) -> list[dict[str, str]]:
+    previous_limit = csv.field_size_limit()
     try:
+        # Exact two-round transcripts exceed CSV's default 128-KiB field limit.
+        csv.field_size_limit(max(previous_limit, path.stat().st_size))
         with path.open(encoding="utf-8", newline="") as handle:
             reader = csv.DictReader(handle)
             if reader.fieldnames != list(RATING_COLUMNS):
                 raise AnnotationError("rating sheet columns or order differ from the frozen template")
             rows = list(reader)
-    except OSError as exc:
+    except (OSError, csv.Error) as exc:
         raise AnnotationError(f"cannot read rating sheet: {path}") from exc
+    finally:
+        csv.field_size_limit(previous_limit)
     return rows
 
 
@@ -682,7 +746,7 @@ def validate_ratings(packet_dir: str | Path, ratings_path: str | Path, *,
     }
     return {
         "artifact_type": "annotation-rating-validation",
-        "annotation_version": ANNOTATION_VERSION,
+        "annotation_version": manifest["annotation_version"],
         "protocol_version": manifest["source"]["protocol_version"],
         "run_type": manifest["source"]["run_type"],
         "split": manifest["source"]["split"],
@@ -772,7 +836,7 @@ def agreement_report(packet_dir: str | Path, ratings_a: str | Path,
         }
     return {
         "artifact_type": "annotation-agreement",
-        "annotation_version": ANNOTATION_VERSION,
+        "annotation_version": manifest_a["annotation_version"],
         "protocol_version": manifest_a["source"]["protocol_version"],
         "run_type": manifest_a["source"]["run_type"],
         "split": manifest_a["source"]["split"],
@@ -852,8 +916,8 @@ def write_adjudication_template(packet_dir: str | Path, ratings_a: str | Path,
         writer.writerows(rows)
     return {
         "artifact_type": "annotation-adjudication-template",
-        "annotation_version": ANNOTATION_VERSION,
-        "protocol_version": ANNOTATION_PROTOCOL_VERSION,
+        "annotation_version": report["annotation_version"],
+        "protocol_version": report["protocol_version"],
         "run_type": report["run_type"],
         "split": report["split"],
         "unit_inventory_hash": report["unit_inventory_hash"],
@@ -923,8 +987,8 @@ def validate_adjudication(packet_dir: str | Path, ratings_a: str | Path,
         })
     return {
         "artifact_type": "annotation-adjudication-validation",
-        "annotation_version": ANNOTATION_VERSION,
-        "protocol_version": ANNOTATION_PROTOCOL_VERSION,
+        "annotation_version": report["annotation_version"],
+        "protocol_version": report["protocol_version"],
         "run_type": report["run_type"],
         "split": report["split"],
         "unit_inventory_hash": report["unit_inventory_hash"],

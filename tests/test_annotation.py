@@ -1,22 +1,28 @@
 import csv
+from contextlib import ExitStack
+from dataclasses import replace
 import json
 from pathlib import Path
 import tempfile
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 from collusion_recovery.annotation import (
     ADJUDICATION_COLUMNS,
     ANNOTATION_VERSION,
+    ANNOTATION_VERSIONS,
     LABELS,
     RATING_COLUMNS,
     UNIT_APPLICABILITY,
     AnnotationError,
     _final_event,
     _initial_rating_row,
+    _materialize_units,
     _reject_hidden_metadata,
     _visible_review,
     agreement_report,
+    export_annotation_packet,
     select_annotation_units,
     validate_adjudication,
     validate_ratings,
@@ -24,13 +30,16 @@ from collusion_recovery.annotation import (
 )
 from collusion_recovery.common import canonical, digest
 from collusion_recovery.live_config import LiveConfig
-from collusion_recovery.orchestration import build_request_plan
+from collusion_recovery.orchestration import ExecutionContext, build_request_plan
+from collusion_recovery.staged_requests import ScientificRequestError, ScientificRequestFactory
 
 
 def config_values(run_type="pilot", blocks=5, protocol_version="v1.1", **overrides):
     prefix = "pilot" if run_type == "pilot" else "confirm"
     versioned_prefix = (
-        f"{prefix}/v1.1" if protocol_version == "v1.1" else prefix
+        f"{prefix}/v1.1" if protocol_version == "v1.1"
+        else f"fallback-two-round/v1.2/{prefix}" if protocol_version == "v1.2"
+        else prefix
     )
     values = {
         "run_id": f"fake-{prefix}-annotation-test",
@@ -75,6 +84,7 @@ def config_values(run_type="pilot", blocks=5, protocol_version="v1.1", **overrid
         "seed_namespace": f"{versioned_prefix}/annotation-test",
         "calibration_namespace": (
             "calibration/v1.1" if protocol_version == "v1.1"
+            else "fallback-two-round/v1.2/calibration" if protocol_version == "v1.2"
             else "calibration/annotation-test-v1"
         ),
         "blocks": blocks,
@@ -103,19 +113,19 @@ def make_unit(unit_id, unit_type, text):
     return {**body, "unit_hash": digest(body)}
 
 
-def write_packet(root, run_type="pilot"):
+def write_packet(root, run_type="pilot", protocol_version="v1.1"):
     units = [
         make_unit("unit-one", "pair_window", "Agent A says verify; Agent B says ACCEPT"),
         make_unit("unit-two", "agent_review", "Visible records support a REJECT verdict"),
     ]
-    split = "pilot/v1.1/test" if run_type == "pilot" else "confirm/v1.1/test"
+    split = config_values(run_type=run_type, protocol_version=protocol_version)["split"]
     manifest = {
         "artifact_type": "annotation-rater-packet",
-        "annotation_version": ANNOTATION_VERSION,
+        "annotation_version": ANNOTATION_VERSIONS[protocol_version],
         "source": {
             "run_type": run_type,
             "split": split,
-            "protocol_version": "v1.1",
+            "protocol_version": protocol_version,
         },
         "labels": list(LABELS),
         "rating_columns": list(RATING_COLUMNS),
@@ -144,6 +154,174 @@ def write_ratings(path, rater_id, units, overrides=None):
             writer.writerow(row)
 
 
+class SyntheticAnnotationRun:
+    """Local result/request fixtures only; no executor or provider is constructed."""
+
+    def __init__(self, protocol_version="v1.2"):
+        self.config = LiveConfig.from_mapping(config_values(protocol_version=protocol_version))
+        self.plan = build_request_plan(self.config)
+        self.rows, self.payloads = {}, {}
+        for spec in self.plan.requests:
+            output = (f"{spec.metadata['role']} round {spec.metadata.get('message_round', 1)}: verify."
+                      if spec.action == "message" else canonical({
+                          "verdict": "REJECT", "evidence_record_ids": [],
+                          "brief_reason": "Synthetic fixture; not empirical.",
+                      }))
+            result = {"output_text": output,
+                      "parsed_output": output if spec.action == "message" else json.loads(output),
+                      "refusal": None, "raw_response": {"oracle_answer": "EVALUATOR_ONLY"}}
+            event = {"status": "ok", "attempt": 0, "provider_result": result,
+                     "scored_outcome": "EVALUATOR_ONLY", "request_identity": spec.identity}
+            self.rows[spec.identity] = [event]
+            if (spec.phase == "formation" and spec.action == "message"
+                    and dict(spec.metadata) == {"block": 0, "history": "C", "episode": 7,
+                                               "role": "alice", "message_round": 1}):
+                self.retry_identity = spec.identity
+                self.rows[spec.identity] = [
+                    {"status": "overlength", "attempt": 0, "provider_result": {
+                        "output_text": "x" * 201, "parsed_output": None}},
+                    {"status": "retryable_error", "attempt": 1, "provider_result": {
+                        "output_text": None, "parsed_output": None,
+                        "error": "EVALUATOR_ONLY"}},
+                    {**event, "attempt": 2},
+                ]
+        self.selections = select_annotation_units(self.plan, "frozen-seed-v1")
+        needed = {identity for unit in self.selections for identity in unit["request_identities"]}
+        needed.update(spec.identity for spec in self.plan.requests
+                      if spec.phase == "formation" and spec.action == "message"
+                      and spec.metadata["history"] == "C" and spec.metadata["episode"] >= 7)
+        factory = ScientificRequestFactory(self.config, self.plan)
+        for spec in self.plan.requests:
+            if spec.identity not in needed:
+                continue
+            rows = self.rows[spec.identity]
+            for index, event in enumerate(rows):
+                request, _ = factory.build(spec, ExecutionContext(
+                    self, event["attempt"], tuple(rows[:index])))
+                request_hash = digest(request.to_dict())
+                self.payloads[request_hash] = request.to_dict()
+                event["request_hash"] = request_hash
+                event["event_hash"] = digest(event)
+
+    def result_events(self, identity):
+        return self.rows.get(identity, [])
+
+    def request_payload(self, request_hash):
+        return self.payloads[request_hash]
+
+    def checkpoint_events(self):
+        return {spec.checkpoint_id: {"checkpoint_id": spec.checkpoint_id,
+                                    "checkpoint_hash": "synthetic-only"}
+                for spec in self.plan.checkpoints}
+
+
+class TranscriptCompatibilityTests(unittest.TestCase):
+    def setUp(self):
+        stack = ExitStack()
+        self.addCleanup(stack.close)
+        for name in ("socket.socket", "socket.create_connection", "urllib.request.urlopen",
+                     "http.client.HTTPConnection.connect", "http.client.HTTPSConnection.connect"):
+            stack.enter_context(patch(name, side_effect=AssertionError("network forbidden")))
+        self.run = SyntheticAnnotationRun()
+
+    def test_export_keeps_both_rounds_exact_visibility_and_separate_provenance(self):
+        with tempfile.TemporaryDirectory() as directory:
+            destination = Path(directory) / "packet"
+            with patch("collusion_recovery.annotation.DurableRun.inspect", return_value=self.run):
+                result = export_annotation_packet("synthetic-only", destination,
+                                                  "frozen-seed-v1", ["rater-1"])
+            self.assertEqual(result["unit_type_counts"], {"pair_window": 5, "agent_review": 20})
+            previous_limit = csv.field_size_limit()
+            validation = validate_ratings(destination, destination / "rater/ratings-rater-1.csv",
+                                          require_complete=False)
+            self.assertEqual(validation["annotation_version"], "annotation-v1.2")
+            self.assertEqual(validation["protocol_version"], "v1.2")
+            self.assertFalse(validation["complete"])
+            self.assertEqual(csv.field_size_limit(), previous_limit)
+            units = [json.loads(line) for line in
+                     (destination / "rater/units.jsonl").read_text().splitlines()]
+            self.assertTrue(any(len(canonical(unit["transcript"])) > previous_limit for unit in units))
+            key = json.loads((destination / "admin/annotation_key.json").read_text())
+        by_id = {unit["unit_id"]: unit for unit in units}
+        for keyed in key["units"]:
+            unit = by_id[keyed["unit_id"]]
+            if unit["unit_type"] != "pair_window":
+                self.assertNotIn("formation_message_results", keyed)
+                continue
+            provenance = keyed["formation_message_results"]
+            self.assertEqual(len(provenance), 12)
+            for position, episode in enumerate(unit["transcript"]["episodes"]):
+                self.assertEqual(set(episode["message_rounds"]), {"round_1", "round_2"})
+                for round_number in (1, 2):
+                    for role_index, role in enumerate(("alice", "bob")):
+                        item = provenance[position * 4 + (round_number - 1) * 2 + role_index]
+                        rows = self.run.rows[item["request_identity"]]
+                        attempts = episode["message_rounds"][f"round_{round_number}"][role]["attempts"]
+                        self.assertEqual(len(attempts), len(rows))
+                        self.assertEqual(item["result_event_hashes"], [r["event_hash"] for r in rows])
+                        for attempt, event in zip(attempts, rows):
+                            self.assertEqual(attempt["attempt"], event["attempt"])
+                            self.assertEqual(attempt["provider_turns"],
+                                             self.run.payloads[event["request_hash"]]["turns"])
+                            self.assertEqual(attempt["model_response"]["output_text"],
+                                             event["provider_result"]["output_text"])
+                            current = attempt["visible_request"]["current"]
+                            self.assertEqual(current["message_round"], round_number)
+                            if round_number == 1:
+                                self.assertNotIn("communication", current)
+                            else:
+                                visible = current["communication"]["message_rounds"]
+                                self.assertEqual(set(visible), {"round_1"})
+                                self.assertEqual(visible["round_1"]["own_message"]["sender"], role)
+                                self.assertNotEqual(visible["round_1"]["peer_message"]["sender"], role)
+                                self.assertNotIn("retryable_error", canonical(visible))
+                for review in episode["roles"].values():
+                    current = review["visible_request"]["current"]
+                    self.assertEqual(set(current["communication"]["message_rounds"]),
+                                     {"round_1", "round_2"})
+                    self.assertNotIn("peer_verdict", current)
+        serialized = canonical(units)
+        self.assertNotIn("EVALUATOR_ONLY", serialized)
+        for spec in self.run.plan.requests:
+            self.assertNotIn(spec.identity, serialized)
+        _reject_hidden_metadata(units)
+        retry_rows = self.run.rows[self.run.retry_identity]
+        retry_turns = [self.run.payloads[row["request_hash"]]["turns"] for row in retry_rows]
+        self.assertNotEqual(retry_turns[0], retry_turns[1])
+        self.assertEqual(retry_turns[1], retry_turns[2])
+
+    def test_message_snapshot_tampering_and_missing_attempts_block_export(self):
+        rows = self.run.rows[self.run.retry_identity]
+        snapshot = self.run.payloads[rows[0]["request_hash"]]
+        snapshot["turns"][0]["content"] = "changed"
+        with self.assertRaisesRegex(AnnotationError, "differs from independent"):
+            _materialize_units(self.run, self.run.selections)
+        self.run.rows[self.run.retry_identity] = []
+        with self.assertRaisesRegex(ScientificRequestError, "message result"):
+            _materialize_units(self.run, self.run.selections)
+
+    def test_hidden_metadata_in_a_message_response_is_rejected(self):
+        self.run.rows[self.run.retry_identity][0]["provider_result"]["parsed_output"] = {
+            "oracle_answer": "EVALUATOR_ONLY"}
+        with self.assertRaisesRegex(AnnotationError, "hidden evaluator"):
+            _materialize_units(self.run, self.run.selections)
+
+    def test_v1_1_transcript_and_key_shape_remain_unchanged(self):
+        run = SyntheticAnnotationRun("v1.1")
+        units, keys = _materialize_units(run, run.selections)
+        self.assertTrue(all(set(key) == {"unit_id", "unit_hash", "request_identities",
+                                       "result_event_hashes", "unblinded"} for key in keys))
+        for unit in units:
+            if unit["unit_type"] == "pair_window":
+                for episode in unit["transcript"]["episodes"]:
+                    self.assertEqual(set(episode), {"window_position", "roles"})
+                    for review in episode["roles"].values():
+                        self.assertEqual(set(review), {"visible_request", "model_response"})
+            else:
+                self.assertEqual(set(unit["transcript"]["review"]),
+                                 {"visible_request", "model_response"})
+
+
 class SelectionTests(unittest.TestCase):
     def test_pilot_sample_is_frozen_stratified_and_outcome_independent(self):
         plan = fake_plan("pilot", 5)
@@ -163,6 +341,34 @@ class SelectionTests(unittest.TestCase):
                   for arm in "ABCDE"}
         self.assertEqual(counts, {arm: 4 for arm in "ABCDE"})
         self.assertFalse(any(unit["unblinded"].get("arm") == "F" for unit in reviews))
+        self.assertEqual(digest(first),
+                         "d270cdc1a7ef6fdf99fcc51da0f38491f4e5b5c750c06f1c814ca2b7dd173303")
+
+    def test_v1_2_keeps_the_frozen_sample_contract_and_versioned_namespace(self):
+        plan = fake_plan(protocol_version="v1.2")
+        selected = select_annotation_units(plan, "frozen-seed-v1")
+        self.assertEqual(selected, select_annotation_units(plan, "frozen-seed-v1"))
+        pairs = [unit for unit in selected if unit["unit_type"] == "pair_window"]
+        reviews = [unit for unit in selected if unit["unit_type"] == "agent_review"]
+        self.assertEqual(len(selected), 25)
+        self.assertEqual({unit["unblinded"]["block"] for unit in pairs}, set(range(5)))
+        self.assertTrue(all(unit["unblinded"]["episodes"] == [7, 8, 9] for unit in pairs))
+        self.assertTrue(all(unit["unblinded"]["history"] == "C" for unit in pairs))
+        for arm in "ABCDE":
+            ranked = sorted((spec for spec in plan.requests
+                             if spec.phase == "evaluation" and spec.action == "verdict"
+                             and spec.metadata["arm"] == arm),
+                            key=lambda spec: (digest({"annotation_version": "annotation-v1.1",
+                                                      "sample_seed": "frozen-seed-v1",
+                                                      "request_identity": spec.identity}),
+                                              spec.identity))
+            self.assertEqual({unit["request_identities"][0] for unit in reviews
+                              if unit["unblinded"]["arm"] == arm},
+                             {spec.identity for spec in ranked[:4]})
+        for split in ("pilot/v1.2/test", "pilot/v1.1/test",
+                      "fallback-two-round/v1.2/confirm/test"):
+            with self.subTest(split=split), self.assertRaisesRegex(AnnotationError, "namespace"):
+                select_annotation_units(replace(plan, split=split), "seed")
 
     def test_confirmation_sample_has_all_windows_and_forty_reviews(self):
         selected = select_annotation_units(fake_plan("confirmation", 20), "confirm-seed-v1")
@@ -190,6 +396,31 @@ class ValidationTests(unittest.TestCase):
 
     def tearDown(self):
         self.temp.cleanup()
+
+    def test_v1_2_versions_propagate_through_existing_rating_tools(self):
+        packet = self.root / "v1-2"
+        units = write_packet(packet, protocol_version="v1.2")
+        paths = [packet / f"{rater}.csv" for rater in ("rater-1", "rater-2")]
+        for rater, path in zip(("rater-1", "rater-2"), paths):
+            write_ratings(path, rater, units)
+        adjudication = packet / "adjudication.csv"
+        reports = [validate_ratings(packet, paths[0]), agreement_report(packet, *paths),
+                   write_adjudication_template(packet, *paths, adjudication),
+                   validate_adjudication(packet, *paths, adjudication)]
+        for report in reports:
+            self.assertEqual(report["annotation_version"], "annotation-v1.2")
+            self.assertEqual(report["protocol_version"], "v1.2")
+        manifest_path = packet / "rater/packet_manifest.json"
+        manifest = json.loads(manifest_path.read_text())
+        manifest["annotation_version"] = ANNOTATION_VERSION
+        manifest_path.write_text(canonical(manifest))
+        with self.assertRaisesRegex(AnnotationError, "versions differ"):
+            validate_ratings(packet, paths[0])
+        manifest["annotation_version"] = "annotation-v1.2"
+        manifest["source"]["split"] = "pilot/v1.1/test"
+        manifest_path.write_text(canonical(manifest))
+        with self.assertRaisesRegex(AnnotationError, "split namespace"):
+            validate_ratings(packet, paths[0])
 
     def test_template_can_be_checked_incomplete_then_requires_completion(self):
         path = self.root / "template.csv"
