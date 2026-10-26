@@ -34,15 +34,15 @@ Completed Gate 2 evidence and current Gate 3 partial-run boundary:
 
 Gate 3's one-use authorization is consumed and cannot be replayed. No existing approval permits retry, continuation, assessment completion by dispatch, or Phase 2. Protocol v1.2 has been selected for prospective offline preparation as an early-futility methodological decision/deviation because no completed Gate 3 trigger artifact exists. Separately review and authorize fresh calibration, smoke, Phase 1, and Phase 2 releases, and never pool v1.1 observations.
 
-Current v1.2 artifacts are projections only. `baseline_v1_2.txt` changes the
-formation interface alone; calibration, evaluation, and probes preserve the
-original baseline, and the protocol hash binds the frozen base protocol plus
-addendum. There is no live Gate 1 controller, execution-ready/static proposal,
-authorization-issuance path, or checked-in static v1.2 authorization schema.
-Gate 2 and Gate 3 Phase 1 likewise lack live controllers and cross-run
-prerequisite assessments. The inherited October 24, 2026 pricing is stale for a
-v1.2 release and must be freshly verified. A projection must never be entered as
-an executed, review-ready, or authorized artifact in this manifest.
+`baseline_v1_2.txt` changes the formation interface alone; calibration,
+evaluation, and probes preserve the original baseline, and the protocol hash
+binds the frozen base protocol plus addendum. Gate 1 now has a dedicated
+independently reviewed controller and a checked static proposal/schema package
+binding fresh official pricing and exact ceilings, but no authorization,
+credential access, provider call, or result. Gate 2 and Gate 3 Phase 1 remain
+projections and lack live controllers and cross-run prerequisite assessments.
+Preparation must never be entered as executed or authorized evidence in this
+manifest.
 
 ## 1. Release identity
 
@@ -252,9 +252,11 @@ The combined five-block main v1.1 plus secondary planning total is **1,660 logic
   the original baseline exactly.
 - [ ] Any v1.2 ambiguous-5xx recovery has received integer exception/response
   statuses exactly equal to the same eligible code, matching request IDs,
-  absent output/usage, identical retry wire bytes, and numeric delta-seconds
-  retry metadata only. The incident remains durable and fully reserved but is
-  absent from model-visible history; the first non-ambiguous outcome is terminal,
+  absent output/usage, and identical retry wire bytes. Only numeric
+  delta-seconds or numeric millisecond metadata extended the fixed five-second
+  fallback; missing, malformed, or HTTP-date metadata did not. The incident
+  remains durable and fully reserved but is absent from model-visible history;
+  the first non-ambiguous outcome is terminal,
   refusals/invalid responses remain missing/invalid, and no second
   ambiguous-5xx-owned retry occurred.
 - [ ] All affected identities and an unresolved-outcome sensitivity artifact are

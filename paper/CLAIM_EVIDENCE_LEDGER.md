@@ -27,7 +27,7 @@ Status: **pilot-incomplete template with Gate 1 capability, Gate 2 block-0 smoke
 21. Protocol v1.2 changes only U/C formation to two sequential message rounds. `baseline_v1_2.txt` is formation-only; calibration, evaluation, and scripted probes preserve the original baseline, and evaluation/probes remain one-round and one-focal-request, respectively. The v1.2 protocol hash binds the frozen base protocol plus addendum. Its exact pilot partitions are 20 calibration, 192 block-0 smoke, 480 blocks-1--4 formation, and 888 remaining evaluation/probe requests. These counts and this ledger do not authorize a call.
 22. The one-round `formation-peer-v1` secondary protocol remains separate and unchanged. It is not inherited by, converted to, or counted inside v1.2. A changed secondary study requires a new prospective protocol version and independent lineage.
 23. v1.2 freezes one runner-owned retry only when a response was received and the exception and response statuses are integers exactly equal to the same HTTP 500/502/503/504, request IDs match, and output and usage are absent. The failed attempt retains its full reservation and durable transport record but never enters model-visible attempts or history; the retry uses identical wire bytes and SDK retries are disabled. Only numeric delta-seconds `Retry-After` or numeric `Retry-After-Ms` may extend the 5--60-second delay. The first non-ambiguous returned outcome is terminal, refusals/invalid responses remain missing/invalid, and no second ambiguous-5xx-owned retry is permitted. Per-release affected-identity caps are 1/2/5/9 and maximum dispatch attempts are 61/694/1,765/2,997 for the 20/192/480/888 logical stages. The unseen ambiguous attempt may have completed and differed from its retry, so every affected identity and an unresolved-outcome sensitivity analysis remain required even below the cap. This is a prospective safety contract, not empirical evidence or authorization. Exact token/context/fresh-pricing/cost ceilings remain release-bound.
-24. Current v1.2 support is projection-only. Gate 1 has no live controller, execution-ready proposal, authorization-issuance path, checked-in static v1.2 proposal, or checked-in v1.2 authorization schema; its inherited October 24, 2026 pricing is stale and must be freshly verified. Gate 2 and Gate 3 Phase 1 have plan projections only, without live controllers or cross-run prerequisite assessments.
+24. v1.2 Gate 1 now has a dedicated independently reviewed controller and a checked static proposal/schema package binding fresh official pricing and exact ceilings. It remains unauthorized and unstarted: no credential access, provider call, or result exists. Gate 2 and Gate 3 Phase 1 have plan projections only, without live controllers or cross-run prerequisite assessments.
 
 ## Protocol-selection and deviation record
 
@@ -42,11 +42,11 @@ row.
 | Deviation | Early activation from a logically decisive partial-run upper bound without a completed Gate 3 assessment |
 | v1.2 empirical evidence | **EMPTY — no model calls or observations** |
 | Authorization | **NONE — preparation only** |
-| Execution readiness | **OFFLINE PROJECTION ONLY — no live v1.2 controller, execution-ready/static proposal, authorization-issuance path, or static authorization schema** |
+| Execution readiness | **GATE 1 PACKAGE READY, NOT AUTHORIZED — exact external one-use authorization still required; Gate 2/Phase 1 remain projections** |
 | Pooling | Prohibited across v1.1, v1.2, pilot, confirmation, and formation-peer lineages |
 | Secondary compatibility | `formation-peer-v1` remains one-round, separate, and offline |
 | v1.2 transport envelope | One eligible runner-owned 5xx retry; affected-identity caps 1/2/5/9; stage attempt ceilings 61/694/1,765/2,997; 5,517 total |
-| Outstanding resource binding | Live controllers and cross-run prerequisite assessments; rendered prompt/context projections; freshly verified official pricing; exact token/cost ceilings; static reviewed contracts for each stage |
+| Outstanding resource binding | Gate 1: exact external one-use authorization only. Later stages: live controllers, cross-run prerequisite assessments, rendered prompt/context projections, fresh pricing, exact ceilings, and static reviewed contracts |
 | Further revision | No v1.3; stop or report if v1.2 fails the unchanged marker gate |
 
 ## Main report-path and independent secondary-status locks

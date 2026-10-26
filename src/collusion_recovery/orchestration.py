@@ -22,6 +22,7 @@ import os
 import platform
 from pathlib import Path
 import re
+import sys
 import threading
 import time
 from types import MappingProxyType
@@ -132,6 +133,12 @@ V1_2_GATE3_PHASE1_CONTROLLER_ID = "gate3_formation_phase1_v1_2"
 V1_2_GATE3_PHASE1_RUN_ID = "e93c4f9a-5118-446e-8935-4724e164222c"
 V1_2_GATE3_PHASE2_CONTROLLER_ID = "gate3_remaining_phase2_v1_2"
 V1_2_GATE3_PHASE2_RUN_ID = "0bf185b9-ed8e-43b7-a20e-f8014e02f039"
+# This capability is fake-only for the exact Gate 1 release.  It exists solely
+# so lower-level offline retry tests can exercise the generic engine.  The live
+# path has no importable capability: it is accepted only from the actual loaded
+# ``_run_v1_2_gate1`` caller after that function has constructed the official
+# SDK client and durably bound empirical mode.
+_V1_2_GATE1_STAGED_TEST_CAPABILITY = object()
 V1_2_CALIBRATION_NAMESPACE = "fallback-two-round/v1.2/calibration"
 V1_2_GATE1_NAMESPACE = (
     "fallback-two-round/v1.2/pilot/"
@@ -2443,7 +2450,8 @@ class StagedExecutor:
                  request_factory: Callable[[ScheduledRequest, ExecutionContext], Any],
                  *, sleep: Callable[[float], None] | None = None,
                  now: Callable[[], datetime] | None = None,
-                 dedicated_controller: str | None = None):
+                 dedicated_controller: str | None = None,
+                 _dedicated_capability: object | None = None):
         required_controller = DEDICATED_EXECUTION_CONTROLLERS.get(run.config.run_id)
         if (getattr(run.config, "source", None) == "empirical-live"
                 and getattr(run.config, "protocol_version", None) == "v1.2"
@@ -2468,6 +2476,114 @@ class StagedExecutor:
             and dedicated_controller == required_controller
             and run.manifest.get("execution_controller") == required_controller
         )
+        if (getattr(run.config, "protocol_version", None) == "v1.2"
+                and run.config.run_id == V1_2_GATE1_RUN_ID):
+            gate1_modes = [
+                event for event in run.events
+                if event.get("kind") == "v1_2_gate1_execution_mode_binding"
+            ]
+            mode_pair = (
+                (
+                    gate1_modes[0].get("mode"),
+                    gate1_modes[0].get("executor_provenance"),
+                )
+                if len(gate1_modes) == 1 else None
+            )
+            exact_wrapper_identity = (
+                type(self).__module__ == "collusion_recovery.v1_2_gate1"
+                and type(self).__qualname__ == "V12Gate1Executor"
+            )
+            gate1_module = sys.modules.get("collusion_recovery.v1_2_gate1")
+            gate1_entrypoint = getattr(
+                gate1_module, "_run_v1_2_gate1", None
+            )
+            exact_empirical_wrapper = (
+                exact_wrapper_identity
+                and _dedicated_capability is None
+                and mode_pair == (
+                    "empirical_live",
+                    "official_openai_client_from_run_v1_2_gate1",
+                )
+                and getattr(gate1_entrypoint, "__code__", None)
+                is sys._getframe(1).f_code
+            )
+            exact_fake_wrapper = (
+                exact_wrapper_identity
+                and _dedicated_capability
+                is _V1_2_GATE1_STAGED_TEST_CAPABILITY
+                and mode_pair == (
+                    "fake_transport_test",
+                    "explicit_offline_fake_factory",
+                )
+            )
+            exact_offline_unit_harness = (
+                type(self) is StagedExecutor
+                and _dedicated_capability is _V1_2_GATE1_STAGED_TEST_CAPABILITY
+                and (
+                    run.manifest.get("execution_controller")
+                    != V1_2_GATE1_CONTROLLER_ID
+                    or mode_pair == (
+                        "fake_transport_test",
+                        "explicit_offline_fake_factory",
+                    )
+                )
+            )
+            if not (
+                    exact_empirical_wrapper
+                    or exact_fake_wrapper
+                    or exact_offline_unit_harness):
+                raise AuthorizationRequiredError(
+                    "v1.2 Gate 1 empirical execution requires the exact official "
+                    "run caller; imported capabilities, controller strings, and "
+                    "subclasses are insufficient"
+                )
+        elif _dedicated_capability is not None:
+            raise AuthorizationRequiredError(
+                "an internal v1.2 Gate 1 capability cannot authorize another run"
+            )
+        if (reusable_v1_2_controller
+                and run.config.run_id == V1_2_GATE1_RUN_ID
+                and required_controller == V1_2_GATE1_CONTROLLER_ID):
+            bindings = [
+                event for event in run.events
+                if event.get("kind") == "v1_2_gate1_calibration_binding"
+            ]
+            claims = [
+                event for event in run.events
+                if event.get("kind") == "v1_2_gate1_authorization_claimed"
+            ]
+            modes = [
+                event for event in run.events
+                if event.get("kind") == "v1_2_gate1_execution_mode_binding"
+            ]
+            if (run.manifest.get("v1_2_gate1_authorization_consumed") is not True
+                    or len(bindings) != 1 or len(claims) != 1 or len(modes) != 1
+                    or claims[0].get("sequence", -1)
+                    <= bindings[0].get("sequence", -1)
+                    or modes[0].get("sequence", -1)
+                    <= claims[0].get("sequence", -1)
+                    or claims[0].get("event_hash")
+                    != run.manifest.get(
+                        "v1_2_gate1_authorization_claim_event_hash")
+                    or modes[0].get("controller") != required_controller
+                    or modes[0].get("run_id") != V1_2_GATE1_RUN_ID
+                    or (
+                        modes[0].get("mode"),
+                        modes[0].get("executor_provenance"),
+                    ) not in {
+                        (
+                            "empirical_live",
+                            "official_openai_client_from_run_v1_2_gate1",
+                        ),
+                        (
+                            "fake_transport_test",
+                            "explicit_offline_fake_factory",
+                        ),
+                    }):
+                raise AuthorizationRequiredError(
+                    "v1.2 Gate 1 requires its atomic authorization claim and "
+                    "execution-mode binding before the generic retry engine"
+                )
         if required_controller is None and dedicated_controller is not None:
             raise AuthorizationRequiredError(
                 "a dedicated controller cannot be attached to a generic run id"
@@ -2624,7 +2740,11 @@ class StagedExecutor:
         provider = row.get("provider_result")
         evidence = provider.get("transport_evidence") if isinstance(provider, Mapping) else {}
         candidate = evidence.get("retry_after_seconds") if isinstance(evidence, Mapping) else None
-        delay = 5.0 if candidate is None else max(5.0, float(candidate))
+        # Evidence validation already guarantees a finite nonnegative number.
+        # Preserve arbitrarily large integer delays here instead of coercing
+        # them to float: values above the policy ceiling must reach the caller
+        # and produce a hard stop, never overflow or fall back to five seconds.
+        delay = 5.0 if candidate is None else max(5.0, candidate)
         return delay
 
     def _v1_2_5xx_retry_state(
@@ -3057,11 +3177,14 @@ class StagedExecutor:
                 raise DependencyError("parent checkpoint is unavailable or ambiguously completed")
             while not self._status_terminal(spec, results):
                 attempt = len(results)
+                retry_schedule = None
                 if results:
                     retry_state, _delay = self._v1_2_5xx_retry_state(spec, results)
                     if retry_state == "retry":
-                        schedule = self._v1_2_5xx_schedule_event(spec, results)
-                        self._wait_for_v1_2_5xx_retry(schedule)
+                        retry_schedule = self._v1_2_5xx_schedule_event(
+                            spec, results
+                        )
+                        self._wait_for_v1_2_5xx_retry(retry_schedule)
                     else:
                         self._backoff(attempt)
                 context = ExecutionContext(self.run, attempt, tuple(results))
@@ -3077,12 +3200,34 @@ class StagedExecutor:
                 if wire_payload is not None:
                     wire_payload_hash = self.run.save_wire_payload(wire_payload)
                 if results and self._eligible_ambiguous_5xx(results[-1]):
-                    scheduled = self._v1_2_5xx_schedule_event(spec, results)
+                    scheduled = (
+                        retry_schedule
+                        if retry_schedule is not None else
+                        self._v1_2_5xx_schedule_event(spec, results)
+                    )
                     if (scheduled.get("next_attempt") != attempt
                             or wire_payload_hash != scheduled.get("wire_payload_hash")):
                         raise ResumeError(
                             "ambiguous HTTP-5xx retry changed the exact wire payload"
                         )
+                reservation_recorded_at = None
+                if retry_schedule is not None:
+                    reservation_time = self.now()
+                    if (not isinstance(reservation_time, datetime)
+                            or reservation_time.tzinfo is None
+                            or reservation_time.utcoffset() is None):
+                        raise OrchestrationError(
+                            "executor clock must return an aware datetime"
+                        )
+                    reservation_time = reservation_time.astimezone(timezone.utc)
+                    not_before = self._v1_2_5xx_schedule_not_before(
+                        retry_schedule
+                    )
+                    if reservation_time < not_before:
+                        raise ResumeError(
+                            "ambiguous HTTP-5xx retry delay has not elapsed"
+                        )
+                    reservation_recorded_at = reservation_time.isoformat()
                 try:
                     reservation = self.ledger.reserve(
                         spec.identity, attempt,
@@ -3094,10 +3239,21 @@ class StagedExecutor:
                                         budget=self.ledger.snapshot())
                     return self._report(status, target_stage, through_block,
                                         dispatched, skipped, selected, stop_identity)
-                self.run.append("reservation", identity=spec.identity, attempt=attempt,
-                                request_hash=request_hash,
-                                wire_payload_hash=wire_payload_hash,
-                                reservation=reservation.to_dict())
+                reservation_data = {
+                    "identity": spec.identity,
+                    "attempt": attempt,
+                    "request_hash": request_hash,
+                    "wire_payload_hash": wire_payload_hash,
+                    "reservation": reservation.to_dict(),
+                }
+                if reservation_recorded_at is None:
+                    self.run.append("reservation", **reservation_data)
+                else:
+                    self.run._append_event(
+                        "reservation",
+                        reservation_data,
+                        recorded_at=reservation_recorded_at,
+                    )
                 dispatched += 1
                 try:
                     provider_result = self.provider.complete(request)

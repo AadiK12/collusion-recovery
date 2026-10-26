@@ -8,6 +8,7 @@ transport implementing ``send``.
 from __future__ import annotations
 
 from collections.abc import Mapping
+from decimal import Decimal, InvalidOperation, ROUND_CEILING
 import json
 import math
 import re
@@ -190,15 +191,36 @@ def _allowlisted_header(headers, name):
 
 
 def _retry_delay(value, *, milliseconds=False):
+    """Normalize a Retry-After value without imposing runner policy.
+
+    This evidence contract intentionally understands only numeric
+    delay-seconds and OpenAI's non-standard numeric ``retry-after-ms`` variant.
+    An HTTP-date remains recorded as a present but unnormalized header, causing
+    the versioned runner to use its fixed five-second fallback.  The adapter's
+    job is to preserve numeric provider delays without imposing runner policy;
+    in particular, values above a day must reach v1.2's separately bound
+    60-second ceiling and hard-stop there.
+    """
     if isinstance(value, bool) or not isinstance(value, (str, int, float)):
         return None
     text = str(value).strip()
-    if re.fullmatch(r"(?:0|[1-9][0-9]{0,7})(?:\.[0-9]{1,6})?", text) is None:
-        return None
-    seconds = float(text) / (1000 if milliseconds else 1)
-    if not math.isfinite(seconds) or not 0 <= seconds <= 86_400:
-        return None
-    return seconds
+    if re.fullmatch(r"[0-9]+(?:\.[0-9]{1,6})?", text) is not None:
+        try:
+            seconds = Decimal(text) / (1000 if milliseconds else 1)
+        except InvalidOperation:
+            return None
+        if not seconds.is_finite() or seconds < 0:
+            return None
+        value_as_float = float(seconds)
+        if math.isfinite(value_as_float):
+            return value_as_float
+        # A syntactically valid but extraordinarily large millisecond value
+        # cannot retain its fraction in JSON's number model.  Conservatively
+        # round upward; it remains a faithful lower-risk delay indication and
+        # necessarily exceeds every retry ceiling used by this repository.
+        return int(seconds.to_integral_value(rounding=ROUND_CEILING))
+
+    return None
 
 
 def _normalized_retry_after(headers):
@@ -469,6 +491,13 @@ def _sdk_failure(exc):
         status, known_not_completed = ProviderStatus.AMBIGUOUS_TIMEOUT, False
     else:
         status, known_not_completed = ProviderStatus.FATAL_ERROR, False
+    if body is not None and "usage" in body:
+        # Presence is the evidence boundary.  A null, zero-like, or malformed
+        # usage value still means the provider supplied usage-bearing response
+        # material, so an SDK exception cannot prove non-completion.  The
+        # durable runner will conservatively reclassify retryable/auth/quota
+        # labels without that proof as ambiguous and charge the full reserve.
+        known_not_completed = False
     safe = f"OpenAI SDK {name}"
     if isinstance(status_code, int):
         safe += f" (HTTP {status_code})"

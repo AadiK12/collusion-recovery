@@ -121,9 +121,9 @@ def _load_transport_evidence(evidence_json):
     if seconds is not None and (
             isinstance(seconds, bool)
             or not isinstance(seconds, (int, float))
-            or not math.isfinite(seconds)
-            or not 0 <= seconds <= 86_400):
-        raise ValueError("retry-after seconds must be finite and between 0 and 86400")
+            or (isinstance(seconds, float) and not math.isfinite(seconds))
+            or seconds < 0):
+        raise ValueError("retry-after seconds must be finite and nonnegative")
     source = evidence["retry_after_source"]
     if source is not None and source not in _RETRY_AFTER_SOURCES:
         raise ValueError("invalid retry-after source")

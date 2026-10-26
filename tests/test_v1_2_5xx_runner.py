@@ -32,6 +32,7 @@ from collusion_recovery.orchestration import (
     V1_2_GATE2_CONTROLLER_ID,
     V1_2_GATE2_NAMESPACE,
     V1_2_GATE2_RUN_ID,
+    _V1_2_GATE1_STAGED_TEST_CAPABILITY,
     authorization_binding,
     build_request_plan,
 )
@@ -54,7 +55,8 @@ class _HTTPResponse:
 
 
 class InternalServerError(Exception):
-    def __init__(self, request_id, *, retry_after=5):
+    def __init__(self, request_id, *, retry_after=5,
+                 retry_after_header="retry-after"):
         super().__init__("synthetic provider HTTP 500")
         self.status_code = 500
         self.request_id = request_id
@@ -67,7 +69,27 @@ class InternalServerError(Exception):
         }
         self.response = _HTTPResponse(
             500,
-            {"x-request-id": request_id, "retry-after": str(retry_after)},
+            {"x-request-id": request_id,
+             retry_after_header: str(retry_after)},
+        )
+
+
+class RateLimitError(Exception):
+    def __init__(self, request_id, *, usage):
+        super().__init__("synthetic provider HTTP 429")
+        self.status_code = 429
+        self.request_id = request_id
+        self.body = {
+            "error": {
+                "type": "rate_limit_error",
+                "code": "rate_limit_exceeded",
+                "message": "Synthetic provider rate limit",
+            },
+            "usage": usage,
+        }
+        self.response = _HTTPResponse(
+            429,
+            {"x-request-id": request_id, "retry-after": "5"},
         )
 
 
@@ -88,6 +110,15 @@ class _LocalResponses:
         if isinstance(step, tuple) and step[0] == "500":
             raise InternalServerError(
                 f"req_500_{call_number}", retry_after=step[1]
+            )
+        if isinstance(step, tuple) and step[0] == "500-ms":
+            raise InternalServerError(
+                f"req_500_{call_number}", retry_after=step[1],
+                retry_after_header="retry-after-ms",
+            )
+        if isinstance(step, tuple) and step[0] == "429-usage":
+            raise RateLimitError(
+                f"req_429_{call_number}", usage=step[1]
             )
 
         mode = kwargs["text"]["format"]["type"]
@@ -271,6 +302,32 @@ def _artifact(config, plan, provider, release):
     )
 
 
+def _synthetic_v12_ceremony(run):
+    """Install the minimum local-only ceremony needed by the retry unit tests."""
+    run.append(
+        "v1_2_gate1_calibration_binding",
+        controller=V1_2_GATE1_CONTROLLER_ID,
+        fixture="offline-runner-test",
+    )
+    claim = run.append(
+        "v1_2_gate1_authorization_claimed",
+        controller=V1_2_GATE1_CONTROLLER_ID,
+        fixture="offline-runner-test",
+    )
+    run.append(
+        "v1_2_gate1_execution_mode_binding",
+        controller=V1_2_GATE1_CONTROLLER_ID,
+        run_id=V1_2_GATE1_RUN_ID,
+        mode="fake_transport_test",
+        executor_provenance="explicit_offline_fake_factory",
+    )
+    run.set_status(
+        run.manifest["status"],
+        v1_2_gate1_authorization_consumed=True,
+        v1_2_gate1_authorization_claim_event_hash=claim["event_hash"],
+    )
+
+
 def _prepared_run(path, steps, *, protocol_version="v1.2", max_attempts=20,
                   run_id="http-5xx-runner-test"):
     config = _config(protocol_version, run_id=run_id)
@@ -286,6 +343,11 @@ def _prepared_run(path, steps, *, protocol_version="v1.2", max_attempts=20,
         execution_controller=(
             V1_2_GATE1_CONTROLLER_ID if protocol_version == "v1.2" else None),
     )
+    if protocol_version == "v1.2":
+        # Unit-test-only synthetic ceremony.  Production Gate 1 creates these
+        # through its external authorization, atomic receipt, and mode binder;
+        # the generic retry engine must never be constructible without them.
+        _synthetic_v12_ceremony(run)
     # The test targets transport execution, not the separately tested protocol
     # freeze ceremony.  A direct synthetic event keeps this fixture local while
     # preserving the executor's normal gate lookup.
@@ -323,6 +385,9 @@ def _executor(run, provider, factory, *, sleep=None):
         now=clock.now,
         dedicated_controller=(
             V1_2_GATE1_CONTROLLER_ID
+            if run.config.protocol_version == "v1.2" else None),
+        _dedicated_capability=(
+            _V1_2_GATE1_STAGED_TEST_CAPABILITY
             if run.config.protocol_version == "v1.2" else None),
     )
 
@@ -365,6 +430,7 @@ class V12Ambiguous5xxRunnerTests(unittest.TestCase):
                 sleep=wake_early,
                 now=clock.now,
                 dedicated_controller=V1_2_GATE1_CONTROLLER_ID,
+                _dedicated_capability=_V1_2_GATE1_STAGED_TEST_CAPABILITY,
             )
             with self.assertRaisesRegex(ResumeError, "delay has not elapsed"):
                 _execute(executor)
@@ -495,6 +561,7 @@ class V12Ambiguous5xxRunnerTests(unittest.TestCase):
                     sleep=clock.sleep,
                     now=clock.now,
                     dedicated_controller=V1_2_GATE2_CONTROLLER_ID,
+                    _dedicated_capability=_V1_2_GATE1_STAGED_TEST_CAPABILITY,
                 )
                 report = _execute(executor)
 
@@ -574,23 +641,107 @@ class V12Ambiguous5xxRunnerTests(unittest.TestCase):
             ))
 
     def test_retry_after_above_ceiling_stops_without_a_retry(self):
-        with tempfile.TemporaryDirectory() as td:
-            (_config_value, plan, client, provider, _release_limits, _artifact_value,
-             run, factory) = _prepared_run(
-                Path(td) / "run", [("500", 61), "ok"]
-            )
-            report = _execute(_executor(
-                run, provider, factory
-            ))
+        cases = {
+            "long-delay-seconds": (("500", 172_801), 172_801),
+            "long-milliseconds": (("500-ms", 172_801_250), 172_801.25),
+        }
+        for label, (failure, expected_delay) in cases.items():
+            with self.subTest(label=label), tempfile.TemporaryDirectory() as td:
+                (_config_value, plan, client, provider, _release_limits,
+                 _artifact_value, run, factory) = _prepared_run(
+                    Path(td) / "run", [failure, "ok"]
+                )
+                report = _execute(_executor(run, provider, factory))
 
-            self.assertEqual(report.status,
-                             "paused_ambiguous_5xx_retry_after_exceeded")
-            self.assertEqual(len(client.responses.calls), 1)
-            self.assertEqual(len(run.result_events(plan.requests[0].identity)), 1)
-            self.assertFalse(any(
-                event["kind"] == "ambiguous_5xx_retry_scheduled"
-                for event in run.events
-            ))
+                self.assertEqual(
+                    report.status,
+                    "paused_ambiguous_5xx_retry_after_exceeded",
+                )
+                self.assertEqual(len(client.responses.calls), 1)
+                rows = run.result_events(plan.requests[0].identity)
+                self.assertEqual(len(rows), 1)
+                persisted_delay = rows[0]["provider_result"][
+                    "transport_evidence"
+                ]["retry_after_seconds"]
+                self.assertEqual(persisted_delay, expected_delay)
+                self.assertFalse(any(
+                    event["kind"] == "ambiguous_5xx_retry_scheduled"
+                    for event in run.events
+                ))
+
+    def test_http_date_retry_after_uses_fixed_five_second_fallback(self):
+        with tempfile.TemporaryDirectory() as td:
+            (_config_value, plan, client, provider, _release_limits,
+             _artifact_value, run, factory) = _prepared_run(
+                Path(td) / "run",
+                [("500", "Wed, 31 Dec 2099 23:59:59 GMT"), "ok"],
+                max_attempts=2,
+            )
+            report = _execute(_executor(run, provider, factory))
+
+            rows = run.result_events(plan.requests[0].identity)
+            evidence = rows[0]["provider_result"]["transport_evidence"]
+            self.assertTrue(evidence["retry_after_present"])
+            self.assertIsNone(evidence["retry_after_seconds"])
+            self.assertIsNone(evidence["retry_after_source"])
+            self.assertEqual([row["status"] for row in rows], [
+                "ambiguous_timeout", "ok",
+            ])
+            self.assertEqual(len(client.responses.calls), 2)
+            schedule = next(
+                event for event in run.events
+                if event["kind"] == "ambiguous_5xx_retry_scheduled"
+            )
+            self.assertEqual(schedule["delay_seconds"], 5.0)
+            self.assertEqual(report.status, "paused_budget_exhausted")
+
+    def test_429_usage_key_is_ambiguous_full_reservation_and_never_retried(self):
+        cases = {
+            "null": None,
+            "zero": 0,
+            "zero-object": {
+                "input_tokens": 0,
+                "output_tokens": 0,
+                "total_tokens": 0,
+            },
+            "malformed": "not-a-usage-object",
+        }
+        for label, usage in cases.items():
+            with self.subTest(label=label), tempfile.TemporaryDirectory() as td:
+                (_config_value, plan, client, provider, _release_limits,
+                 _artifact_value, run, factory) = _prepared_run(
+                    Path(td) / "run",
+                    [("429-usage", usage), "ok"],
+                    max_attempts=2,
+                )
+                report = _execute(_executor(run, provider, factory))
+
+                rows = run.result_events(plan.requests[0].identity)
+                self.assertEqual(report.status, "paused_ambiguous_timeout")
+                self.assertEqual(len(client.responses.calls), 1)
+                self.assertEqual(len(rows), 1)
+                self.assertEqual(rows[0]["status"], "ambiguous_timeout")
+                self.assertTrue(rows[0]["ambiguous"])
+                self.assertFalse(rows[0]["known_not_completed"])
+                self.assertEqual(
+                    rows[0]["provider_result"]["original_status"],
+                    "retryable_error",
+                )
+                self.assertIn(
+                    "usage", rows[0]["provider_result"]["raw_response"]
+                )
+                self.assertEqual(
+                    rows[0]["provider_result"]["raw_response"]["usage"],
+                    usage,
+                )
+                self.assertEqual(
+                    rows[0]["budget_accounting"]["accounting"],
+                    "full_reservation",
+                )
+                self.assertFalse(any(
+                    event["kind"] == "ambiguous_5xx_retry_scheduled"
+                    for event in run.events
+                ))
 
     def test_per_identity_cap_does_not_reset_after_overlength(self):
         identity = "request-test-identity"
@@ -641,6 +792,7 @@ class V12Ambiguous5xxRunnerTests(unittest.TestCase):
                 dispatch_authorization=artifact,
                 execution_controller=V1_2_GATE1_CONTROLLER_ID,
             )
+            _synthetic_v12_ceremony(run)
             run.append("gate", gate="transport_preflight", passed=True,
                        decided_by="offline-unit-test", note="Synthetic gate.",
                        evidence={"fixture": "offline-only"})

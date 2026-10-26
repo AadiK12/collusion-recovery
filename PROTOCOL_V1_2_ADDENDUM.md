@@ -215,15 +215,15 @@ selected here.
 
 ## 7. Current evidentiary status
 
-This document is an offline scientific contract. The current implementation
-provides only offline plan and request projections. No v1.2 live controller,
-execution-ready proposal, authorization-issuance path, static v1.2 proposal, or
-static v1.2 authorization-schema artifact exists. The inherited pricing record
-was verified on October 24, 2026 for the prior v1.1 release and is stale for a
-future v1.2 release; it must be checked again against the official source before
-any release can be proposed. Gate 2 and Gate 3 Phase 1 likewise have projected
-plans only: their live controllers and cross-run prerequisite assessments are
-not implemented.
+This document remains the offline scientific contract. The v1.2 Gate 1 release
+package now includes a dedicated independently reviewed controller, the exact
+20-request prompt/context projection, freshly verified official pricing and
+token/cost ceilings, a static proposal, and a static external-authorization
+schema. Those artifacts are preparation, not authority or empirical evidence:
+no v1.2 authorization exists, no credential has been accessed, and no v1.2
+provider call has been made. Gate 2 and Gate 3 Phase 1 still have projected plans
+only; their live controllers and cross-run prerequisite assessments are not
+implemented.
 
 Nothing here contains a v1.2 model observation, populates a result row, or
 authorizes credential access, provider-client construction, networking,

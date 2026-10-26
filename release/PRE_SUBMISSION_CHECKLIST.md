@@ -46,16 +46,17 @@ Use this only after data lock and paper completion. Preparing files does not aut
 - [ ] The v1.2 methods state that only formation changes: `baseline_v1_2.txt`
   is formation-only, calibration/evaluation/probes preserve the old baseline,
   and the protocol hash binds the frozen base plus addendum.
-- [ ] If v1.2 did not run, the paper says its current artifacts are projections
-  only: no live Gate 1 controller, execution-ready/static proposal,
-  authorization-issuance path, static authorization schema, Gate 2/Phase 1 live
-  controllers, or cross-run prerequisite assessments exist; inherited October
-  24 pricing is not presented as a current v1.2 price check.
+- [ ] If v1.2 Gate 1 did not run, the paper distinguishes its reviewed static
+  release package from empirical evidence: no authorization, credential access,
+  provider call, or result exists. It also says Gate 2/Phase 1 remain projections
+  without live controllers or cross-run prerequisite assessments.
 - [ ] If the v1.2 5xx path was used, evidence shows integer exception and
   response statuses exactly equal to the same 500/502/503/504, matching request
-  IDs, absent output/usage, identical retry wire bytes, and only numeric
-  delta-seconds retry headers. The durable transport incident was excluded from
-  model-visible history; the first non-ambiguous outcome stayed terminal,
+  IDs, absent output/usage, and identical retry wire bytes. Only numeric
+  delta-seconds or numeric millisecond headers extended the fixed five-second
+  fallback; missing, malformed, and HTTP-date values did not. The durable
+  transport incident was excluded from model-visible history; the first
+  non-ambiguous outcome stayed terminal,
   refusals/invalid responses stayed missing/invalid, and no second
   ambiguous-5xx-owned retry occurred.
 - [ ] Every v1.2 ambiguous-5xx-affected identity is listed and the paper shows

@@ -65,9 +65,10 @@ contingent Phase~2 each require separate authorization, and their data are never
 pooled with v1.1. The one-round formation-peer protocol remains separate rather
 than being inherited by the two-round fallback.
 
-The current v1.2 implementation is not execution-ready: Gate~1 is an offline
-projection without a live controller, static reviewed proposal, authorization
-path, or fresh pricing verification; later stages also lack live controllers and
+The v1.2 Gate~1 implementation now has a dedicated independently reviewed
+controller and an exact static proposal/schema package binding fresh pricing
+and ceilings. It remains unauthorized and unstarted: no credential access,
+provider call, or result exists. Later stages also lack live controllers and
 cross-run prerequisite assessments. If the narrow v1.2 5xx retry is eventually
 used, remaining under its identity cap does not resolve the scientific
 uncertainty. The unseen attempt may have completed and may differ from the

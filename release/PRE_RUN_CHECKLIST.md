@@ -12,14 +12,14 @@ Gate 3 Phase 1 proposal `1b85e13a8b10c98ad4314611de0da56624328225b54a0aa7764ac72
 
 The selected [formation-peer-v1 secondary study](../docs/FORMATION_PEER_CONTROLS.md) is a separate mock-only implementation; empirical inclusion remains conditional on live integration, prospective allocation, and release review. Main A–F, primary B−A, six evaluation-time peer cells, and main Gate 1/Gate 2/Gate 3 scopes remain unchanged and exclude its requests.
 
-Protocol v1.2 is currently projection-only. Its formation-only prompt changes do
-not alter the original baseline used for calibration, evaluation, or probes, and
-its protocol hash binds the frozen base protocol plus addendum. Gate 1 has no
-live controller, execution-ready proposal, authorization-issuance path,
-checked-in static proposal, or checked-in authorization schema; the inherited
-October 24 pricing must be freshly verified. Gate 2 and Gate 3 Phase 1 have plan
-projections only, without live controllers or cross-run prerequisite
-assessments. Do not check any v1.2 release item using a projection as evidence.
+Protocol v1.2 changes formation only; calibration, evaluation, and probes retain
+the original baseline, and its protocol hash binds the frozen base protocol plus
+addendum. Gate 1 now has a dedicated independently reviewed controller and a
+checked static proposal/schema package binding fresh official pricing and exact
+ceilings. It remains unauthorized and unstarted. Gate 2 and Gate 3 Phase 1 have
+plan projections only, without live controllers or cross-run prerequisite
+assessments. Do not check any empirical item from preparation evidence, and do
+not check any later-stage item using a projection.
 
 ## Completed Gate 1 record
 

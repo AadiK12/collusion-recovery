@@ -312,12 +312,12 @@ decision, proposal, or authority carries forward or may be pooled with v1.2.
 The v1.2 change is formation-only: `baseline_v1_2.txt` supplies the two-round
 formation interface, while calibration, evaluation, and probes retain the
 original baseline. Its canonical protocol hash binds the frozen base protocol
-and addendum together. Current Gate 1 support is only an offline projection;
-there is no live controller, execution-ready proposal, authorization-issuance
-path, checked-in static proposal, or checked-in v1.2 authorization schema. Its
-inherited October 24, 2026 pricing is stale and must be freshly verified. Gate 2
-and Gate 3 Phase 1 are plan projections whose live controllers and cross-run
-prerequisite assessments are not implemented.
+and addendum together. Gate 1 now has a dedicated independently reviewed
+controller and checked static proposal/schema package binding freshly verified
+official pricing and exact ceilings. It remains unauthorized and unstarted:
+there is no v1.2 authorization, credential access, provider call, or result.
+Gate 2 and Gate 3 Phase 1 are plan projections whose live controllers and
+cross-run prerequisite assessments are not implemented.
 
 The projected retry path applies only when received exception and response
 statuses are integers exactly equal to the same 500/502/503/504, request IDs

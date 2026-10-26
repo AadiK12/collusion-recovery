@@ -8,7 +8,7 @@ The compact, compilable manuscript derived from this detailed source is [`paper/
 **Affiliations:** [AFFILIATIONS REQUIRED]
 **Primary sprint track:** Track 3 — Collusion Carriers and Countermeasures
 **Additional track, only if the form permits and the final evidence supports it:** Track 2 — Detection and Audit of Collusion
-**Protocol:** v1.2 selected prospectively for offline preparation under [`PROTOCOL_V1_2_ADDENDUM.md`](../PROTOCOL_V1_2_ADDENDUM.md); its hash binds the frozen base protocol plus addendum, and only offline projections exist
+**Protocol:** v1.2 selected prospectively under [`PROTOCOL_V1_2_ADDENDUM.md`](../PROTOCOL_V1_2_ADDENDUM.md); its hash binds the frozen base protocol plus addendum, Gate 1 has a reviewed static release package awaiting exact authorization, and later stages remain offline projections
 **Code commit:** [CLEAN FULL COMMIT REQUIRED]
 **Paper status:** Pilot-incomplete methods draft; v1.1 Gate 1 and Gate 2 complete; v1.1 Gate 3 Phase 1 partial and paused fail-closed; v1.2 empirical work not started
 
@@ -238,7 +238,7 @@ Directional wording requires both the frozen claim-governing interval and the ap
 
 For every difference `X−Y`, compute the all-scheduled bound as `[lower_X−upper_Y, upper_X−lower_Y]` from the exact scheduled denominator for the relevant arm, time window, or peer cell. A missing final-three C-history window counts as not qualifying in C10's denominator of all scheduled C histories.
 
-Transport retry rules, message-format retry rules, exclusions, and budget handling are frozen before each live release and again before confirmation. Protocol v1.2 permits one runner-owned retry only when a response was received and the exception and response statuses are integers exactly equal to the same HTTP 500/502/503/504, provider/header request IDs match, and neither output nor usage is present. The failed attempt remains a durable ambiguous transport incident and retains its full reservation, but never enters the model-visible attempt list or scientific history. The retry keeps the same logical identity with a distinct attempt index and must reproduce identical wire bytes. SDK retries are disabled (`max_retries=0`). The runner waits at least 5 seconds; only numeric delta-seconds `Retry-After` and numeric `Retry-After-Ms` values can extend the delay within the 60-second ceiling, and larger values hard-stop rather than being shortened. The first non-ambiguous returned outcome is terminal for the logical identity; refusals and invalid responses remain missing/invalid. No second ambiguous-5xx-owned retry is permitted. An exceeded release-wide affected-identity cap or any other ambiguity hard-stops. This wording does not imply a maximum of two physical attempts under every policy, because an overlength or proven-known-not-completed attempt may already have occurred. The cap is `max(1, ceil(N/100))` distinct identities in an `N`-logical-request release. The prospective Gate 1, Gate 2, Phase 1, and Phase 2 caps are therefore 1/2/5/9 affected identities and 61/694/1,765/2,997 total attempts, respectively, while logical counts remain 20/192/480/888. The unseen ambiguous attempt may have completed and differed from its retry; every report must disclose affected identities and show sensitivity to that unresolved outcome, and staying within the cap does not remove this inferential limitation. Exact token/context/current-pricing/cost ceilings still require rendered release-specific projections and binding. Outcome-based exclusion is prohibited. If invalid or missing outcomes exceed 5% or are strongly arm-imbalanced, interpretation pauses pending an integrity review.
+Transport retry rules, message-format retry rules, exclusions, and budget handling are frozen before each live release and again before confirmation. Protocol v1.2 permits one runner-owned retry only when a response was received and the exception and response statuses are integers exactly equal to the same HTTP 500/502/503/504, provider/header request IDs match, and neither output nor usage is present. The failed attempt remains a durable ambiguous transport incident and retains its full reservation, but never enters the model-visible attempt list or scientific history. The retry keeps the same logical identity with a distinct attempt index and must reproduce identical wire bytes. SDK retries are disabled (`max_retries=0`). The runner waits at least 5 seconds; only numeric delta-seconds `Retry-After` and numeric `Retry-After-Ms` values can extend the delay within the 60-second ceiling, and larger values hard-stop rather than being shortened. The first non-ambiguous returned outcome is terminal for the logical identity; refusals and invalid responses remain missing/invalid. No second ambiguous-5xx-owned retry is permitted. An exceeded release-wide affected-identity cap or any other ambiguity hard-stops. This wording does not imply a maximum of two physical attempts under every policy, because an overlength or proven-known-not-completed attempt may already have occurred. The cap is `max(1, ceil(N/100))` distinct identities in an `N`-logical-request release. The prospective Gate 1, Gate 2, Phase 1, and Phase 2 caps are therefore 1/2/5/9 affected identities and 61/694/1,765/2,997 total attempts, respectively, while logical counts remain 20/192/480/888. The unseen ambiguous attempt may have completed and differed from its retry; every report must disclose affected identities and show sensitivity to that unresolved outcome, and staying within the cap does not remove this inferential limitation. Gate 1 now has rendered token/context/current-pricing/cost binding; every later release still requires its own rendered projection and binding. Outcome-based exclusion is prohibited. If invalid or missing outcomes exceed 5% or are strongly arm-imbalanced, interpretation pauses pending an integrity review.
 
 For that sensitivity analysis, recovery is determined from each affected identity's final durable status, not an intermediate returned retry. The analyzer enumerates affected, recovered, and unresolved identities, derives the transitive request-and-checkpoint dependency closure, and recomputes claim-level identification bounds after treating every verdict in that closure as missing. It never imputes an unseen first-attempt outcome from the retained retry.
 
@@ -273,13 +273,12 @@ The existing main-study sample and six labels remain unchanged. `formation-peer-
 
 **[DECISIONS RECORDED FOR GATES 1–3; GATE 3 REMAINS PARTIAL]** Gate 1 and Gate 2 requested and returned `gpt-6.1-sol` on the `default` service tier with low reasoning effort and a 4,096-token output ceiling. Provider metadata also reported `gpt-6.1-sol`; the system fingerprint was absent/null. The bound context limit was 1,050,000 tokens, and Gate 2 bound the price contract reverified at `2026-10-24T14:02:52-07:00` against the official GPT-6.1 Sol model page. Gate 3 proposal `1b85e13a8b10c98ad4314611de0da56624328225b54a0aa7764ac72ecabd3b5e` independently bound the same provider/settings and a price contract reverified at `2026-10-24T18:31:56-07:00`. Its one-use authorization was consumed by the partial run; no current approval permits continuation or Phase 2. Credentials remain outside repository artifacts.
 
-The v1.2 code currently reuses that model/settings lineage only to build an
-offline Gate 1 projection. Its inherited October 24 pricing timestamp is stale
-for v1.2 and must be freshly verified. There is no live v1.2 Gate 1 controller,
-execution-ready proposal, authorization-issuance path, static proposal, or
-static authorization-schema artifact. Gate 2 and Gate 3 Phase 1 have projected
-plans only; their live controllers and cross-run prerequisite assessments are
-not implemented.
+The v1.2 Gate 1 package retains that model/settings lineage and now includes a
+dedicated independently reviewed controller, a checked static proposal/schema,
+and a current official price record with exact resource ceilings. It remains
+unauthorized and unstarted: no v1.2 credential access, provider call, or result
+exists. Gate 2 and Gate 3 Phase 1 have projected plans only; their live
+controllers and cross-run prerequisite assessments are not implemented.
 
 ## 4. Results
 
@@ -293,7 +292,7 @@ not implemented.
 | v1.1 Gate 2 block-0 smoke | 1 | 152 | 152 final observations / 153 attempts | 0 final observations | PASSED integrity; scientific marker false; hard stop | `$7.4959330` |
 | v1.1 Gate 3 Phase 1, blocks 1–4 U/C formation | 4 | 320 | 227 usable / 228 attempts | 1 ambiguous + 92 undispatched | PAUSED; no formal assessment | `$6.7658595` conservative ledger accounting, including the ambiguous reservation |
 | v1.1 formation, all five blocks | 5 | 400 formation requests | 307 usable formation requests | 1 ambiguous + 92 undispatched | At most 2/5 partial-run bound; no completed decision | Gate 2 formation cost not isolated; Gate 3 `$6.7658595` conservative ledger accounting |
-| v1.2 Gate 1 calibration | N/A | 20 fresh planned | NOT RUN | 20 undispatched | OFFLINE PROJECTION ONLY; NO LIVE CONTROLLER OR AUTHORIZATION | NOT INCURRED |
+| v1.2 Gate 1 calibration | N/A | 20 fresh planned | NOT RUN | 20 undispatched | RELEASE PACKAGE READY; NO AUTHORIZATION OR DISPATCH | NOT INCURRED |
 | v1.2 Gate 2 block-0 smoke | 1 | 192 fresh planned | NOT RUN | 192 undispatched | PLAN PROJECTION ONLY; LIVE CONTROLLER/PREREQUISITE ASSESSMENT NOT IMPLEMENTED | NOT INCURRED |
 | v1.2 Gate 3 Phase 1 formation | 4 | 480 fresh planned | NOT RUN | 480 undispatched | PLAN PROJECTION ONLY; LIVE CONTROLLER/PREREQUISITE ASSESSMENT NOT IMPLEMENTED | NOT INCURRED |
 | v1.2 Gate 3 Phase 2 evaluation/probes | 5 | 888 fresh planned | NOT RUN | 888 undispatched | BLOCKED ON 3/5 MARKER AND SEPARATE AUTHORIZATION | NOT INCURRED |
@@ -306,9 +305,10 @@ not implemented.
 The prospective v1.2 rows remain logical-request inventories rather than
 observed attempt counts. Their frozen maximum dispatch-attempt ceilings are 61,
 694, 1,765, and 2,997, totaling 5,517 across four separately gated releases.
-No v1.2 attempt has occurred. No static v1.2 proposal or authorization artifact
-exists, and exact token, context, freshly verified pricing, and cost ceilings
-remain unbound pending the rendered projection for each release.
+No v1.2 attempt has occurred. Gate 1 has a static proposal and authorization
+schema with exact token, context, freshly verified pricing, and cost ceilings;
+it has no authorization artifact. The corresponding bindings remain unprepared
+for every later v1.2 release.
 
 On the main pilot-only path, write “not run” across the main confirmation row and remove main confirmation placeholders. Fill the secondary rows independently from actual secondary data. If only its pilot completed, report its exploratory pilot and mark secondary confirmation **NOT RUN**, including when main confirmation completed. If no empirical secondary study ran, both secondary empirical rows are **NOT RUN**; mock execution remains **OFFLINE ONLY**. Keep every completed split as a distinct provenance record, with no pooled estimate.
 
@@ -446,11 +446,10 @@ empirical evidence. The fresh staged plan contains 20 calibration requests, 192
 block-0 smoke requests, 480 blocks-1--4 formation requests, and 888 remaining
 evaluation/probe requests. Each boundary requires independent review and exact
 authorization; results remain empty until those releases actually execute and
-pass integrity review. At present these are projections: Gate 1 lacks a live
-controller, execution-ready/static proposal and authorization path, while Gate 2
-and Gate 3 Phase 1 also lack live controllers and cross-run assessments. The
-inherited October 24 pricing record must be freshly verified before a v1.2
-release is proposed.
+pass integrity review. Gate 1 now has a dedicated independently reviewed
+controller and an exact static proposal/schema package binding current pricing
+and ceilings, but it remains unauthorized and unstarted. Gate 2 and Gate 3
+Phase 1 still lack live controllers and cross-run assessments.
 
 Select main-study language from its locked report path. The main templates below require confirmation-level evidence. Main pilot-only findings use VERIFIED `P` rows and exploratory estimate wording; do not adapt these templates merely by adding a prefix. In particular, omit the main harmful-margin-exclusion, persistence, and C10 templates on the main pilot-only path. The secondary status is independent: VERIFIED `FP-P` findings retain explicitly exploratory wording even beside main confirmation, while `FP-C` requires its own fresh confirmation. Do not infer equivalence or persistence from descriptive pilot windows or combine either study into a compound claim.
 

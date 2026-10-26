@@ -161,6 +161,22 @@ class FakeSDKClient:
         return self
 
 
+class RateLimitError(Exception):
+    def __init__(self, usage):
+        super().__init__("synthetic SDK rate limit")
+        self.status_code = 429
+        self.request_id = "req_rate_limit"
+        self.body = {
+            "error": {
+                "type": "rate_limit_error",
+                "code": "rate_limit_exceeded",
+                "message": "Synthetic rate limit",
+            },
+            "usage": usage,
+        }
+        self.response = None
+
+
 class PromptRenderingTests(unittest.TestCase):
     def setUp(self):
         self.own = generate_fixture("prompt/own").packet
@@ -297,6 +313,33 @@ class OpenAIAdapterTests(unittest.TestCase):
         self.assertEqual(result.raw_response["headers"]["openaiApiKey"], "[REDACTED]")
         self.assertNotIn("plain-secret", result.error)
         self.assertNotIn("sk-testsecret", result.raw_response_json)
+
+    def test_sdk_429_usage_key_removes_known_not_completed_proof(self):
+        cases = {
+            "null": None,
+            "zero": 0,
+            "zero-object": {
+                "input_tokens": 0,
+                "output_tokens": 0,
+                "total_tokens": 0,
+            },
+            "malformed": "not-a-usage-object",
+        }
+        for label, usage in cases.items():
+            with self.subTest(label=label):
+                client = FakeSDKClient(RateLimitError(usage))
+                provider = OpenAIResponsesProvider(OpenAISDKTransport(
+                    client,
+                    timeout_seconds=30,
+                    sdk_version="9.9.9-test",
+                ))
+                with no_network():
+                    result = provider.complete(provider_request())
+                self.assertIs(result.status, ProviderStatus.RETRYABLE_ERROR)
+                self.assertFalse(result.known_not_completed)
+                self.assertIsNone(result.usage)
+                self.assertIn("usage", result.raw_response)
+                self.assertEqual(result.raw_response["usage"], usage)
 
     def test_conservative_input_bound_covers_utf8_schema_settings_and_framing(self):
         request = provider_request(turns=(TextTurn("developer", "a"),

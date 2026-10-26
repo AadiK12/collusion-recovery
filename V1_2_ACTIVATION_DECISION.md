@@ -96,16 +96,15 @@ transition. The decision was recorded before any v1.2 model output exists.
 
 ## Next permissible step
 
-The current code supports an offline Gate 1 projection only. It does not contain
-a live v1.2 controller, an execution-ready proposal, an authorization-issuance
-path, or static v1.2 proposal/authorization-schema artifacts. Its inherited
-October 24, 2026 pricing record must be freshly verified. Before any empirical
-step, implement and independently review the live controller, render the exact
-prompt/context projection, bind fresh official pricing and exact token/cost
-ceilings, and then generate a separately reviewed Gate 1 contract. Gate 2 and
-Gate 3 Phase 1 remain plan projections; their live controllers and cross-run
-prerequisite assessments are also unimplemented. Gate 1's projected
+The dedicated v1.2 Gate 1 controller has now been implemented and independently
+reviewed offline. The checked release package renders the exact prompt/context
+projection, binds freshly verified official pricing and exact token/cost
+ceilings, and includes a static proposal and external authorization schema.
+This preparation accessed no credential and made no provider call. Gate 1's
 logical/transport envelope is 20 requests, at most one affected identity, and
-at most 61 dispatch attempts. Only after those missing pieces are complete
-could the first empirical action be a separately authorized **20-request v1.2
-capability calibration**. No smoke or pilot request is implied by this decision.
+at most 61 dispatch attempts. The next permissible action is to create a fresh,
+short-lived, external one-use authorization bound to that exact package; only
+then may the **20-request v1.2 capability calibration** run. It hard-stops before
+smoke and grants no hypothesis-bearing authority. Gate 2 and Gate 3 Phase 1
+remain plan projections; their live controllers and cross-run prerequisite
+assessments are unimplemented.

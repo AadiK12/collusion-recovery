@@ -126,7 +126,7 @@ class V12TransportEvidenceTests(unittest.TestCase):
         self.assertNotIn("must-not-be-persisted", persisted)
         self.assertNotIn("sk-testsecret", persisted)
 
-    def test_retry_after_normalization_is_bounded_and_never_persists_values(self):
+    def test_retry_after_normalization_never_persists_raw_values(self):
         _, both = complete(InternalServerError(headers={
             "x-request-id": "req_500",
             "retry-after": "2",
@@ -144,6 +144,42 @@ class V12TransportEvidenceTests(unittest.TestCase):
         self.assertIsNone(evidence["retry_after_seconds"])
         self.assertIsNone(evidence["retry_after_source"])
         self.assertNotIn("sk-testsecret", canonical(malformed.to_dict()))
+
+    def test_long_retry_after_seconds_and_milliseconds_are_preserved(self):
+        cases = {
+            "delay-seconds": ({"retry-after": "000172801"}, 172801.0,
+                              "retry-after"),
+            "milliseconds": ({"retry-after-ms": "172801250"}, 172801.25,
+                             "retry-after-ms"),
+        }
+        for label, (retry_header, expected, source) in cases.items():
+            with self.subTest(label=label):
+                _, result = complete(InternalServerError(headers={
+                    "x-request-id": "req_500",
+                    **retry_header,
+                }))
+                evidence = result.transport_evidence
+                self.assertTrue(evidence["retry_eligible"])
+                self.assertTrue(evidence["retry_after_present"])
+                self.assertEqual(evidence["retry_after_source"], source)
+                self.assertEqual(evidence["retry_after_seconds"], expected)
+                # The closed persisted evidence schema must accept the same
+                # long normalized delay rather than dropping it on round-trip.
+                self.assertEqual(
+                    result.to_dict()["transport_evidence"]["retry_after_seconds"],
+                    evidence["retry_after_seconds"],
+                )
+
+    def test_http_date_is_present_but_deliberately_not_normalized(self):
+        _, result = complete(InternalServerError(headers={
+            "x-request-id": "req_500",
+            "retry-after": "Wed, 31 Dec 2099 23:59:59 GMT",
+        }))
+        evidence = result.transport_evidence
+        self.assertTrue(evidence["retry_eligible"])
+        self.assertTrue(evidence["retry_after_present"])
+        self.assertIsNone(evidence["retry_after_seconds"])
+        self.assertIsNone(evidence["retry_after_source"])
 
     def test_retry_candidate_requires_exact_status_ids_and_absence_evidence(self):
         missing_response_status = InternalServerError()

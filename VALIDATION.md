@@ -317,16 +317,15 @@ observation or gate artifact fills a v1.2 cell. The one-round
 `formation-peer-v1` study remains separate and is not inherited or counted.
 
 This checkpoint creates no authorization, accesses no credential, constructs no
-provider client, and makes no network or paid call. The Gate 1 module generates
-an offline projection only: it is not a live controller or execution-ready
-proposal, cannot issue authorization, and has no checked-in static v1.2 proposal
-or authorization-schema artifact. Its inherited October 24, 2026 v1.1 pricing
-record is stale for a future v1.2 release and must be freshly verified. Gate 2
-and Gate 3 Phase 1 are also plan projections; live controllers and cross-run
-prerequisite assessments are not implemented. Each stage must separately bind
-fresh pricing, its rendered prompts and contexts, exact token and cost ceilings,
-inventory, source, model/settings, transport-policy hash, budget, and one-use
-authorization after its prerequisites pass.
+provider client, and makes no network or paid call. Gate 1 now has a dedicated
+live controller and a checked, execution-ready static proposal/schema package
+that binds fresh official pricing, rendered prompts and contexts, exact token
+and cost ceilings, inventory, source, model/settings, transport-policy hash, and
+budget. It still cannot dispatch without a fresh external one-use authorization
+bound to that exact package, and it hard-stops before smoke. Gate 2 and Gate 3
+Phase 1 remain plan projections; their live controllers and cross-run
+prerequisite assessments are not implemented and require separate future
+packages and approvals.
 
 ## October 24 formation-control methodology reconciliation
 
